@@ -1,0 +1,53 @@
+{
+  "cli": {
+    "version": ">= 5.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "dev"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "channel": "development"
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "prod"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "preview"
+    },
+    "production": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "prod"
+      },
+      "ios": {
+        "autoIncrement": true
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "production"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "",
+        "ascAppId": "",
+        "appleTeamId": ""
+      }
+    }
+  }
+}
