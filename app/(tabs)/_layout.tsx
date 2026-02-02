@@ -31,6 +31,7 @@ export default function TabLayout() {
         name="recommend"
         options={{
           title: 'Recommend',
+          href: '/recommend',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="bulb" size={size} color={color} />
           ),
@@ -42,6 +43,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Depart',
+          href: '/',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="boat" size={size} color={color} />
           ),
@@ -53,6 +55,7 @@ export default function TabLayout() {
         name="trends"
         options={{
           title: 'Trends',
+          href: '/trends',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="trending-up" size={size} color={color} />
           ),
@@ -64,6 +67,7 @@ export default function TabLayout() {
         name="timer"
         options={{
           title: 'Timer',
+          href: '/timer',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="timer" size={size} color={color} />
           ),
