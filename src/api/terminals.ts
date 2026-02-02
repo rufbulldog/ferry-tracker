@@ -1,12 +1,7 @@
 import { terminalsApi } from './client';
-import type { TerminalCondition, TerminalWaitTime } from './types';
+import type { TerminalSailingSpace } from './types';
 
-export async function fetchTerminalConditions(): Promise<TerminalCondition[]> {
-  const { data } = await terminalsApi.get<TerminalCondition[]>('/terminalconditions');
-  return data;
-}
-
-export async function fetchTerminalWaitTime(terminalId: number): Promise<TerminalWaitTime> {
-  const { data } = await terminalsApi.get<TerminalWaitTime>(`/terminalwaittimes/${terminalId}`);
+export async function fetchTerminalSailingSpace(): Promise<TerminalSailingSpace[]> {
+  const { data } = await terminalsApi.get<TerminalSailingSpace[]>('/terminalsailingspace');
   return data;
 }

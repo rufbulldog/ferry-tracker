@@ -1,0 +1,234 @@
+# Ferry Tracker
+
+A React Native app for tracking Washington State Ferries in real-time. Shows upcoming departures, vessel locations, drive-up space availability, departure recommendations, trend analytics, and personal transit timing.
+
+## Features
+
+### Recommend Tab
+- **Personalized departure recommendations** - tells you when to leave home to catch the next ferry
+- **Travel time calculations** - accounts for your commute time to the terminal
+- **Buffer time** - adds appropriate buffer based on vehicle type (car vs bike)
+- **Capacity awareness** - warns when ferries are filling up
+- **Vehicle selection** - different recommendations for car vs bike
+
+### Depart Tab
+- **Real-time ferry schedules** for Seattle ↔ Bainbridge and Edmonds ↔ Kingston routes
+- **Live vessel tracking** - see when boats are loading, departed, or arriving
+- **Drive-up space availability** - know how many spots remain before you arrive
+- **Estimated departure times** - predictions based on vessel arrival + turnaround time
+- **Recently departed section** - scroll up to see ferries that just left
+- **Auto-refresh** - vessel data updates every 5 seconds, terminal data every 10 seconds
+
+### Trends Tab
+- **Departure accuracy chart** - visualize how often ferries run late or early
+- **Capacity chart** - see how full ferries are at departure time
+- **Daily statistics** - average delay and capacity percentages
+- **Automatic data collection** - captures departure snapshots as ferries leave
+
+### Timer Tab
+- **Personal transit timing** - track your commute times
+- **5 route options**:
+  - Home → Bainbridge Ferry
+  - Seattle dock → Work
+  - Work → Seattle ferry
+  - Bainbridge dock → Home
+  - Home → Kingston ferry
+- **Vehicle tracking** - record times by car or bike
+- **History view** - see recent recorded times with averages
+- **Persistent storage** - times saved locally on device
+
+## Supported Routes
+
+| Route | Terminals |
+|-------|-----------|
+| Bainbridge | Seattle (Colman Dock) ↔ Bainbridge Island |
+| Kingston | Edmonds ↔ Kingston |
+
+## Tech Stack
+
+- **React Native** + **Expo** (SDK 54)
+- **TypeScript**
+- **TanStack Query** (React Query) for data fetching and caching
+- **React Native Paper** for UI components
+- **Expo Router** for tab navigation
+- **AsyncStorage** for local data persistence
+- **react-native-gifted-charts** for trend visualizations
+- **AWS Amplify** for web hosting
+- **EAS Build** for native iOS/Android builds
+
+## Project Structure
+
+```
+ferry-app/
+├── app/                          # Expo Router screens
+│   ├── _layout.tsx               # Root layout with providers
+│   └── (tabs)/
+│       ├── _layout.tsx           # Tab navigator config
+│       ├── index.tsx             # Depart screen
+│       ├── recommend.tsx         # Recommendation screen
+│       ├── trends.tsx            # Trends/analytics screen
+│       └── timer.tsx             # Transit timer screen
+│
+├── src/
+│   ├── api/
+│   │   ├── client.ts             # Axios instances for WSF APIs
+│   │   ├── types.ts              # TypeScript interfaces
+│   │   ├── vessels.ts            # Vessel locations API
+│   │   └── terminals.ts          # Terminal sailing space API
+│   │
+│   ├── components/
+│   │   ├── FerryCard.tsx         # Departure card with progress
+│   │   ├── RouteSelector.tsx     # Route/direction picker header
+│   │   └── TrendCollector.tsx    # Background trend data collection
+│   │
+│   ├── context/
+│   │   └── RouteContext.tsx      # Shared route state across tabs
+│   │
+│   ├── hooks/
+│   │   ├── useVesselLocations.ts # Real-time vessel polling (5s)
+│   │   ├── useTerminalConditions.ts # Terminal data polling (10s)
+│   │   ├── useRouteVessels.ts    # Filter vessels by route
+│   │   ├── useNextDepartures.ts  # Combined departure data
+│   │   ├── useRecommendation.ts  # Leave-by time calculations
+│   │   ├── useDailyTrends.ts     # Trend data management
+│   │   ├── useTimer.ts           # Timer state management
+│   │   └── useTransitRecords.ts  # Transit time CRUD
+│   │
+│   ├── services/
+│   │   └── storage.ts            # AsyncStorage wrapper
+│   │
+│   ├── types/
+│   │   └── storage.ts            # Storage data types
+│   │
+│   └── utils/
+│       ├── constants.ts          # Terminal IDs, route config
+│       └── time.ts               # Date parsing and formatting
+│
+├── amplify.yml                   # AWS Amplify build config
+├── eas.json                      # EAS Build config
+└── .env                          # WSF API key (not committed)
+```
+
+## WSF API Integration
+
+The app uses Washington State Ferries APIs:
+
+### Vessel Locations API
+```
+GET /ferries/api/vessels/rest/vessellocations
+```
+- Real-time vessel positions, updated every 5 seconds
+- Contains: vessel name, location, ETA, departure time, at-dock status
+
+### Terminal Sailing Space API
+```
+GET /ferries/api/terminals/rest/terminalsailingspace
+```
+- Scheduled departures with space availability
+- Contains: departure times, vessel assignments, drive-up/reservation spots
+
+### Terminal IDs
+```typescript
+SEATTLE: 7       // Colman Dock
+BAINBRIDGE: 3    // Bainbridge Island
+KINGSTON: 12     // Kingston
+EDMONDS: 8       // Edmonds
+```
+
+## Status Logic
+
+The app determines departure status by matching real-time vessel data to scheduled sailings:
+
+| Status | Condition |
+|--------|-----------|
+| **Scheduled** | Future departure, vessel not yet at terminal |
+| **Arriving** | Vessel en route TO the departure terminal |
+| **Loading** | Vessel at dock, matches scheduled departure time |
+| **Departed** | Vessel has left dock for this sailing |
+
+### Estimated Departure
+When a vessel is arriving late, the app calculates:
+```
+Estimated Departure = Vessel ETA + 15 min turnaround
+```
+
+## Travel Time Configuration
+
+The Recommend tab uses these travel times:
+
+| Route | Bike | Car |
+|-------|------|-----|
+| Home → Bainbridge Ferry | 7 min + 2 min buffer | 5 min + 10 min buffer |
+| Seattle → Bainbridge | 10 min + 2 min buffer | N/A |
+| Home → Kingston Ferry | N/A | 30 min + 20 min buffer |
+
+## Running Locally
+
+### Prerequisites
+- Node.js 18+
+- Expo CLI: `npm install -g expo-cli`
+- iOS Simulator (Xcode) or Android Emulator (Android Studio)
+
+### Setup
+```bash
+cd ferry-app
+npm install
+
+# Create .env file with your WSF API key
+echo "EXPO_PUBLIC_WSF_API_KEY=your_key_here" > .env
+```
+
+### Development
+```bash
+# Start Expo dev server
+npx expo start
+
+# Then press:
+# i - Open iOS Simulator
+# a - Open Android Emulator
+# w - Open in web browser (has CORS issues)
+```
+
+### Web Note
+The WSF API doesn't support CORS, so web browser testing won't work locally. Use iOS Simulator, Android Emulator, or Expo Go on a physical device.
+
+## Building & Deployment
+
+### Web (AWS Amplify)
+The app auto-deploys to AWS Amplify on push to `main`. The `amplify.yml` configures the build.
+
+### Native (EAS Build)
+```bash
+# Login to Expo
+eas login
+
+# Configure project
+eas build:configure
+
+# Build for iOS
+eas build --profile preview --platform ios
+
+# Build for Android
+eas build --profile preview --platform android
+```
+
+## API Key
+
+Get a free API key at: https://wsdot.wa.gov/traffic/api/
+
+Add to `.env`:
+```
+EXPO_PUBLIC_WSF_API_KEY=your-key-here
+```
+
+## Future Enhancements
+
+- [ ] Push notifications for departure reminders
+- [ ] Map view with vessel positions
+- [ ] Historical trend analysis (week/month views)
+- [ ] Weather integration for commute recommendations
+- [ ] Additional routes (Mukilteo-Clinton, Bremerton, etc.)
+
+## License
+
+MIT

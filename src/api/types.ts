@@ -43,24 +43,36 @@ export interface SailingTime {
   AnnotationIndexes: number[];
 }
 
-export interface TerminalCondition {
+export interface SpaceForArrivalTerminal {
   TerminalID: number;
   TerminalName: string;
-  TerminalAbbrev: string;
-  DriveUpSpaceCount: number;
-  ReservationSpaceCount: number;
+  VesselID: number;
+  VesselName: string;
+  DisplayReservableSpace: boolean;
+  ReservableSpaceCount: number | null;
+  DisplayDriveUpSpace: boolean;
+  DriveUpSpaceCount: number | null;
   MaxSpaceCount: number;
-  IsReservationEnabled: boolean;
-  BulletinMessages: string[];
-  LastUpdated: string;
+  ArrivalTerminalIDs: number[];
 }
 
-export interface TerminalWaitTime {
+export interface DepartingSpace {
+  Departure: string; // "/Date(1234567890000-0800)/"
+  IsCancelled: boolean;
+  VesselID: number;
+  VesselName: string;
+  MaxSpaceCount: number;
+  SpaceForArrivalTerminals: SpaceForArrivalTerminal[];
+}
+
+export interface TerminalSailingSpace {
   TerminalID: number;
+  TerminalSubjectID: number;
+  RegionID: number;
   TerminalName: string;
-  WaitTime: number;
-  WaitTimeNotes: string;
-  WaitTimeLastUpdated: string;
+  TerminalAbbrev: string;
+  SortSeq: number;
+  DepartingSpaces: DepartingSpace[];
 }
 
 export interface EnrichedDeparture {
