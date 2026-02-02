@@ -77,6 +77,19 @@ export class InfraStack extends cdk.Stack {
     departuresTable.grantReadData(apiFn);
     transitTable.grantReadWriteData(apiFn);
 
+    // WSF Proxy Lambda - forwards requests to WSF API (for web CORS)
+    const proxyFn = new nodejs.NodejsFunction(this, 'ProxyFunction', {
+      functionName: 'ferry-wsf-proxy',
+      entry: path.join(__dirname, '../lambda/proxy/index.ts'),
+      handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      timeout: cdk.Duration.seconds(10),
+      memorySize: 256,
+      environment: {
+        WSF_API_KEY: wsfApiKey.valueAsString,
+      },
+    });
+
     // API Gateway
     const api = new apigateway.RestApi(this, 'FerryApi', {
       restApiName: 'Ferry Tracker API',
@@ -106,6 +119,18 @@ export class InfraStack extends cdk.Stack {
     // /transit-records/{id}
     const transitRecord = transitRecords.addResource('{id}');
     transitRecord.addMethod('DELETE', lambdaIntegration);
+
+    // WSF Proxy routes
+    const proxyIntegration = new apigateway.LambdaIntegration(proxyFn);
+    const wsf = api.root.addResource('wsf');
+
+    // /wsf/vessels
+    const wsfVessels = wsf.addResource('vessels');
+    wsfVessels.addMethod('GET', proxyIntegration);
+
+    // /wsf/terminals
+    const wsfTerminals = wsf.addResource('terminals');
+    wsfTerminals.addMethod('GET', proxyIntegration);
 
     // Outputs
     new cdk.CfnOutput(this, 'ApiUrl', {
