@@ -28,24 +28,22 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="recommend"
+        name="index"
         options={{
-          title: 'Recommend',
-          href: '/recommend',
+          title: 'Depart',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="bulb" size={size} color={color} />
+            <Ionicons name="boat" size={size} color={color} />
           ),
           header: () => <TabHeader />,
           headerShown: true,
         }}
       />
       <Tabs.Screen
-        name="index"
+        name="recommend"
         options={{
-          title: 'Depart',
-          href: '/',
+          title: 'Recommend',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="boat" size={size} color={color} />
+            <Ionicons name="bulb" size={size} color={color} />
           ),
           header: () => <TabHeader />,
           headerShown: true,
@@ -55,7 +53,6 @@ export default function TabLayout() {
         name="trends"
         options={{
           title: 'Trends',
-          href: '/trends',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="trending-up" size={size} color={color} />
           ),
@@ -67,7 +64,6 @@ export default function TabLayout() {
         name="timer"
         options={{
           title: 'Timer',
-          href: '/timer',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="timer" size={size} color={color} />
           ),
