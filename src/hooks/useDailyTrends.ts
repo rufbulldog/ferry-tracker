@@ -1,85 +1,24 @@
-import { useEffect, useCallback } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  getDailyTrends,
-  saveDepartureSnapshot,
-  getRecentTrends,
-  cleanupOldTrends,
-  generateId,
-} from '../services/storage';
-import { DepartureSnapshot, DailyTrends } from '../types/storage';
-import { useNextDepartures, DepartureInfo } from './useNextDepartures';
+import { useQuery } from '@tanstack/react-query';
+import { getTodayTrends, getRecentTrends } from '../api/backend';
+import { DepartureSnapshot } from '../types/storage';
 import { Route } from '../utils/constants';
 
-// Get today's date string
-function getToday(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
-// Hook to get today's trends
-export function useTodayTrends() {
-  const today = getToday();
-
+// Hook to get today's trends for a route
+export function useTodayTrends(route: Route) {
   return useQuery({
-    queryKey: ['dailyTrends', today],
-    queryFn: () => getDailyTrends(today),
+    queryKey: ['dailyTrends', route],
+    queryFn: () => getTodayTrends(route),
     staleTime: 30_000, // 30 seconds
   });
 }
 
-// Hook to get recent trends (last N days)
-export function useRecentTrends(days: number = 7) {
+// Hook to get recent trends (last N days) for a route
+export function useRecentTrends(route: Route, days: number = 7) {
   return useQuery({
-    queryKey: ['recentTrends', days],
-    queryFn: () => getRecentTrends(days),
+    queryKey: ['recentTrends', route, days],
+    queryFn: () => getRecentTrends(route, days),
     staleTime: 60_000, // 1 minute
   });
-}
-
-// Hook to collect departure snapshots as ferries depart
-export function useTrendCollector(route: Route) {
-  const { data: departures } = useNextDepartures(route);
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (!departures) return;
-
-    // Find departures that have just departed and need to be recorded
-    const departedSailings = departures.filter(
-      dep => dep.status === 'departed' && dep.actualDeparture
-    );
-
-    departedSailings.forEach(async (departure) => {
-      const capacityPercent = departure.maxSpaces > 0
-        ? Math.round(((departure.maxSpaces - (departure.driveUpSpaces || 0)) / departure.maxSpaces) * 100)
-        : 0;
-
-      const snapshot: DepartureSnapshot = {
-        id: generateId(),
-        scheduledTime: departure.scheduledDeparture.toISOString(),
-        actualTime: departure.actualDeparture?.toISOString() || null,
-        delayMinutes: departure.delayMinutes,
-        capacityPercent,
-        route,
-        timestamp: new Date().toISOString(),
-      };
-
-      try {
-        await saveDepartureSnapshot(snapshot);
-        // Invalidate the trends query to refresh the UI
-        queryClient.invalidateQueries({ queryKey: ['dailyTrends'] });
-      } catch (error) {
-        console.error('Failed to save departure snapshot:', error);
-      }
-    });
-  }, [departures, route, queryClient]);
-}
-
-// Hook to clean up old trend data on app start
-export function useTrendCleanup() {
-  useEffect(() => {
-    cleanupOldTrends(7); // Keep last 7 days
-  }, []);
 }
 
 // Calculate average delay for a day's snapshots

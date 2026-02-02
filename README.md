@@ -23,7 +23,7 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 - **Departure accuracy chart** - visualize how often ferries run late or early
 - **Capacity chart** - see how full ferries are at departure time
 - **Daily statistics** - average delay and capacity percentages
-- **Automatic data collection** - captures departure snapshots as ferries leave
+- **Server-side data collection** - Lambda captures departures every 2 minutes (no app needed)
 
 ### Timer Tab
 - **Personal transit timing** - track your commute times
@@ -51,9 +51,8 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 - **TanStack Query** (React Query) for data fetching and caching
 - **React Native Paper** for UI components
 - **Expo Router** for tab navigation
-- **AsyncStorage** for local data persistence
 - **react-native-gifted-charts** for trend visualizations
-- **AWS Amplify** for web hosting
+- **AWS CDK** for backend infrastructure (API Gateway, Lambda, DynamoDB)
 - **EAS Build** for native iOS/Android builds
 
 ## Project Structure
@@ -71,6 +70,7 @@ ferry-app/
 │
 ├── src/
 │   ├── api/
+│   │   ├── backend.ts            # Backend API client
 │   │   ├── client.ts             # Axios instances for WSF APIs
 │   │   ├── types.ts              # TypeScript interfaces
 │   │   ├── vessels.ts            # Vessel locations API
@@ -78,8 +78,7 @@ ferry-app/
 │   │
 │   ├── components/
 │   │   ├── FerryCard.tsx         # Departure card with progress
-│   │   ├── RouteSelector.tsx     # Route/direction picker header
-│   │   └── TrendCollector.tsx    # Background trend data collection
+│   │   └── RouteSelector.tsx     # Route/direction picker header
 │   │
 │   ├── context/
 │   │   └── RouteContext.tsx      # Shared route state across tabs
@@ -94,9 +93,6 @@ ferry-app/
 │   │   ├── useTimer.ts           # Timer state management
 │   │   └── useTransitRecords.ts  # Transit time CRUD
 │   │
-│   ├── services/
-│   │   └── storage.ts            # AsyncStorage wrapper
-│   │
 │   ├── types/
 │   │   └── storage.ts            # Storage data types
 │   │
@@ -104,9 +100,14 @@ ferry-app/
 │       ├── constants.ts          # Terminal IDs, route config
 │       └── time.ts               # Date parsing and formatting
 │
-├── amplify.yml                   # AWS Amplify build config
+├── infra/                        # AWS CDK infrastructure
+│   ├── lib/infra-stack.ts        # CDK stack definition
+│   └── lambda/
+│       ├── api/index.ts          # REST API handler
+│       └── collector/index.ts    # Scheduled data collector
+│
 ├── eas.json                      # EAS Build config
-└── .env                          # WSF API key (not committed)
+└── .env                          # API keys (not committed)
 ```
 
 ## WSF API Integration
@@ -194,8 +195,17 @@ The WSF API doesn't support CORS, so web browser testing won't work locally. Use
 
 ## Building & Deployment
 
-### Web (AWS Amplify)
-The app auto-deploys to AWS Amplify on push to `main`. The `amplify.yml` configures the build.
+### Backend (AWS CDK)
+The backend runs on AWS using Lambda, API Gateway, and DynamoDB.
+
+```bash
+# Deploy the backend
+cd infra
+npm install
+npm run deploy
+```
+
+After deployment, copy the API URL from the output and add it to your `.env` file.
 
 ### Native (EAS Build)
 ```bash
@@ -212,13 +222,14 @@ eas build --profile preview --platform ios
 eas build --profile preview --platform android
 ```
 
-## API Key
+## Configuration
 
-Get a free API key at: https://wsdot.wa.gov/traffic/api/
+Get a free WSF API key at: https://wsdot.wa.gov/traffic/api/
 
 Add to `.env`:
 ```
 EXPO_PUBLIC_WSF_API_KEY=your-key-here
+EXPO_PUBLIC_API_URL=https://your-api-id.execute-api.us-west-2.amazonaws.com/prod
 ```
 
 ## Future Enhancements

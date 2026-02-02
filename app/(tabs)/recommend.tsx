@@ -77,8 +77,8 @@ export default function RecommendScreen() {
             value={vehicle}
             onValueChange={(value) => setVehicle(value as Vehicle)}
             buttons={[
-              { value: 'car', label: 'Car' },
               { value: 'bike', label: 'Bike' },
+              { value: 'car', label: 'Car' },
             ]}
           />
         </Card.Content>

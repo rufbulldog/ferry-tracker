@@ -3,8 +3,7 @@ import { Text, Card } from 'react-native-paper';
 import { useMemo } from 'react';
 import { LineChart, BarChart } from 'react-native-gifted-charts';
 import {
-  useTodayTrends,
-  useTrendCleanup,
+  useRecentTrends,
   getHourlyDelays,
   getDepartureCapacities,
   calculateAverageDelay,
@@ -17,17 +16,8 @@ const screenWidth = Dimensions.get('window').width;
 export default function TrendsScreen() {
   const { route } = useRoute();
 
-  // Clean up old data on mount
-  useTrendCleanup();
-
-  // Get today's trends
-  const { data: todayTrends, isLoading } = useTodayTrends();
-
-  // Filter snapshots for selected route
-  const routeSnapshots = useMemo(() => {
-    if (!todayTrends?.snapshots) return [];
-    return todayTrends.snapshots.filter(s => s.route === route);
-  }, [todayTrends, route]);
+  // Get recent trends for the selected route (last 7 days)
+  const { data: routeSnapshots = [], isLoading } = useRecentTrends(route, 7);
 
   // Prepare chart data
   const hourlyDelays = useMemo(() => getHourlyDelays(routeSnapshots), [routeSnapshots]);

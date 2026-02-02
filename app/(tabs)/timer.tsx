@@ -167,8 +167,8 @@ export default function TimerScreen() {
               value={vehicle}
               onValueChange={(value) => !timer.isRunning && setVehicle(value as Vehicle)}
               buttons={[
-                { value: 'car', label: 'Car', disabled: timer.isRunning },
                 { value: 'bike', label: 'Bike', disabled: timer.isRunning },
+                { value: 'car', label: 'Car', disabled: timer.isRunning },
               ]}
             />
           </Card.Content>

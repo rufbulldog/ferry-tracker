@@ -1,17 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   getTransitRecords,
-  saveTransitRecord,
+  createTransitRecord,
   deleteTransitRecord,
-  generateId,
-} from '../services/storage';
+} from '../api/backend';
 import { TransitRecord, TransitRoute, Vehicle } from '../types/storage';
 
 export function useTransitRecords() {
   return useQuery({
     queryKey: ['transitRecords'],
     queryFn: getTransitRecords,
-    staleTime: Infinity, // Only refresh on mutation
+    staleTime: 60_000, // Refresh every minute
   });
 }
 
@@ -19,13 +18,12 @@ export function useSaveTransitRecord() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (record: Omit<TransitRecord, 'id' | 'timestamp'>) => {
-      const fullRecord: TransitRecord = {
-        ...record,
-        id: generateId(),
-        timestamp: new Date().toISOString(),
-      };
-      return saveTransitRecord(fullRecord);
+    mutationFn: (record: { route: TransitRoute; vehicle: Vehicle; durationSeconds: number }) => {
+      return createTransitRecord({
+        route: record.route,
+        vehicle: record.vehicle,
+        durationSeconds: record.durationSeconds,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transitRecords'] });
