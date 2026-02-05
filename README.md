@@ -5,37 +5,45 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 ## Features
 
 ### Recommend Tab
-- **Personalized departure recommendations** - tells you when to leave home to catch the next ferry
+- **Large recommendation card** - prominent "leave by" time display (55% of screen)
+- **Color-coded urgency** - green (plenty of time), orange (urgent), red (past due)
+- **Vehicle toggle** - switch between bike and car for different travel times
 - **Travel time calculations** - accounts for your commute time to the terminal
-- **Buffer time** - adds appropriate buffer based on vehicle type (car vs bike)
-- **Capacity awareness** - warns when ferries are filling up
-- **Vehicle selection** - different recommendations for car vs bike
+- **Buffer time** - adds appropriate buffer based on vehicle type
+- **Capacity awareness** - shows ferry fill percentage at bottom of card
 
 ### Depart Tab
-- **Real-time ferry schedules** for Seattle ↔ Bainbridge and Edmonds ↔ Kingston routes
-- **Live vessel tracking** - see when boats are loading, departed, or arriving
-- **Drive-up space availability** - know how many spots remain before you arrive
+- **Visual capacity indicator** - tank-fill animation shows how full the ferry is
+- **3-zone card layout** - vessel info at top, departure time center, capacity at bottom
+- **Live vessel tracking** - animated ferry icon shows incoming vessel position
+- **Drive-up space availability** - large number display shows spots remaining
+- **Camera viewer** - flip card to see terminal webcam feeds
 - **Estimated departure times** - predictions based on vessel arrival + turnaround time
 - **Recently departed section** - scroll up to see ferries that just left
 - **Auto-refresh** - vessel data updates every 5 seconds, terminal data every 10 seconds
 
 ### Trends Tab
+- **Prominent stats card** - large display of average delay and capacity
+- **My Transit Times** - personal commute averages from Timer recordings
+  - Filtered by selected route and direction
+  - Shows trip count and average duration
 - **Departure accuracy chart** - visualize how often ferries run late or early
 - **Capacity chart** - see how full ferries are at departure time
-- **Daily statistics** - average delay and capacity percentages
 - **Server-side data collection** - Lambda captures departures every 2 minutes (no app needed)
 
 ### Timer Tab
+- **Large timer card** - prominent display with state-based colors
+  - Blue (idle), Red (running), Orange (paused)
 - **Personal transit timing** - track your commute times
-- **5 route options**:
-  - Home → Bainbridge Ferry
-  - Seattle dock → Work
-  - Work → Seattle ferry
-  - Bainbridge dock → Home
-  - Home → Kingston ferry
-- **Vehicle tracking** - record times by car or bike
-- **History view** - see recent recorded times with averages
-- **Persistent storage** - times saved locally on device
+- **5 route options** with vehicle restrictions:
+  - Home → Bainbridge Ferry (bike or car)
+  - Seattle dock → Work (bike only)
+  - Work → Seattle ferry (bike only)
+  - Bainbridge dock → Home (bike only)
+  - Home → Kingston ferry (car only)
+- **Smart vehicle toggle** - only shows valid options per route
+- **History view** - route-specific labels (e.g., "Home → BI Ferry")
+- **Persistent storage** - times saved to backend database
 
 ## Supported Routes
 
