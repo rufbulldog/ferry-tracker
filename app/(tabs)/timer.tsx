@@ -120,7 +120,7 @@ export default function TimerScreen() {
   const getCardColor = () => {
     if (timer.isRunning) return '#C62828'; // Red when running
     if (timer.isPaused && timer.elapsedSeconds > 0) return '#F57C00'; // Orange when paused with time
-    return '#1565C0'; // Blue default
+    return theme.colors.primary; // Theme primary when idle
   };
 
   return (
