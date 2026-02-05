@@ -73,3 +73,15 @@ export async function getRecentTrends(route: string, days: number = 7): Promise<
   });
   return response.data.departures;
 }
+
+// Get the most recent departure(s) for real-time display
+export async function getLatestDepartures(route: string, limit: number = 1): Promise<DepartureSnapshot[]> {
+  if (!API_URL) {
+    console.warn('API_URL not configured, returning empty array');
+    return [];
+  }
+  const response = await api.get<TrendsResponse>('/trends/latest', {
+    params: { route, limit },
+  });
+  return response.data.departures;
+}

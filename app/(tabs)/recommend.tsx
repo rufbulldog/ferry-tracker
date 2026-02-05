@@ -71,14 +71,24 @@ export default function RecommendScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Vehicle Selection */}
       <Card style={styles.card}>
-        <Card.Title title="I'm taking my..." />
+        <Text style={styles.cardTitle}>I'm taking my...</Text>
         <Card.Content>
           <SegmentedButtons
             value={vehicle}
             onValueChange={(value) => setVehicle(value as Vehicle)}
             buttons={[
-              { value: 'bike', label: 'Bike' },
-              { value: 'car', label: 'Car' },
+              {
+                value: 'bike',
+                label: 'Bike',
+                style: vehicle === 'bike' ? styles.buttonSelected : styles.buttonUnselected,
+                labelStyle: vehicle === 'bike' ? styles.labelSelected : styles.labelUnselected,
+              },
+              {
+                value: 'car',
+                label: 'Car',
+                style: vehicle === 'car' ? styles.buttonSelected : styles.buttonUnselected,
+                labelStyle: vehicle === 'car' ? styles.labelSelected : styles.labelUnselected,
+              },
             ]}
           />
         </Card.Content>
@@ -106,7 +116,7 @@ export default function RecommendScreen() {
 
       {/* Factors */}
       <Card style={styles.card}>
-        <Card.Title title="Based on" />
+        <Text style={styles.cardTitle}>Based on</Text>
         <Card.Content>
           <View style={styles.factorRow}>
             <Text variant="bodyMedium" style={styles.factorLabel}>Next departure:</Text>
@@ -153,7 +163,7 @@ export default function RecommendScreen() {
       {/* Reasoning */}
       {recommendation.reasoning.length > 0 && (
         <Card style={styles.card}>
-          <Card.Title title="Notes" />
+          <Text style={styles.cardTitle}>Notes</Text>
           <Card.Content>
             {recommendation.reasoning.map((reason, index) => (
               <Text key={index} variant="bodySmall" style={styles.reasonText}>
@@ -178,6 +188,30 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 16,
     backgroundColor: '#fff',
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  buttonSelected: {
+    backgroundColor: '#1565C0',
+    borderColor: '#1565C0',
+  },
+  buttonUnselected: {
+    backgroundColor: '#fff',
+    borderColor: '#1565C0',
+  },
+  labelSelected: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  labelUnselected: {
+    color: '#1565C0',
+    fontWeight: '500',
   },
   recommendCard: {
     marginBottom: 16,

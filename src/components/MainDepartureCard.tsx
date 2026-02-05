@@ -21,9 +21,11 @@ interface MainDepartureCardProps {
   departure: DepartureInfo;
   terminalId: number;
   terminalName: string;
+  isAnimatingOut?: boolean;
+  backendIncomingCapacity?: number | null; // Fallback from backend when WSF data unavailable
 }
 
-export function MainDepartureCard({ departure, terminalId, terminalName }: MainDepartureCardProps) {
+export function MainDepartureCard({ departure, terminalId, terminalName, isAnimatingOut = false, backendIncomingCapacity }: MainDepartureCardProps) {
   const {
     vesselName,
     scheduledDeparture,
@@ -37,7 +39,11 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
     vesselArrivalEta,
     vesselProgressPercent,
     vesselAtOppositeTerminal,
+    incomingVesselCapacity: wsfIncomingCapacity,
   } = departure;
+
+  // Use WSF data if available, fallback to backend data
+  const incomingVesselCapacity = wsfIncomingCapacity ?? backendIncomingCapacity ?? null;
 
   // Flip card state
   const [isFlipped, setIsFlipped] = useState(false);
@@ -159,6 +165,14 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
     return '#43A047';
   };
 
+  // Color for incoming vessel capacity
+  const getIncomingCapacityColor = (percent: number) => {
+    if (percent > 90) return '#C62828';
+    if (percent > 70) return '#F57C00';
+    if (percent > 50) return '#FBC02D';
+    return '#43A047';
+  };
+
   const getStatusText = (): string => {
     if (isCancelled) return 'CANCELLED';
     switch (status) {
@@ -181,16 +195,15 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
     }
   };
 
-  const carsLoaded = driveUpSpaces !== null ? maxSpaces - driveUpSpaces : 0;
-
   const fillHeight = animatedFill.interpolate({
     inputRange: [0, 100],
     outputRange: ['0%', '100%'],
   });
 
+  // For arriving vessels: ferry comes from right (90%) to left (5%) - toward our dock
   const ferryPosition = animatedFerryProgress.interpolate({
     inputRange: [0, 100],
-    outputRange: ['5%', '90%'],
+    outputRange: ['90%', '5%'],
   });
 
   const getMinutesToArrival = (): number | null => {
@@ -201,7 +214,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
   };
 
   const minutesToArrival = getMinutesToArrival();
-  const showFerryTracker = status === 'arriving' || status === 'returning' || status === 'departed';
+  // Only show ferry tracker when vessel is arriving - hide when docked (loading/scheduled)
+  const showFerryTracker = status === 'arriving' || status === 'returning';
   const hasDelay = estimatedDeparture && estimatedDeparture.getTime() !== scheduledDeparture.getTime();
   const minutesUntilEstimated = estimatedDeparture ? getMinutesUntil(estimatedDeparture) : minutesUntilDeparture;
 
@@ -221,7 +235,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
             opacity: frontOpacity,
           },
         ]}
-        pointerEvents={isFlipped ? 'none' : 'auto'}
+        pointerEvents={isFlipped || isAnimatingOut ? 'none' : 'auto'}
       >
         {/* Background fill - the "tank" */}
         <View style={styles.tankBackground}>
@@ -239,6 +253,18 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
           {showFerryTracker && (
             <View style={styles.ferryTracker}>
               <View style={[styles.trackLine, fillPercent < 40 && styles.trackLineDark]}>
+                {/* Incoming vessel capacity fill inside track */}
+                {(status === 'arriving' || status === 'returning') && incomingVesselCapacity !== null && (
+                  <View
+                    style={[
+                      styles.trackCapacityFill,
+                      {
+                        width: `${incomingVesselCapacity}%`,
+                        backgroundColor: getIncomingCapacityColor(incomingVesselCapacity),
+                      },
+                    ]}
+                  />
+                )}
                 <View style={[styles.dock, styles.leftDock, fillPercent < 40 && styles.dockDark]} />
                 <View style={[styles.dock, styles.rightDock, fillPercent < 40 && styles.dockDark]} />
                 <Animated.View
@@ -246,7 +272,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
                     styles.ferryIcon,
                     {
                       left: ferryPosition,
-                      transform: [{ scaleX: status === 'departed' ? 1 : -1 }],
+                      transform: [{ scaleX: -1 }], // Ferry faces left (toward our dock)
                     },
                   ]}
                 >
@@ -259,7 +285,6 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
                 {status === 'returning' && vesselAtOppositeTerminal && 'Ferry has not left yet'}
                 {status === 'returning' && !vesselAtOppositeTerminal && minutesToArrival !== null && vesselArrivalEta &&
                   `${minutesToArrival} min to dock · arrives ${formatTime(vesselArrivalEta)}`}
-                {status === 'departed' && 'En route to destination'}
               </Text>
             </View>
           )}
@@ -270,7 +295,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
               <Text style={styles.statusText}>{getStatusText()}</Text>
             </View>
             <Text style={styles.vesselName}>{vesselName}</Text>
-            {cameras.length > 0 && (
+            {cameras.length > 0 && !isAnimatingOut && (
               <TouchableOpacity style={styles.cameraButton} onPress={handleFlip}>
                 <Ionicons name="videocam" size={20} color="#1565C0" />
               </TouchableOpacity>
@@ -317,11 +342,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName }: MainD
             <View style={styles.carCountSection}>
               <Text style={[styles.spotsNumber, fillPercent < 30 && styles.darkText]}>{driveUpSpaces}</Text>
               <Text style={[styles.spotsLabel, fillPercent < 30 && styles.darkText]}>spots remaining</Text>
-              <View style={styles.capacityRow}>
-                <Text style={[styles.capacityInfo, fillPercent < 40 && styles.darkTextMuted]}>{carsLoaded} cars waiting</Text>
-                <Text style={[styles.capacityDivider, fillPercent < 40 && styles.darkTextMuted]}> · </Text>
-                <Text style={[styles.capacityInfo, fillPercent < 40 && styles.darkTextMuted]}>{Math.round(fillPercent)}% full</Text>
-              </View>
+              <Text style={[styles.capacityInfo, fillPercent < 40 && styles.darkTextMuted]}>{Math.round(fillPercent)}% full</Text>
             </View>
           )}
         </View>
@@ -461,9 +482,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     position: 'relative',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   trackLineDark: {
     backgroundColor: 'rgba(21, 101, 192, 0.2)',
+  },
+  trackCapacityFill: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    borderRadius: 20,
+    opacity: 0.6,
   },
   dock: {
     position: 'absolute',
@@ -612,11 +642,6 @@ const styles = StyleSheet.create({
     color: '#444',
     textShadowColor: 'transparent',
   },
-  capacityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-  },
   capacityInfo: {
     fontSize: 15,
     color: 'rgba(255,255,255,0.9)',
@@ -624,13 +649,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-  },
-  capacityDivider: {
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.7)',
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    marginTop: 12,
   },
   // Camera back side styles
   cameraContainer: {

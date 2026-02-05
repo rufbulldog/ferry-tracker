@@ -32,8 +32,18 @@ export function RouteSelector() {
         value={direction}
         onValueChange={(value) => setDirection(value as 'outbound' | 'inbound')}
         buttons={[
-          { value: 'outbound', label: directionLabels.outbound },
-          { value: 'inbound', label: directionLabels.inbound },
+          {
+            value: 'outbound',
+            label: directionLabels.outbound,
+            style: direction === 'outbound' ? styles.buttonSelected : styles.buttonUnselected,
+            labelStyle: direction === 'outbound' ? styles.labelSelected : styles.labelUnselected,
+          },
+          {
+            value: 'inbound',
+            label: directionLabels.inbound,
+            style: direction === 'inbound' ? styles.buttonSelected : styles.buttonUnselected,
+            labelStyle: direction === 'inbound' ? styles.labelSelected : styles.labelUnselected,
+          },
         ]}
         style={styles.segmentedButtons}
       />
@@ -103,6 +113,22 @@ const styles = StyleSheet.create({
   },
   segmentedButtons: {
     marginBottom: 4,
+  },
+  buttonSelected: {
+    backgroundColor: '#1565C0',
+    borderColor: '#1565C0',
+  },
+  buttonUnselected: {
+    backgroundColor: '#fff',
+    borderColor: '#1565C0',
+  },
+  labelSelected: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  labelUnselected: {
+    color: '#1565C0',
+    fontWeight: '500',
   },
   modalOverlay: {
     flex: 1,

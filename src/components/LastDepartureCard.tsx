@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { DepartureInfo } from '../hooks/useNextDepartures';
@@ -7,9 +7,10 @@ import { formatTime } from '../utils/time';
 
 interface LastDepartureCardProps {
   departure: DepartureInfo;
+  backendCapacityPercent?: number | null; // Fallback from backend when WSF data unavailable
 }
 
-export function LastDepartureCard({ departure }: LastDepartureCardProps) {
+export function LastDepartureCard({ departure, backendCapacityPercent }: LastDepartureCardProps) {
   const {
     vesselName,
     scheduledDeparture,
@@ -17,47 +18,79 @@ export function LastDepartureCard({ departure }: LastDepartureCardProps) {
     delayMinutes,
     driveUpSpaces,
     maxSpaces,
+    vesselProgressPercent,
   } = departure;
 
-  // Calculate capacity percentage
-  const capacityPercent = driveUpSpaces !== null && maxSpaces > 0
+  // Calculate capacity percentage - how full was this ferry when it departed
+  // Use WSF data if available, fallback to backend data
+  const wsfCapacity = driveUpSpaces !== null && maxSpaces > 0
     ? Math.round(((maxSpaces - driveUpSpaces) / maxSpaces) * 100)
-    : 0;
+    : null;
+  const capacityPercent = wsfCapacity ?? backendCapacityPercent ?? null;
 
-  const getCapacityColor = () => {
-    if (capacityPercent > 90) return '#C62828';
-    if (capacityPercent > 70) return '#F57C00';
-    if (capacityPercent > 50) return '#FBC02D';
+  // Same color scale as MainDepartureCard
+  const getCapacityColor = (percent: number) => {
+    if (percent > 90) return '#C62828';
+    if (percent > 70) return '#F57C00';
+    if (percent > 50) return '#FBC02D';
     return '#43A047';
   };
 
   const departureTime = actualDeparture || scheduledDeparture;
 
+  // Animated ferry progress
+  const animatedProgress = useRef(new Animated.Value(vesselProgressPercent)).current;
+
+  useEffect(() => {
+    Animated.timing(animatedProgress, {
+      toValue: vesselProgressPercent,
+      duration: 800,
+      useNativeDriver: false,
+    }).start();
+  }, [vesselProgressPercent, animatedProgress]);
+
+  const ferryPosition = animatedProgress.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['5%', '90%'],
+  });
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Ionicons name="checkmark-circle" size={16} color="#666" />
-        <Text style={styles.headerText}>LAST DEPARTURE</Text>
+      {/* Ferry tracker with capacity fill inside */}
+      <View style={styles.ferryTracker}>
+        <View style={styles.trackLine}>
+          {/* Capacity fill inside track - shows how full ferry was when it departed */}
+          {capacityPercent !== null && (
+            <View
+              style={[
+                styles.trackCapacityFill,
+                {
+                  width: `${capacityPercent}%`,
+                  backgroundColor: getCapacityColor(capacityPercent),
+                },
+              ]}
+            />
+          )}
+          <View style={[styles.dock, styles.leftDock]} />
+          <View style={[styles.dock, styles.rightDock]} />
+          <Animated.View
+            style={[
+              styles.ferryIcon,
+              { left: ferryPosition },
+            ]}
+          >
+            <Ionicons name="boat" size={18} color="#1565C0" />
+          </Animated.View>
+        </View>
       </View>
 
+      {/* Vessel info - all on one line */}
       <View style={styles.content}>
-        <View style={styles.leftSection}>
-          <Text style={styles.time}>{formatTime(departureTime)}</Text>
-          {delayMinutes > 0 && (
-            <Text style={styles.delay}>+{delayMinutes}m late</Text>
-          )}
-        </View>
-
-        <View style={styles.middleSection}>
-          <Text style={styles.vesselName}>{vesselName}</Text>
-        </View>
-
-        <View style={styles.rightSection}>
-          <View style={[styles.capacityBadge, { backgroundColor: getCapacityColor() }]}>
-            <Text style={styles.capacityText}>{capacityPercent}%</Text>
-          </View>
-          <Text style={styles.capacityLabel}>full</Text>
-        </View>
+        <Text style={styles.vesselName}>{vesselName}</Text>
+        <Text style={styles.departedAt}>departed {formatTime(departureTime)}</Text>
+        {delayMinutes > 0 && (
+          <Text style={styles.delay}>+{delayMinutes}m late</Text>
+        )}
       </View>
     </View>
   );
@@ -65,66 +98,73 @@ export function LastDepartureCard({ departure }: LastDepartureCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+    borderLeftWidth: 3,
+    borderLeftColor: '#1565C0',
+    // Subtle drop shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  ferryTracker: {
+    marginBottom: 6,
+  },
+  trackLine: {
+    height: 24,
+    backgroundColor: 'rgba(21, 101, 192, 0.15)',
     borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    position: 'relative',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 8,
+  trackCapacityFill: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    borderRadius: 12,
+    opacity: 0.6,
   },
-  headerText: {
-    fontSize: 11,
-    color: '#666',
-    fontWeight: '600',
-    letterSpacing: 0.5,
+  dock: {
+    position: 'absolute',
+    width: 5,
+    height: 14,
+    backgroundColor: '#1565C0',
+    borderRadius: 2,
+  },
+  leftDock: {
+    left: 5,
+  },
+  rightDock: {
+    right: 5,
+  },
+  ferryIcon: {
+    position: 'absolute',
+    top: 3,
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
-  leftSection: {
-    minWidth: 70,
-  },
-  time: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  vesselName: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#333',
   },
   delay: {
     fontSize: 11,
     color: '#F57C00',
     fontWeight: '500',
+    marginLeft: 'auto',
   },
-  middleSection: {
-    flex: 1,
-    paddingHorizontal: 12,
-  },
-  vesselName: {
-    fontSize: 14,
+  departedAt: {
+    fontSize: 12,
     color: '#666',
-  },
-  rightSection: {
-    alignItems: 'center',
-  },
-  capacityBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  capacityText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  capacityLabel: {
-    fontSize: 10,
-    color: '#999',
-    marginTop: 2,
   },
 });

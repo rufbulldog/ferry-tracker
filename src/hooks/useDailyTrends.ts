@@ -28,11 +28,12 @@ export function calculateAverageDelay(snapshots: DepartureSnapshot[]): number {
   return Math.round(total / snapshots.length);
 }
 
-// Calculate average capacity for a day's snapshots
+// Calculate average capacity for a day's snapshots (excluding zeros which mean no data)
 export function calculateAverageCapacity(snapshots: DepartureSnapshot[]): number {
-  if (snapshots.length === 0) return 0;
-  const total = snapshots.reduce((sum, s) => sum + s.capacityPercent, 0);
-  return Math.round(total / snapshots.length);
+  const validSnapshots = snapshots.filter(s => s.capacityPercent > 0);
+  if (validSnapshots.length === 0) return 0;
+  const total = validSnapshots.reduce((sum, s) => sum + s.capacityPercent, 0);
+  return Math.round(total / validSnapshots.length);
 }
 
 // Get hourly breakdown of delays for chart
@@ -56,9 +57,10 @@ export function getHourlyDelays(snapshots: DepartureSnapshot[]): { hour: number;
   return result.sort((a, b) => a.hour - b.hour);
 }
 
-// Get departure capacity data for bar chart
+// Get departure capacity data for bar chart (individual departures, excluding zeros)
 export function getDepartureCapacities(snapshots: DepartureSnapshot[]): { time: string; capacity: number }[] {
   return snapshots
+    .filter(s => s.capacityPercent > 0) // Exclude zeros (no data recorded)
     .map(s => ({
       time: new Date(s.scheduledTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
       capacity: s.capacityPercent,
@@ -68,4 +70,25 @@ export function getDepartureCapacities(snapshots: DepartureSnapshot[]): { time: 
       const timeB = new Date(`2000-01-01 ${b.time}`).getTime();
       return timeA - timeB;
     });
+}
+
+// Get hourly breakdown of capacity for chart (same scale as delays)
+export function getHourlyCapacities(snapshots: DepartureSnapshot[]): { hour: number; capacity: number }[] {
+  const hourlyData: Map<number, number[]> = new Map();
+
+  snapshots.forEach(snapshot => {
+    const hour = new Date(snapshot.scheduledTime).getHours();
+    if (!hourlyData.has(hour)) {
+      hourlyData.set(hour, []);
+    }
+    hourlyData.get(hour)!.push(snapshot.capacityPercent);
+  });
+
+  const result: { hour: number; capacity: number }[] = [];
+  hourlyData.forEach((capacities, hour) => {
+    const avg = capacities.reduce((a, b) => a + b, 0) / capacities.length;
+    result.push({ hour, capacity: Math.round(avg) });
+  });
+
+  return result.sort((a, b) => a.hour - b.hour);
 }

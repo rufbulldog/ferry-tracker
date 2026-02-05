@@ -114,7 +114,7 @@ export default function TimerScreen() {
 
       {/* Route Selection */}
       <Card style={styles.card}>
-        <Card.Title title="Timing" />
+        <Text style={styles.cardTitle}>Timing</Text>
         <Card.Content>
           <TouchableOpacity
             style={[styles.dropdown, timer.isRunning && styles.dropdownDisabled]}
@@ -161,14 +161,26 @@ export default function TimerScreen() {
       {/* Vehicle Selection - hidden for car-only routes */}
       {!selectedRoute.carOnly && (
         <Card style={styles.card}>
-          <Card.Title title="Vehicle" />
+          <Text style={styles.cardTitle}>Vehicle</Text>
           <Card.Content>
             <SegmentedButtons
               value={vehicle}
               onValueChange={(value) => !timer.isRunning && setVehicle(value as Vehicle)}
               buttons={[
-                { value: 'bike', label: 'Bike', disabled: timer.isRunning },
-                { value: 'car', label: 'Car', disabled: timer.isRunning },
+                {
+                  value: 'bike',
+                  label: 'Bike',
+                  disabled: timer.isRunning,
+                  style: vehicle === 'bike' ? styles.buttonSelected : styles.buttonUnselected,
+                  labelStyle: vehicle === 'bike' ? styles.labelSelected : styles.labelUnselected,
+                },
+                {
+                  value: 'car',
+                  label: 'Car',
+                  disabled: timer.isRunning,
+                  style: vehicle === 'car' ? styles.buttonSelected : styles.buttonUnselected,
+                  labelStyle: vehicle === 'car' ? styles.labelSelected : styles.labelUnselected,
+                },
               ]}
             />
           </Card.Content>
@@ -231,7 +243,7 @@ export default function TimerScreen() {
 
       {/* Recent Times */}
       <Card style={styles.card}>
-        <Card.Title title="Recent Times" />
+        <Text style={styles.cardTitle}>Recent Times</Text>
         <Card.Content>
           {recordsLoading ? (
             <Text style={styles.placeholderText}>Loading...</Text>
@@ -281,6 +293,30 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 16,
     backgroundColor: '#fff',
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  buttonSelected: {
+    backgroundColor: '#1565C0',
+    borderColor: '#1565C0',
+  },
+  buttonUnselected: {
+    backgroundColor: '#fff',
+    borderColor: '#1565C0',
+  },
+  labelSelected: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  labelUnselected: {
+    color: '#1565C0',
+    fontWeight: '500',
   },
   timerCard: {
     marginBottom: 16,

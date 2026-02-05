@@ -26,35 +26,46 @@ export default function TrendsScreen() {
   const avgDelay = calculateAverageDelay(routeSnapshots);
   const avgCapacity = calculateAverageCapacity(routeSnapshots);
 
+  // Color for avg delay: green if early (negative), grey if 0, yellow/orange/red for delays
+  const getDelayColor = (delay: number) => {
+    if (delay < 0) return '#2E7D32'; // Early - green
+    if (delay === 0) return '#666'; // On time - grey
+    if (delay > 10) return '#C62828'; // Very late - red
+    if (delay > 5) return '#F57C00'; // Late - orange
+    return '#FBC02D'; // Slightly late - yellow
+  };
+
   // Calculate chart dimensions to fit screen
   const chartWidth = screenWidth - 64; // Account for padding and margins
   const chartPadding = 40; // Space for y-axis labels
 
-  // Line chart - calculate spacing to fit all points
+  // Line chart spacing
   const lineSpacing = hourlyDelays.length > 1
     ? Math.max(20, Math.min(40, (chartWidth - chartPadding) / hourlyDelays.length))
     : 40;
 
-  // Bar chart - calculate bar width and spacing to fit
-  const maxBars = Math.max(1, capacityData.length);
-  const availableBarSpace = chartWidth - chartPadding;
-  const barWidth = Math.max(16, Math.min(32, availableBarSpace / maxBars * 0.6));
-  const barSpacing = Math.max(4, Math.min(12, availableBarSpace / maxBars * 0.4));
+  // Bar chart - limit to recent 8 departures for readability
+  const recentCapacityData = capacityData.slice(-8);
+  const barCount = Math.max(recentCapacityData.length, 1);
+  const barSpacing = Math.max(12, Math.min(24, (chartWidth - chartPadding) / barCount * 0.6));
+  const barWidth = Math.max(16, Math.min(24, barSpacing * 0.8));
 
   // Line chart data for delays
   const delayLineData = hourlyDelays.map(d => ({
     value: d.delay,
     label: `${d.hour}`,
-    dataPointText: d.delay !== 0 ? `${d.delay > 0 ? '+' : ''}${d.delay}` : '',
   }));
 
-  // Bar chart data for capacity - limit to last 10 for readability
-  const recentCapacityData = capacityData.slice(-10);
-  const capacityBarData = recentCapacityData.map(d => ({
-    value: d.capacity,
-    label: d.time.replace(' ', '\n'),
-    frontColor: d.capacity > 90 ? '#C62828' : d.capacity > 70 ? '#F57C00' : '#2E7D32',
-  }));
+  // Bar chart data for capacity - individual departures with simplified time labels
+  const capacityBarData = recentCapacityData.map(d => {
+    const shortTime = d.time.replace(':00 AM', 'a').replace(':00 PM', 'p')
+      .replace(' AM', 'a').replace(' PM', 'p');
+    return {
+      value: d.capacity,
+      label: shortTime,
+      frontColor: d.capacity > 90 ? '#C62828' : d.capacity > 70 ? '#F57C00' : '#2E7D32',
+    };
+  });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -64,7 +75,7 @@ export default function TrendsScreen() {
           <Card.Content style={styles.statContent}>
             <Text variant="headlineMedium" style={[
               styles.statValue,
-              { color: avgDelay > 5 ? '#F57C00' : avgDelay > 0 ? '#666' : '#2E7D32' }
+              { color: getDelayColor(avgDelay) }
             ]}>
               {avgDelay > 0 ? '+' : ''}{avgDelay} min
             </Text>
@@ -86,7 +97,7 @@ export default function TrendsScreen() {
 
       {/* Delay Chart */}
       <Card style={styles.card}>
-        <Card.Title title="Departure Accuracy" subtitle="Minutes late (+) or early (-)" />
+        <Text style={styles.chartTitle}>Departure Accuracy</Text>
         <Card.Content>
           {delayLineData.length > 0 ? (
             <View style={styles.chartContainer}>
@@ -102,10 +113,13 @@ export default function TrendsScreen() {
                 hideDataPoints={false}
                 dataPointsColor="#1565C0"
                 dataPointsRadius={4}
-                xAxisLabelTextStyle={styles.chartLabel}
-                yAxisTextStyle={styles.chartLabel}
+                xAxisLabelTextStyle={{ color: '#1a1a1a', fontSize: 11 }}
+                yAxisTextStyle={{ color: '#1a1a1a', fontSize: 11 }}
+                xAxisColor="#666"
+                yAxisColor="#666"
+                yAxisLabelWidth={30}
                 yAxisOffset={-5}
-                rulesColor="#e0e0e0"
+                rulesColor="#ddd"
                 rulesType="solid"
                 showReferenceLine1
                 referenceLine1Position={0}
@@ -131,10 +145,7 @@ export default function TrendsScreen() {
 
       {/* Capacity Chart */}
       <Card style={styles.card}>
-        <Card.Title
-          title="Departure Capacity"
-          subtitle={capacityData.length > 10 ? `% full (last 10 of ${capacityData.length})` : '% full at departure'}
-        />
+        <Text style={styles.chartTitle}>Departure Capacity</Text>
         <Card.Content>
           {capacityBarData.length > 0 ? (
             <View style={styles.chartContainer}>
@@ -144,13 +155,16 @@ export default function TrendsScreen() {
                 height={140}
                 barWidth={barWidth}
                 spacing={barSpacing}
-                initialSpacing={8}
-                endSpacing={8}
+                initialSpacing={10}
+                endSpacing={10}
                 maxValue={100}
                 noOfSections={4}
-                xAxisLabelTextStyle={styles.chartLabelSmall}
-                yAxisTextStyle={styles.chartLabel}
-                rulesColor="#e0e0e0"
+                xAxisLabelTextStyle={{ color: '#1a1a1a', fontSize: 9 }}
+                yAxisTextStyle={{ color: '#1a1a1a', fontSize: 11 }}
+                xAxisColor="#666"
+                yAxisColor="#666"
+                yAxisLabelWidth={35}
+                rulesColor="#ddd"
                 showYAxisIndices={false}
                 yAxisLabelSuffix="%"
                 barBorderRadius={4}
@@ -209,17 +223,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: '#fff',
   },
+  chartTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
   chartContainer: {
     alignItems: 'center',
     overflow: 'hidden',
-  },
-  chartLabel: {
-    color: '#666',
-    fontSize: 10,
-  },
-  chartLabelSmall: {
-    color: '#666',
-    fontSize: 8,
   },
   emptyChart: {
     height: 140,

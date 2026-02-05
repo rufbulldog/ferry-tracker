@@ -78,6 +78,34 @@ async function getRecentTrends(route: string, days: number): Promise<APIGatewayP
   });
 }
 
+// GET /trends/latest?route=X&limit=1
+// Returns the most recent departure(s) for a route (for real-time display)
+async function getLatestDepartures(route: string, limit: number = 1): Promise<APIGatewayProxyResult> {
+  const now = new Date();
+  // Look back 2 hours max - covers longest crossing time plus buffer
+  const startDate = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+
+  const result = await docClient.send(new QueryCommand({
+    TableName: DEPARTURES_TABLE,
+    KeyConditionExpression: '#route = :route AND #ts >= :start',
+    ExpressionAttributeNames: {
+      '#route': 'route',
+      '#ts': 'timestamp',
+    },
+    ExpressionAttributeValues: {
+      ':route': route,
+      ':start': startDate.toISOString(),
+    },
+    ScanIndexForward: false, // Most recent first
+    Limit: limit,
+  }));
+
+  return response(200, {
+    route,
+    departures: result.Items || [],
+  });
+}
+
 // GET /transit-records
 async function getTransitRecords(): Promise<APIGatewayProxyResult> {
   const result = await docClient.send(new ScanCommand({
@@ -149,6 +177,13 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       const days = parseInt(query.days || '7', 10);
       if (!route) return response(400, { error: 'route parameter required' });
       return getRecentTrends(route, days);
+    }
+
+    if (path === '/trends/latest' && method === 'GET') {
+      const route = query.route;
+      const limit = parseInt(query.limit || '1', 10);
+      if (!route) return response(400, { error: 'route parameter required' });
+      return getLatestDepartures(route, limit);
     }
 
     // Transit records endpoints
