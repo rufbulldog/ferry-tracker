@@ -96,3 +96,21 @@ export interface EnrichedDeparture {
   status: 'scheduled' | 'boarding' | 'departed' | 'arriving';
   eta: Date | null;
 }
+
+export interface TerminalBulletin {
+  BulletinTitle: string;
+  BulletinText: string;
+  BulletinSortSeq: number;
+  BulletinLastUpdated: string; // "/Date(1234567890000-0800)/"
+  BulletinLastUpdatedSortable: string;
+}
+
+export interface TerminalBulletins {
+  TerminalID: number;
+  TerminalSubjectID: number;
+  RegionID: number;
+  TerminalName: string;
+  TerminalAbbrev: string;
+  SortSeq: number;
+  Bulletins: TerminalBulletin[];
+}

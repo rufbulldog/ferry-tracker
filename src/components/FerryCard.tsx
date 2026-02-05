@@ -64,6 +64,7 @@ export function FerryCard({
     switch (status) {
       case 'loading': return 'Loading';
       case 'arriving': return 'Arriving';
+      case 'returning': return 'Delayed';
       case 'departed': return delayMinutes > 0 ? `Left ${delayMinutes}m late` : 'Departed';
       default: return 'Scheduled';
     }
@@ -74,6 +75,7 @@ export function FerryCard({
     switch (status) {
       case 'loading': return '#1565C0';
       case 'arriving': return '#7B1FA2';
+      case 'returning': return '#F57C00';
       case 'departed': return delayMinutes > 5 ? '#F57C00' : '#2E7D32';
       default: return '#2E7D32';
     }

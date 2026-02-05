@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import { useMemo } from 'react';
 import { LineChart, BarChart } from 'react-native-gifted-charts';
@@ -11,9 +11,8 @@ import {
 } from '../../src/hooks/useDailyTrends';
 import { useRoute } from '../../src/context/RouteContext';
 
-const screenWidth = Dimensions.get('window').width;
-
 export default function TrendsScreen() {
+  const { width: screenWidth } = useWindowDimensions();
   const { route } = useRoute();
 
   // Get recent trends for the selected route (last 7 days)
@@ -27,6 +26,21 @@ export default function TrendsScreen() {
   const avgDelay = calculateAverageDelay(routeSnapshots);
   const avgCapacity = calculateAverageCapacity(routeSnapshots);
 
+  // Calculate chart dimensions to fit screen
+  const chartWidth = screenWidth - 64; // Account for padding and margins
+  const chartPadding = 40; // Space for y-axis labels
+
+  // Line chart - calculate spacing to fit all points
+  const lineSpacing = hourlyDelays.length > 1
+    ? Math.max(20, Math.min(40, (chartWidth - chartPadding) / hourlyDelays.length))
+    : 40;
+
+  // Bar chart - calculate bar width and spacing to fit
+  const maxBars = Math.max(1, capacityData.length);
+  const availableBarSpace = chartWidth - chartPadding;
+  const barWidth = Math.max(16, Math.min(32, availableBarSpace / maxBars * 0.6));
+  const barSpacing = Math.max(4, Math.min(12, availableBarSpace / maxBars * 0.4));
+
   // Line chart data for delays
   const delayLineData = hourlyDelays.map(d => ({
     value: d.delay,
@@ -34,8 +48,9 @@ export default function TrendsScreen() {
     dataPointText: d.delay !== 0 ? `${d.delay > 0 ? '+' : ''}${d.delay}` : '',
   }));
 
-  // Bar chart data for capacity
-  const capacityBarData = capacityData.map(d => ({
+  // Bar chart data for capacity - limit to last 10 for readability
+  const recentCapacityData = capacityData.slice(-10);
+  const capacityBarData = recentCapacityData.map(d => ({
     value: d.capacity,
     label: d.time.replace(' ', '\n'),
     frontColor: d.capacity > 90 ? '#C62828' : d.capacity > 70 ? '#F57C00' : '#2E7D32',
@@ -77,10 +92,11 @@ export default function TrendsScreen() {
             <View style={styles.chartContainer}>
               <LineChart
                 data={delayLineData}
-                width={screenWidth - 80}
-                height={150}
-                spacing={40}
-                initialSpacing={20}
+                width={chartWidth - chartPadding}
+                height={140}
+                spacing={lineSpacing}
+                initialSpacing={10}
+                endSpacing={10}
                 color="#1565C0"
                 thickness={2}
                 hideDataPoints={false}
@@ -103,7 +119,7 @@ export default function TrendsScreen() {
           ) : (
             <View style={styles.emptyChart}>
               <Text style={styles.emptyText}>
-                No departure data yet today.
+                No departure data yet.
               </Text>
               <Text style={styles.emptyHint}>
                 Data is collected as ferries depart.
@@ -115,17 +131,21 @@ export default function TrendsScreen() {
 
       {/* Capacity Chart */}
       <Card style={styles.card}>
-        <Card.Title title="Departure Capacity" subtitle="% full at departure time" />
+        <Card.Title
+          title="Departure Capacity"
+          subtitle={capacityData.length > 10 ? `% full (last 10 of ${capacityData.length})` : '% full at departure'}
+        />
         <Card.Content>
           {capacityBarData.length > 0 ? (
             <View style={styles.chartContainer}>
               <BarChart
                 data={capacityBarData}
-                width={screenWidth - 80}
-                height={150}
-                barWidth={24}
-                spacing={16}
-                initialSpacing={10}
+                width={chartWidth - chartPadding}
+                height={140}
+                barWidth={barWidth}
+                spacing={barSpacing}
+                initialSpacing={8}
+                endSpacing={8}
                 maxValue={100}
                 noOfSections={4}
                 xAxisLabelTextStyle={styles.chartLabelSmall}
@@ -133,12 +153,13 @@ export default function TrendsScreen() {
                 rulesColor="#e0e0e0"
                 showYAxisIndices={false}
                 yAxisLabelSuffix="%"
+                barBorderRadius={4}
               />
             </View>
           ) : (
             <View style={styles.emptyChart}>
               <Text style={styles.emptyText}>
-                No capacity data yet today.
+                No capacity data yet.
               </Text>
               <Text style={styles.emptyHint}>
                 Data is collected as ferries depart.
@@ -150,7 +171,7 @@ export default function TrendsScreen() {
 
       {/* Info */}
       <Text variant="bodySmall" style={styles.infoText}>
-        {routeSnapshots.length} departures recorded today
+        {routeSnapshots.length} departures recorded (last 7 days)
       </Text>
     </ScrollView>
   );
@@ -189,7 +210,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   chartContainer: {
-    marginLeft: -8,
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   chartLabel: {
     color: '#666',
@@ -200,7 +222,7 @@ const styles = StyleSheet.create({
     fontSize: 8,
   },
   emptyChart: {
-    height: 150,
+    height: 140,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f9f9f9',

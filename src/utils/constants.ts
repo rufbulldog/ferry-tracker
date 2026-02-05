@@ -5,6 +5,35 @@ export const TERMINALS = {
   EDMONDS: 8,        // Edmonds
 } as const;
 
+// WSDOT terminal camera URLs - images refresh every ~5 minutes
+export const TERMINAL_CAMERAS: Record<number, { name: string; url: string }[]> = {
+  [TERMINALS.SEATTLE]: [
+    { name: 'Main Holding', url: 'https://images.wsdot.wa.gov/wsf/colman/seattlemain.jpg' },
+    { name: 'Pier 48 Overflow', url: 'https://images.wsdot.wa.gov/wsf/colman/SeattleHold.jpg' },
+  ],
+  [TERMINALS.BAINBRIDGE]: [
+    { name: 'Terminal Holding', url: 'https://images.wsdot.wa.gov/wsf/Bainbridge/Bainbridge.jpg' },
+    { name: 'Winslow Way (S)', url: 'https://images.wsdot.wa.gov/orflow/305vc00022.jpg' },
+    { name: 'Winslow Way (N)', url: 'https://images.wsdot.wa.gov/orflow/305vc00021.jpg' },
+    { name: 'High School Rd (S)', url: 'https://images.wsdot.wa.gov/orflow/305vc00029.jpg' },
+    { name: 'High School Rd (N)', url: 'https://images.wsdot.wa.gov/orflow/305vc00028.jpg' },
+  ],
+  [TERMINALS.KINGSTON]: [
+    { name: 'Terminal', url: 'https://images.wsdot.wa.gov/wsf/kingston/terminal/kingston.jpg' },
+    { name: 'Toll Booths', url: 'https://images.wsdot.wa.gov/wsf/kingston/washington.jpg' },
+    { name: 'Ferry Sign East', url: 'https://images.wsdot.wa.gov/wsf/kingston/fse/fse.jpg' },
+    { name: 'Ferry Sign West', url: 'https://images.wsdot.wa.gov/wsf/kingston/fsw/fsw.jpg' },
+    { name: 'Barber', url: 'https://images.wsdot.wa.gov/wsf/kingston/barber/barber.jpg' },
+  ],
+  [TERMINALS.EDMONDS]: [
+    { name: 'Holding', url: 'https://images.wsdot.wa.gov/wsf/edmonds/holding.jpg' },
+    { name: 'Dayton St', url: 'https://images.wsdot.wa.gov/wsf/edmonds/104dayton.jpg' },
+    { name: 'VMS Sign', url: 'https://images.wsdot.wa.gov/wsf/edmonds/104vms_wts.jpg' },
+    { name: 'Underpass', url: 'https://images.wsdot.wa.gov/wsf/edmonds/104underpass.jpg' },
+    { name: 'Pine St', url: 'https://images.wsdot.wa.gov/wsf/edmonds/104pine.jpg' },
+  ],
+};
+
 export type Route = 'seattle-bainbridge' | 'bainbridge-seattle' | 'kingston-edmonds' | 'edmonds-kingston';
 
 export const ROUTES: Record<Route, { from: number; to: number; label: string }> = {

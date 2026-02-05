@@ -3,8 +3,21 @@ import { Text, Card, ActivityIndicator } from 'react-native-paper';
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNextDepartures } from '../../src/hooks/useNextDepartures';
+import { useTerminalBulletins } from '../../src/hooks/useTerminalBulletins';
 import { FerryCard } from '../../src/components/FerryCard';
+import { MainDepartureCard } from '../../src/components/MainDepartureCard';
+import { LastDepartureCard } from '../../src/components/LastDepartureCard';
+import { AlertBanner } from '../../src/components/AlertBanner';
 import { useRoute } from '../../src/context/RouteContext';
+import { ROUTES, TERMINALS } from '../../src/utils/constants';
+
+// Terminal ID to display name mapping
+const TERMINAL_NAMES: Record<number, string> = {
+  [TERMINALS.SEATTLE]: 'Seattle',
+  [TERMINALS.BAINBRIDGE]: 'Bainbridge',
+  [TERMINALS.KINGSTON]: 'Kingston',
+  [TERMINALS.EDMONDS]: 'Edmonds',
+};
 
 export default function DepartScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -12,17 +25,22 @@ export default function DepartScreen() {
   const { route } = useRoute();
 
   const { data: departures, isLoading, error } = useNextDepartures(route);
+  const { activeAlert } = useTerminalBulletins(route);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await queryClient.invalidateQueries({ queryKey: ['vesselLocations'] });
     await queryClient.invalidateQueries({ queryKey: ['terminalSailingSpace'] });
+    await queryClient.invalidateQueries({ queryKey: ['terminalBulletins'] });
     setRefreshing(false);
   }, [queryClient]);
 
   // Separate departed ferries from upcoming ones
   const departedFerries = departures?.filter(d => d.status === 'departed') || [];
   const upcomingFerries = departures?.filter(d => d.status !== 'departed') || [];
+
+  // Get the most recent departed ferry (for the last departure card)
+  const lastDeparture = departedFerries.length > 0 ? departedFerries[departedFerries.length - 1] : null;
 
   const nextDeparture = upcomingFerries[0];
   const upcomingDepartures = upcomingFerries.slice(1, 6);
@@ -69,40 +87,30 @@ export default function DepartScreen() {
         </Card>
       )}
 
-      {/* Recently departed ferries (scroll up to see) */}
-      {departedFerries.length > 0 && (
-        <>
-          <Text variant="titleMedium" style={styles.departedTitle}>
-            RECENTLY DEPARTED
-          </Text>
-          {departedFerries.map((departure) => (
-            <FerryCard
-              key={`${departure.vesselId}-${departure.scheduledDeparture.getTime()}`}
-              departure={departure}
-              isMainCard={false}
-            />
-          ))}
-        </>
+      {/* Active alert banner */}
+      {activeAlert && (
+        <AlertBanner alert={activeAlert} />
       )}
 
-      {/* Main departure card with visual tracking */}
+      {/* Last departure card at top */}
+      {lastDeparture && (
+        <LastDepartureCard departure={lastDeparture} />
+      )}
+
+      {/* Main departure card - large tank style */}
       {nextDeparture && (
-        <>
-          <Text variant="titleMedium" style={styles.nextTitle}>
-            NEXT DEPARTURE
-          </Text>
-          <FerryCard
-            departure={nextDeparture}
-            isMainCard={true}
-          />
-        </>
+        <MainDepartureCard
+          departure={nextDeparture}
+          terminalId={ROUTES[route].from}
+          terminalName={TERMINAL_NAMES[ROUTES[route].from] || 'Terminal'}
+        />
       )}
 
-      {/* Upcoming departures */}
+      {/* Upcoming departures - below the fold */}
       {upcomingDepartures.length > 0 && (
-        <>
+        <View style={styles.upcomingSection}>
           <Text variant="titleMedium" style={styles.upcomingTitle}>
-            UPCOMING
+            UPCOMING DEPARTURES
           </Text>
           {upcomingDepartures.map((departure) => (
             <FerryCard
@@ -111,7 +119,7 @@ export default function DepartScreen() {
               isMainCard={false}
             />
           ))}
-        </>
+        </View>
       )}
     </ScrollView>
   );
@@ -120,7 +128,7 @@ export default function DepartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   scrollContent: {
     padding: 16,
@@ -137,20 +145,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: '#fff',
   },
-  departedTitle: {
-    marginBottom: 8,
-    color: '#999',
-  },
-  nextTitle: {
-    marginBottom: 8,
-    marginTop: 8,
-    color: '#1565C0',
-    fontWeight: '600',
+  upcomingSection: {
+    marginTop: 24,
   },
   upcomingTitle: {
-    marginBottom: 8,
-    marginTop: 8,
+    marginBottom: 12,
     color: '#666',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   errorCard: {
     marginBottom: 16,
