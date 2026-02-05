@@ -1,10 +1,13 @@
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, SegmentedButtons } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import { Text } from 'react-native-paper';
 import { useState, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useRecommendation } from '../../src/hooks/useRecommendation';
 import { formatTime } from '../../src/utils/time';
 import { Vehicle } from '../../src/types/storage';
 import { useRoute } from '../../src/context/RouteContext';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function RecommendScreen() {
   const [vehicle, setVehicle] = useState<Vehicle>('bike');
@@ -35,14 +38,14 @@ export default function RecommendScreen() {
 
   const timeUntil = getTimeUntilLeave();
 
-  const getRecommendColor = () => {
-    if (!timeUntil) return '#666';
+  const getCardColor = () => {
+    if (!timeUntil) return '#e0e0e0';
     if (timeUntil.isPast) return '#C62828';
     if (timeUntil.isUrgent) return '#F57C00';
     return '#2E7D32';
   };
 
-  const getRecommendText = () => {
+  const getLeaveByText = () => {
     if (!timeUntil) return '--:--';
     if (timeUntil.isPast) {
       return `${Math.abs(timeUntil.minutes)} min ago`;
@@ -54,7 +57,7 @@ export default function RecommendScreen() {
     if (!recommendation.leaveByTime && recommendation.nextDeparture) {
       return 'Mode not available for this route';
     }
-    if (!timeUntil) return '';
+    if (!timeUntil) return 'No upcoming departures';
     if (timeUntil.isPast) {
       return 'You should have left already!';
     }
@@ -62,117 +65,117 @@ export default function RecommendScreen() {
       return 'Leave now!';
     }
     if (timeUntil.minutes <= 10) {
-      return 'Get ready to leave soon';
+      return 'Get ready to leave';
     }
-    return 'to catch the next ferry';
+    return `Leave in ${timeUntil.minutes} min`;
   };
+
+  // Only use dark text on grey background (when no timeUntil data)
+  const isLightBackground = !timeUntil;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Vehicle Selection */}
-      <Card style={styles.card}>
-        <Text style={styles.cardTitle}>I'm taking my...</Text>
-        <Card.Content>
-          <SegmentedButtons
-            value={vehicle}
-            onValueChange={(value) => setVehicle(value as Vehicle)}
-            buttons={[
-              {
-                value: 'bike',
-                label: 'Bike',
-                style: vehicle === 'bike' ? styles.buttonSelected : styles.buttonUnselected,
-                labelStyle: vehicle === 'bike' ? styles.labelSelected : styles.labelUnselected,
-              },
-              {
-                value: 'car',
-                label: 'Car',
-                style: vehicle === 'car' ? styles.buttonSelected : styles.buttonUnselected,
-                labelStyle: vehicle === 'car' ? styles.labelSelected : styles.labelUnselected,
-              },
-            ]}
-          />
-        </Card.Content>
-      </Card>
+      {/* Main Recommendation Card */}
+      <View style={[styles.mainCard, { backgroundColor: getCardColor() }]}>
+        {/* Vehicle toggle at top */}
+        <View style={styles.vehicleRow}>
+          <TouchableOpacity
+            style={[styles.vehicleButton, vehicle === 'bike' && styles.vehicleButtonActive]}
+            onPress={() => setVehicle('bike')}
+          >
+            <Ionicons
+              name="bicycle"
+              size={20}
+              color={vehicle === 'bike' ? (isLightBackground ? '#2E7D32' : '#fff') : (isLightBackground ? '#666' : 'rgba(255,255,255,0.5)')}
+            />
+            <Text style={[
+              styles.vehicleLabel,
+              vehicle === 'bike' && styles.vehicleLabelActive,
+              isLightBackground && styles.vehicleLabelDark,
+              vehicle === 'bike' && isLightBackground && styles.vehicleLabelActiveDark,
+            ]}>
+              Bike
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.vehicleButton, vehicle === 'car' && styles.vehicleButtonActive]}
+            onPress={() => setVehicle('car')}
+          >
+            <Ionicons
+              name="car"
+              size={20}
+              color={vehicle === 'car' ? (isLightBackground ? '#2E7D32' : '#fff') : (isLightBackground ? '#666' : 'rgba(255,255,255,0.5)')}
+            />
+            <Text style={[
+              styles.vehicleLabel,
+              vehicle === 'car' && styles.vehicleLabelActive,
+              isLightBackground && styles.vehicleLabelDark,
+              vehicle === 'car' && isLightBackground && styles.vehicleLabelActiveDark,
+            ]}>
+              Car
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Recommendation Card */}
-      <Card style={[styles.recommendCard, { backgroundColor: getRecommendColor() }]}>
-        <Card.Content style={styles.recommendContent}>
-          <Text variant="bodyLarge" style={styles.recommendLabel}>
+        {/* Center content */}
+        <View style={styles.centerContent}>
+          <Text style={[styles.leaveByLabel, isLightBackground && styles.leaveByLabelDark]}>
             Leave by
           </Text>
-          <Text style={styles.recommendTime}>
-            {getRecommendText()}
+          <Text style={[styles.leaveByTime, isLightBackground && styles.leaveByTimeDark]}>
+            {getLeaveByText()}
           </Text>
-          <Text variant="bodyMedium" style={styles.recommendNote}>
+          <Text style={[styles.urgencyMessage, isLightBackground && styles.urgencyMessageDark]}>
             {getUrgencyMessage()}
           </Text>
-          {timeUntil && !timeUntil.isPast && timeUntil.minutes > 0 && (
-            <Text variant="titleMedium" style={styles.countdown}>
-              {timeUntil.minutes} min from now
-            </Text>
-          )}
-        </Card.Content>
-      </Card>
+        </View>
 
-      {/* Factors */}
-      <Card style={styles.card}>
-        <Text style={styles.cardTitle}>Based on</Text>
-        <Card.Content>
-          <View style={styles.factorRow}>
-            <Text variant="bodyMedium" style={styles.factorLabel}>Next departure:</Text>
-            <Text variant="bodyMedium" style={styles.factorValue}>
-              {recommendation.nextDeparture
-                ? formatTime(recommendation.nextDeparture.estimatedDeparture || recommendation.nextDeparture.scheduledDeparture)
-                : '--:--'}
-            </Text>
-          </View>
-          <View style={styles.factorRow}>
-            <Text variant="bodyMedium" style={styles.factorLabel}>Vessel:</Text>
-            <Text variant="bodyMedium" style={styles.factorValue}>
-              {recommendation.nextDeparture?.vesselName || '--'}
-            </Text>
-          </View>
-          <View style={styles.factorRow}>
-            <Text variant="bodyMedium" style={styles.factorLabel}>Travel time:</Text>
-            <Text variant="bodyMedium" style={styles.factorValue}>
-              {recommendation.transitMinutes} min
-            </Text>
-          </View>
-          <View style={styles.factorRow}>
-            <Text variant="bodyMedium" style={styles.factorLabel}>Buffer time:</Text>
-            <Text variant="bodyMedium" style={styles.factorValue}>
-              {recommendation.bufferMinutes} min
-            </Text>
-          </View>
-          <View style={styles.factorRow}>
-            <Text variant="bodyMedium" style={styles.factorLabel}>Current capacity:</Text>
-            <Text variant="bodyMedium" style={[
-              styles.factorValue,
-              recommendation.capacityPercent !== null && recommendation.capacityPercent > 80
-                ? { color: '#C62828' }
-                : {}
-            ]}>
-              {recommendation.capacityPercent !== null
-                ? `${recommendation.capacityPercent}%`
-                : '--%'}
-            </Text>
-          </View>
-        </Card.Content>
-      </Card>
-
-      {/* Reasoning */}
-      {recommendation.reasoning.length > 0 && (
-        <Card style={styles.card}>
-          <Text style={styles.cardTitle}>Notes</Text>
-          <Card.Content>
-            {recommendation.reasoning.map((reason, index) => (
-              <Text key={index} variant="bodySmall" style={styles.reasonText}>
-                - {reason}
+        {/* Bottom: departure info */}
+        {recommendation.nextDeparture && (
+          <View style={styles.departureInfo}>
+            <View style={styles.departureRow}>
+              <Ionicons name="boat-outline" size={16} color={isLightBackground ? '#666' : 'rgba(255,255,255,0.7)'} />
+              <Text style={[styles.departureText, isLightBackground && styles.departureTextDark]}>
+                {recommendation.nextDeparture.vesselName} departs {formatTime(
+                  recommendation.nextDeparture.estimatedDeparture || recommendation.nextDeparture.scheduledDeparture
+                )}
               </Text>
+            </View>
+            {recommendation.capacityPercent !== null && (
+              <Text style={[
+                styles.capacityText,
+                isLightBackground && styles.capacityTextDark,
+                recommendation.capacityPercent > 80 && styles.capacityHigh,
+              ]}>
+                {recommendation.capacityPercent}% full
+              </Text>
+            )}
+          </View>
+        )}
+      </View>
+
+      {/* Info Section */}
+      <View style={styles.infoSection}>
+        <Text style={styles.infoTitle}>How this works</Text>
+        <Text style={styles.infoText}>
+          Based on your {vehicle === 'bike' ? 'bike' : 'car'}, you need{' '}
+          <Text style={styles.infoBold}>{recommendation.transitMinutes} min</Text> to get to the terminal
+          {recommendation.bufferMinutes > 0 && (
+            <> plus <Text style={styles.infoBold}>{recommendation.bufferMinutes} min</Text> buffer</>
+          )}.
+        </Text>
+
+        {recommendation.reasoning.length > 0 && (
+          <View style={styles.notesContainer}>
+            {recommendation.reasoning.map((reason, index) => (
+              <View key={index} style={styles.noteRow}>
+                <Ionicons name="information-circle-outline" size={14} color="#666" />
+                <Text style={styles.noteText}>{reason}</Text>
+              </View>
             ))}
-          </Card.Content>
-        </Card>
-      )}
+          </View>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -185,78 +188,145 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
   },
-  card: {
+  // Main card
+  mainCard: {
+    height: SCREEN_HEIGHT * 0.55,
+    borderRadius: 16,
+    padding: 16,
+    justifyContent: 'space-between',
     marginBottom: 16,
-    backgroundColor: '#fff',
   },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+  // Vehicle toggle
+  vehicleRow: {
+    flexDirection: 'row',
+    gap: 12,
   },
-  buttonSelected: {
-    backgroundColor: '#1565C0',
-    borderColor: '#1565C0',
+  vehicleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.1)',
   },
-  buttonUnselected: {
-    backgroundColor: '#fff',
-    borderColor: '#1565C0',
+  vehicleButtonActive: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
   },
-  labelSelected: {
+  vehicleLabel: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.5)',
+    fontWeight: '500',
+  },
+  vehicleLabelActive: {
     color: '#fff',
     fontWeight: '600',
   },
-  labelUnselected: {
-    color: '#1565C0',
+  vehicleLabelDark: {
+    color: '#666',
+  },
+  vehicleLabelActiveDark: {
+    color: '#2E7D32',
+  },
+  // Center content
+  centerContent: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  leaveByLabel: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.8)',
     fontWeight: '500',
   },
-  recommendCard: {
-    marginBottom: 16,
+  leaveByLabelDark: {
+    color: '#666',
   },
-  recommendContent: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  recommendLabel: {
-    color: 'rgba(255, 255, 255, 0.8)',
-  },
-  recommendTime: {
-    fontSize: 56,
+  leaveByTime: {
+    fontSize: 64,
     fontWeight: 'bold',
     color: '#fff',
-    marginVertical: 8,
+    marginVertical: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
-  recommendNote: {
-    color: 'rgba(255, 255, 255, 0.9)',
+  leaveByTimeDark: {
+    color: '#1a1a1a',
+    textShadowColor: 'transparent',
   },
-  countdown: {
+  urgencyMessage: {
+    fontSize: 18,
     color: '#fff',
-    marginTop: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    overflow: 'hidden',
+    fontWeight: '600',
   },
-  factorRow: {
+  urgencyMessageDark: {
+    color: '#2E7D32',
+  },
+  // Departure info
+  departureInfo: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  departureRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    alignItems: 'center',
+    gap: 6,
   },
-  factorLabel: {
+  departureText: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+  },
+  departureTextDark: {
     color: '#666',
   },
-  factorValue: {
+  capacityText: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.7)',
+  },
+  capacityTextDark: {
+    color: '#888',
+  },
+  capacityHigh: {
+    color: '#ffcdd2',
+    fontWeight: '600',
+  },
+  // Info section
+  infoSection: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+  },
+  infoTitle: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#333',
-    fontWeight: '500',
+    marginBottom: 8,
   },
-  reasonText: {
+  infoText: {
+    fontSize: 14,
     color: '#666',
-    marginBottom: 4,
+    lineHeight: 20,
+  },
+  infoBold: {
+    fontWeight: '600',
+    color: '#333',
+  },
+  notesContainer: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    gap: 6,
+  },
+  noteRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 6,
+  },
+  noteText: {
+    fontSize: 13,
+    color: '#666',
+    flex: 1,
   },
 });

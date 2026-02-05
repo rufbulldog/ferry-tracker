@@ -72,3 +72,66 @@ export function useRecentTransitRecords(limit: number = 10) {
 
   return { data: recentRecords, ...rest };
 }
+
+// Transit route display info
+export const TRANSIT_ROUTE_INFO: Record<TransitRoute, { label: string; shortLabel: string }> = {
+  'home-to-ferry': { label: 'Home → Ferry', shortLabel: 'Home→Ferry' },
+  'ferry-to-work': { label: 'Ferry → Work', shortLabel: 'Ferry→Work' },
+  'work-to-ferry': { label: 'Work → Ferry', shortLabel: 'Work→Ferry' },
+  'ferry-to-home': { label: 'Ferry → Home', shortLabel: 'Ferry→Home' },
+};
+
+// Get all transit time averages grouped by route and vehicle
+export interface TransitAverage {
+  route: TransitRoute;
+  vehicle: Vehicle;
+  averageSeconds: number;
+  count: number;
+}
+
+export function useAllTransitAverages() {
+  const { data: records, isLoading } = useTransitRecords();
+
+  if (!records || records.length === 0) {
+    return { averages: [], isLoading };
+  }
+
+  // Group by route + vehicle
+  const groups = new Map<string, { total: number; count: number; route: TransitRoute; vehicle: Vehicle }>();
+
+  records.forEach(r => {
+    const key = `${r.route}-${r.vehicle}`;
+    const existing = groups.get(key);
+    if (existing) {
+      existing.total += r.durationSeconds;
+      existing.count += 1;
+    } else {
+      groups.set(key, {
+        total: r.durationSeconds,
+        count: 1,
+        route: r.route,
+        vehicle: r.vehicle,
+      });
+    }
+  });
+
+  const averages: TransitAverage[] = [];
+  groups.forEach(g => {
+    averages.push({
+      route: g.route,
+      vehicle: g.vehicle,
+      averageSeconds: Math.round(g.total / g.count),
+      count: g.count,
+    });
+  });
+
+  // Sort by route then vehicle
+  const routeOrder: TransitRoute[] = ['home-to-ferry', 'ferry-to-work', 'work-to-ferry', 'ferry-to-home'];
+  averages.sort((a, b) => {
+    const routeDiff = routeOrder.indexOf(a.route) - routeOrder.indexOf(b.route);
+    if (routeDiff !== 0) return routeDiff;
+    return a.vehicle.localeCompare(b.vehicle);
+  });
+
+  return { averages, isLoading };
+}

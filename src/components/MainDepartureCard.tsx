@@ -249,102 +249,116 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
 
         {/* Content overlay */}
         <View style={styles.content}>
-          {/* Ferry tracker at top */}
-          {showFerryTracker && (
-            <View style={styles.ferryTracker}>
-              <View style={[styles.trackLine, fillPercent < 40 && styles.trackLineDark]}>
-                {/* Incoming vessel capacity fill inside track */}
-                {(status === 'arriving' || status === 'returning') && incomingVesselCapacity !== null && (
-                  <View
+          {/* Top section: Vessel info + ferry tracker */}
+          <View style={styles.topSection}>
+            {/* Vessel name row with camera button */}
+            <View style={styles.vesselRow}>
+              <View style={styles.vesselInfo}>
+                <Ionicons name="boat-outline" size={18} color={fillPercent < 40 ? '#666' : '#fff'} />
+                <Text style={[styles.vesselName, fillPercent < 40 && styles.vesselNameDark]}>
+                  {vesselName}
+                </Text>
+                {isCancelled && (
+                  <View style={styles.cancelledBadge}>
+                    <Text style={styles.cancelledBadgeText}>CANCELLED</Text>
+                  </View>
+                )}
+              </View>
+              {cameras.length > 0 && !isAnimatingOut && (
+                <TouchableOpacity style={[styles.cameraButton, fillPercent < 40 && styles.cameraButtonLight]} onPress={handleFlip}>
+                  <Ionicons name="videocam" size={18} color={fillPercent < 40 ? '#1565C0' : '#fff'} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Ferry tracker - only when vessel is arriving */}
+            {showFerryTracker && (
+              <View style={styles.ferryTracker}>
+                <View style={[styles.trackLine, fillPercent < 40 && styles.trackLineDark]}>
+                  {incomingVesselCapacity !== null && (
+                    <View
+                      style={[
+                        styles.trackCapacityFill,
+                        {
+                          width: `${incomingVesselCapacity}%`,
+                          backgroundColor: getIncomingCapacityColor(incomingVesselCapacity),
+                        },
+                      ]}
+                    />
+                  )}
+                  <View style={[styles.dock, styles.leftDock, fillPercent < 40 && styles.dockDark]} />
+                  <View style={[styles.dock, styles.rightDock, fillPercent < 40 && styles.dockDark]} />
+                  <Animated.View
                     style={[
-                      styles.trackCapacityFill,
+                      styles.ferryIcon,
                       {
-                        width: `${incomingVesselCapacity}%`,
-                        backgroundColor: getIncomingCapacityColor(incomingVesselCapacity),
+                        left: ferryPosition,
+                        transform: [{ scaleX: -1 }],
                       },
                     ]}
-                  />
-                )}
-                <View style={[styles.dock, styles.leftDock, fillPercent < 40 && styles.dockDark]} />
-                <View style={[styles.dock, styles.rightDock, fillPercent < 40 && styles.dockDark]} />
-                <Animated.View
-                  style={[
-                    styles.ferryIcon,
-                    {
-                      left: ferryPosition,
-                      transform: [{ scaleX: -1 }], // Ferry faces left (toward our dock)
-                    },
-                  ]}
-                >
-                  <Ionicons name="boat" size={28} color={fillPercent < 40 ? '#1565C0' : '#fff'} />
-                </Animated.View>
-              </View>
-              <Text style={[styles.ferryStatus, fillPercent < 40 && styles.ferryStatusDark]}>
-                {status === 'arriving' && minutesToArrival !== null && vesselArrivalEta &&
-                  `${minutesToArrival} min to dock · arrives ${formatTime(vesselArrivalEta)}`}
-                {status === 'returning' && vesselAtOppositeTerminal && 'Ferry has not left yet'}
-                {status === 'returning' && !vesselAtOppositeTerminal && minutesToArrival !== null && vesselArrivalEta &&
-                  `${minutesToArrival} min to dock · arrives ${formatTime(vesselArrivalEta)}`}
-              </Text>
-            </View>
-          )}
-
-          {/* Header row with status, vessel name, and camera icon */}
-          <View style={styles.headerRow}>
-            <View style={[styles.statusBadge, { backgroundColor: getStatusColor() }]}>
-              <Text style={styles.statusText}>{getStatusText()}</Text>
-            </View>
-            <Text style={styles.vesselName}>{vesselName}</Text>
-            {cameras.length > 0 && !isAnimatingOut && (
-              <TouchableOpacity style={styles.cameraButton} onPress={handleFlip}>
-                <Ionicons name="videocam" size={20} color="#1565C0" />
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Time display */}
-          <View style={styles.timeSection}>
-            {!hasDelay ? (
-              <View style={styles.timeRow}>
-                <Text style={styles.timeLabel}>Scheduled:</Text>
-                <Text style={[styles.mainTime, isCancelled && styles.cancelledText]}>
-                  {formatTime(scheduledDeparture)}
+                  >
+                    <Ionicons name="boat" size={24} color={fillPercent < 40 ? '#1565C0' : '#fff'} />
+                  </Animated.View>
+                </View>
+                <Text style={[styles.ferryStatus, fillPercent < 40 && styles.ferryStatusDark]}>
+                  {status === 'arriving' && minutesToArrival !== null && vesselArrivalEta &&
+                    `Arrives in ${minutesToArrival} min (${formatTime(vesselArrivalEta)})`}
+                  {status === 'returning' && vesselAtOppositeTerminal && 'Waiting at opposite terminal'}
+                  {status === 'returning' && !vesselAtOppositeTerminal && minutesToArrival !== null && vesselArrivalEta &&
+                    `Arrives in ${minutesToArrival} min (${formatTime(vesselArrivalEta)})`}
                 </Text>
-                {status !== 'departed' && minutesUntilDeparture > 0 && !isCancelled && (
-                  <Text style={[styles.countdown, fillPercent < 40 && styles.countdownDark]}>
-                    departs in {minutesUntilDeparture} min
-                  </Text>
-                )}
               </View>
-            ) : (
-              <>
-                <View style={styles.timeRow}>
-                  <Text style={styles.timeLabel}>Scheduled:</Text>
-                  <Text style={[styles.scheduledTime, styles.strikethrough]}>
-                    {formatTime(scheduledDeparture)}
-                  </Text>
-                </View>
-                <View style={styles.timeRow}>
-                  <Text style={[styles.timeLabel, styles.estimatedLabel]}>Estimated:</Text>
-                  <Text style={styles.mainTime}>{formatTime(estimatedDeparture!)}</Text>
-                  {status !== 'departed' && minutesUntilEstimated > 0 && !isCancelled && (
-                    <Text style={[styles.countdown, fillPercent < 40 && styles.countdownDark]}>
-                      departs in {minutesUntilEstimated} min
-                    </Text>
-                  )}
-                </View>
-              </>
             )}
           </View>
 
-          {/* Capacity display */}
-          {driveUpSpaces !== null && !isCancelled && status !== 'departed' && (
-            <View style={styles.carCountSection}>
-              <Text style={[styles.spotsNumber, fillPercent < 30 && styles.darkText]}>{driveUpSpaces}</Text>
-              <Text style={[styles.spotsLabel, fillPercent < 30 && styles.darkText]}>spots remaining</Text>
-              <Text style={[styles.capacityInfo, fillPercent < 40 && styles.darkTextMuted]}>{Math.round(fillPercent)}% full</Text>
-            </View>
-          )}
+          {/* Center section: Departure time */}
+          <View style={styles.centerSection}>
+            {hasDelay && (
+              <Text style={[styles.originalTime, fillPercent < 40 && styles.originalTimeDark]}>
+                was {formatTime(scheduledDeparture)}
+              </Text>
+            )}
+            <Text style={[styles.mainTime, isCancelled && styles.cancelledText]}>
+              {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
+            </Text>
+            {status !== 'departed' && !isCancelled && (
+              <Text style={[styles.countdown, fillPercent < 40 && styles.countdownDark]}>
+                {hasDelay
+                  ? (minutesUntilEstimated > 0 ? `departs in ${minutesUntilEstimated} min` : 'departing now')
+                  : (minutesUntilDeparture > 0 ? `departs in ${minutesUntilDeparture} min` : 'departing now')
+                }
+              </Text>
+            )}
+            {status === 'departed' && (
+              <Text style={[styles.departedStatus, delayMinutes > 5 && styles.departedLate]}>
+                {delayMinutes > 0 ? `departed ${delayMinutes}m late` : 'departed on time'}
+              </Text>
+            )}
+          </View>
+
+          {/* Bottom section: Capacity */}
+          <View style={styles.bottomSection}>
+            {driveUpSpaces !== null && !isCancelled && status !== 'departed' && (
+              <View style={styles.capacityRow}>
+                <Text style={[styles.capacityNumber, fillPercent < 30 && styles.capacityNumberDark]}>
+                  {driveUpSpaces}
+                </Text>
+                <View style={styles.capacityLabels}>
+                  <Text style={[styles.capacityMain, fillPercent < 30 && styles.capacityMainDark]}>
+                    spots open
+                  </Text>
+                  <Text style={[styles.capacitySecondary, fillPercent < 40 && styles.capacitySecondaryDark]}>
+                    {Math.round(fillPercent)}% full
+                  </Text>
+                </View>
+              </View>
+            )}
+            {(status === 'loading' || status === 'scheduled') && !showFerryTracker && !isCancelled && (
+              <View style={[styles.statusIndicator, { backgroundColor: getStatusColor() }]}>
+                <Text style={styles.statusIndicatorText}>{getStatusText()}</Text>
+              </View>
+            )}
+          </View>
         </View>
       </Animated.View>
 
@@ -473,13 +487,60 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: 'space-between',
   },
+  // Top section
+  topSection: {
+    gap: 8,
+  },
+  vesselRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  vesselInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  vesselName: {
+    fontSize: 15,
+    color: '#fff',
+    fontWeight: '600',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  vesselNameDark: {
+    color: '#333',
+    textShadowColor: 'transparent',
+  },
+  cancelledBadge: {
+    backgroundColor: '#C62828',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginLeft: 8,
+  },
+  cancelledBadgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  cameraButton: {
+    padding: 8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 20,
+  },
+  cameraButtonLight: {
+    backgroundColor: 'rgba(21, 101, 192, 0.1)',
+  },
+  // Ferry tracker
   ferryTracker: {
-    marginBottom: 4,
+    marginTop: 4,
   },
   trackLine: {
-    height: 40,
+    height: 36,
     backgroundColor: 'rgba(255,255,255,0.3)',
-    borderRadius: 20,
+    borderRadius: 18,
     position: 'relative',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -492,15 +553,15 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    borderRadius: 20,
+    borderRadius: 18,
     opacity: 0.6,
   },
   dock: {
     position: 'absolute',
-    width: 10,
-    height: 30,
+    width: 8,
+    height: 24,
     backgroundColor: '#fff',
-    borderRadius: 5,
+    borderRadius: 4,
   },
   dockDark: {
     backgroundColor: '#1565C0',
@@ -526,130 +587,115 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   ferryStatusDark: {
-    color: '#333',
+    color: '#444',
     textShadowColor: 'transparent',
   },
-  headerRow: {
-    flexDirection: 'row',
+  // Center section - departure time
+  centerSection: {
     alignItems: 'center',
-    gap: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  statusText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 12,
-    letterSpacing: 0.5,
-  },
-  vesselName: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
+    justifyContent: 'center',
     flex: 1,
   },
-  cameraButton: {
-    padding: 8,
-    backgroundColor: 'rgba(21, 101, 192, 0.1)',
-    borderRadius: 20,
-  },
-  timeSection: {
-    alignItems: 'center',
-  },
-  timeRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  timeLabel: {
+  originalTime: {
     fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
+    color: 'rgba(255,255,255,0.7)',
+    textDecorationLine: 'line-through',
+    marginBottom: 2,
   },
-  estimatedLabel: {
-    color: '#E65100',
+  originalTimeDark: {
+    color: '#999',
   },
   mainTime: {
-    fontSize: 42,
+    fontSize: 56,
     fontWeight: 'bold',
     color: '#1a1a1a',
     textShadowColor: 'rgba(255, 255, 255, 0.5)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-  },
-  scheduledTime: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#666',
-  },
-  strikethrough: {
-    textDecorationLine: 'line-through',
+    letterSpacing: -1,
   },
   cancelledText: {
     textDecorationLine: 'line-through',
     color: '#999',
   },
   countdown: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#fff',
-    fontWeight: '500',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    overflow: 'hidden',
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    fontWeight: '600',
+    marginTop: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   countdownDark: {
-    backgroundColor: 'rgba(21, 101, 192, 0.15)',
     color: '#1565C0',
     textShadowColor: 'transparent',
   },
-  carCountSection: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
+  departedStatus: {
+    fontSize: 14,
+    color: '#2E7D32',
+    fontWeight: '600',
+    marginTop: 4,
   },
-  spotsNumber: {
-    fontSize: 72,
+  departedLate: {
+    color: '#F57C00',
+  },
+  // Bottom section - capacity
+  bottomSection: {
+    alignItems: 'center',
+  },
+  capacityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  capacityNumber: {
+    fontSize: 64,
     fontWeight: 'bold',
     color: '#fff',
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 4,
+    lineHeight: 68,
   },
-  spotsLabel: {
-    fontSize: 20,
+  capacityNumberDark: {
+    color: '#1a1a1a',
+    textShadowColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  capacityLabels: {
+    alignItems: 'flex-start',
+  },
+  capacityMain: {
+    fontSize: 18,
     color: '#fff',
     fontWeight: '600',
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-    marginTop: -4,
   },
-  darkText: {
+  capacityMainDark: {
     color: '#1a1a1a',
     textShadowColor: 'rgba(255, 255, 255, 0.5)',
   },
-  darkTextMuted: {
-    color: '#444',
-    textShadowColor: 'transparent',
-  },
-  capacityInfo: {
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.9)',
+  capacitySecondary: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
     fontWeight: '500',
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-    marginTop: 12,
+    marginTop: 2,
+  },
+  capacitySecondaryDark: {
+    color: '#666',
+  },
+  statusIndicator: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  statusIndicatorText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 13,
+    letterSpacing: 0.5,
   },
   // Camera back side styles
   cameraContainer: {

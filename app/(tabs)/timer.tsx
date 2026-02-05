@@ -1,11 +1,13 @@
-import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, Pressable } from 'react-native';
-import { Text, Card, Button, SegmentedButtons, IconButton } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, Pressable, Dimensions } from 'react-native';
+import { Text, IconButton } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTimer } from '../../src/hooks/useTimer';
 import { useRecentTransitRecords, useSaveTransitRecord, useDeleteTransitRecord } from '../../src/hooks/useTransitRecords';
 import { TransitRoute, Vehicle } from '../../src/types/storage';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // Timer route options - these map to TransitRoute types for storage
 type TimerRoute =
@@ -15,21 +17,32 @@ type TimerRoute =
   | 'bi-ferry-to-home'      // Bainbridge dock → Home
   | 'kingston-home-to-ferry'; // Home → Kingston ferry
 
-const TIMER_ROUTES: { id: TimerRoute; label: string; storageRoute: TransitRoute; carOnly: boolean }[] = [
-  { id: 'bi-home-to-ferry', label: 'Home → Bainbridge Ferry', storageRoute: 'home-to-ferry', carOnly: false },
-  { id: 'bi-ferry-to-work', label: 'Seattle dock → Work', storageRoute: 'ferry-to-work', carOnly: false },
-  { id: 'bi-work-to-ferry', label: 'Work → Seattle ferry', storageRoute: 'work-to-ferry', carOnly: false },
-  { id: 'bi-ferry-to-home', label: 'Bainbridge dock → Home', storageRoute: 'ferry-to-home', carOnly: false },
-  { id: 'kingston-home-to-ferry', label: 'Home → Kingston ferry', storageRoute: 'home-to-ferry', carOnly: true },
+const TIMER_ROUTES: { id: TimerRoute; label: string; shortLabel: string; storageRoute: TransitRoute; bikeAllowed: boolean; carAllowed: boolean }[] = [
+  { id: 'bi-home-to-ferry', label: 'Home → Bainbridge Ferry', shortLabel: 'Home → BI Ferry', storageRoute: 'home-to-ferry', bikeAllowed: true, carAllowed: true },
+  { id: 'bi-ferry-to-work', label: 'Seattle dock → Work', shortLabel: 'Seattle → Work', storageRoute: 'ferry-to-work', bikeAllowed: true, carAllowed: false },
+  { id: 'bi-work-to-ferry', label: 'Work → Seattle ferry', shortLabel: 'Work → Seattle', storageRoute: 'work-to-ferry', bikeAllowed: true, carAllowed: false },
+  { id: 'bi-ferry-to-home', label: 'Bainbridge dock → Home', shortLabel: 'BI dock → Home', storageRoute: 'ferry-to-home', bikeAllowed: true, carAllowed: false },
+  { id: 'kingston-home-to-ferry', label: 'Home → Kingston ferry', shortLabel: 'Home → Kingston', storageRoute: 'home-to-ferry', bikeAllowed: false, carAllowed: true },
 ];
 
-// All route labels for displaying history
-const ALL_ROUTE_LABELS: Record<TransitRoute, string> = {
-  'home-to-ferry': 'Home → Ferry',
-  'ferry-to-work': 'Ferry → Work',
-  'work-to-ferry': 'Work → Ferry',
-  'ferry-to-home': 'Ferry → Home',
-};
+// Get display label for a record based on route + vehicle
+function getRecordLabel(route: TransitRoute, vehicle: Vehicle): string {
+  // Bike routes are always Bainbridge
+  if (vehicle === 'bike') {
+    switch (route) {
+      case 'home-to-ferry': return 'Home → BI Ferry';
+      case 'ferry-to-work': return 'Seattle → Work';
+      case 'work-to-ferry': return 'Work → Seattle';
+      case 'ferry-to-home': return 'BI Ferry → Home';
+    }
+  }
+  // Car home-to-ferry could be Bainbridge or Kingston
+  if (route === 'home-to-ferry') {
+    return 'Home → Ferry';
+  }
+  // Fallback (shouldn't happen with valid data)
+  return route;
+}
 
 function formatDuration(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -65,17 +78,19 @@ export default function TimerScreen() {
 
   const selectedRoute = TIMER_ROUTES.find(r => r.id === selectedRouteId) || TIMER_ROUTES[0];
 
-  // If car-only route is selected, force vehicle to car
+  // Force valid vehicle when route changes
   useEffect(() => {
-    if (selectedRoute.carOnly && vehicle !== 'car') {
+    if (!selectedRoute.bikeAllowed && vehicle === 'bike') {
       setVehicle('car');
+    } else if (!selectedRoute.carAllowed && vehicle === 'car') {
+      setVehicle('bike');
     }
-  }, [selectedRoute.carOnly, vehicle]);
+  }, [selectedRoute, vehicle]);
 
-  const handleDelete = (id: string, route: TransitRoute) => {
+  const handleDelete = (id: string, route: TransitRoute, vehicle: Vehicle) => {
     Alert.alert(
       'Delete Record',
-      `Delete this ${ALL_ROUTE_LABELS[route]} record?`,
+      `Delete this ${getRecordLabel(route, vehicle)} record?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -97,187 +112,193 @@ export default function TimerScreen() {
   };
 
   const canSave = timer.isPaused && timer.elapsedSeconds > 0;
+  const isActive = timer.isRunning || timer.isPaused;
+
+  // Card color based on state
+  const getCardColor = () => {
+    if (timer.isRunning) return '#C62828'; // Red when running
+    if (timer.isPaused && timer.elapsedSeconds > 0) return '#F57C00'; // Orange when paused with time
+    return '#1565C0'; // Blue default
+  };
 
   return (
-    <ScrollView style={[styles.container, { paddingTop: insets.top }]} contentContainerStyle={styles.content}>
-      {/* Timer Display */}
-      <Card style={styles.timerCard}>
-        <Card.Content style={styles.timerContent}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + 16 }]}>
+      {/* Main Timer Card */}
+      <View style={[styles.mainCard, { backgroundColor: getCardColor() }]}>
+        {/* Top: Route selector + vehicle toggle */}
+        <View style={styles.topRow}>
+          <TouchableOpacity
+            style={[styles.routeSelector, timer.isRunning && styles.routeSelectorDisabled]}
+            onPress={() => !timer.isRunning && setModalVisible(true)}
+            disabled={timer.isRunning}
+          >
+            <Text style={[styles.routeText, timer.isRunning && styles.routeTextDisabled]}>
+              {selectedRoute.shortLabel}
+            </Text>
+            {!timer.isRunning && (
+              <Ionicons name="chevron-down" size={16} color="rgba(255,255,255,0.8)" />
+            )}
+          </TouchableOpacity>
+
+          {/* Vehicle toggle - show only valid options */}
+          {(selectedRoute.bikeAllowed || selectedRoute.carAllowed) && (
+            <View style={styles.vehicleRow}>
+              {selectedRoute.bikeAllowed && (
+                <TouchableOpacity
+                  style={[styles.vehicleButton, vehicle === 'bike' && styles.vehicleButtonActive]}
+                  onPress={() => !timer.isRunning && setVehicle('bike')}
+                  disabled={timer.isRunning}
+                >
+                  <Ionicons
+                    name="bicycle"
+                    size={18}
+                    color={vehicle === 'bike' ? '#fff' : 'rgba(255,255,255,0.5)'}
+                  />
+                </TouchableOpacity>
+              )}
+              {selectedRoute.carAllowed && (
+                <TouchableOpacity
+                  style={[styles.vehicleButton, vehicle === 'car' && styles.vehicleButtonActive]}
+                  onPress={() => !timer.isRunning && setVehicle('car')}
+                  disabled={timer.isRunning}
+                >
+                  <Ionicons
+                    name="car"
+                    size={18}
+                    color={vehicle === 'car' ? '#fff' : 'rgba(255,255,255,0.5)'}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+        </View>
+
+        {/* Center: Timer display */}
+        <View style={styles.centerContent}>
           <Text style={styles.timerDisplay}>
             {timer.formattedTime}
           </Text>
-          <Text variant="bodyMedium" style={styles.timerRoute}>
-            {selectedRoute.label} ({vehicle})
-          </Text>
-        </Card.Content>
-      </Card>
+          {timer.isRunning && (
+            <Text style={styles.runningLabel}>Recording...</Text>
+          )}
+          {timer.isPaused && timer.elapsedSeconds > 0 && (
+            <Text style={styles.pausedLabel}>Paused</Text>
+          )}
+        </View>
 
-      {/* Route Selection */}
-      <Card style={styles.card}>
-        <Text style={styles.cardTitle}>Timing</Text>
-        <Card.Content>
+        {/* Bottom: Controls */}
+        <View style={styles.controlsRow}>
+          {!isActive ? (
+            <TouchableOpacity style={styles.mainButton} onPress={timer.start}>
+              <Ionicons name="play" size={28} color="#fff" />
+              <Text style={styles.mainButtonText}>Start</Text>
+            </TouchableOpacity>
+          ) : timer.isRunning ? (
+            <TouchableOpacity style={styles.mainButton} onPress={timer.stop}>
+              <Ionicons name="pause" size={28} color="#fff" />
+              <Text style={styles.mainButtonText}>Stop</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.pausedControls}>
+              <TouchableOpacity style={styles.secondaryButton} onPress={timer.resume}>
+                <Ionicons name="play" size={24} color="#fff" />
+                <Text style={styles.secondaryButtonText}>Resume</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.primaryButton, !canSave && styles.buttonDisabled]}
+                onPress={handleSave}
+                disabled={!canSave || saveRecord.isPending}
+              >
+                <Ionicons name="checkmark" size={24} color="#fff" />
+                <Text style={styles.primaryButtonText}>
+                  {saveRecord.isPending ? 'Saving...' : 'Save'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        {/* Reset button - only when active */}
+        {isActive && (
           <TouchableOpacity
-            style={[styles.dropdown, timer.isRunning && styles.dropdownDisabled]}
-            onPress={() => !timer.isRunning && setModalVisible(true)}
-            activeOpacity={timer.isRunning ? 1 : 0.7}
-          >
-            <Text style={[styles.dropdownText, timer.isRunning && styles.dropdownTextDisabled]}>
-              {selectedRoute.label}
-            </Text>
-            <Ionicons name="chevron-down" size={20} color={timer.isRunning ? '#999' : '#1565C0'} />
-          </TouchableOpacity>
-
-          <Modal
-            visible={modalVisible}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-              <View style={styles.modalContent}>
-                {TIMER_ROUTES.map((route) => (
-                  <TouchableOpacity
-                    key={route.id}
-                    style={[styles.option, selectedRouteId === route.id && styles.optionSelected]}
-                    onPress={() => {
-                      setSelectedRouteId(route.id);
-                      setModalVisible(false);
-                    }}
-                  >
-                    {selectedRouteId === route.id && (
-                      <Ionicons name="checkmark" size={20} color="#1565C0" style={styles.checkIcon} />
-                    )}
-                    <Text style={[styles.optionText, selectedRouteId === route.id && styles.optionTextSelected]}>
-                      {route.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </Pressable>
-          </Modal>
-        </Card.Content>
-      </Card>
-
-      {/* Vehicle Selection - hidden for car-only routes */}
-      {!selectedRoute.carOnly && (
-        <Card style={styles.card}>
-          <Text style={styles.cardTitle}>Vehicle</Text>
-          <Card.Content>
-            <SegmentedButtons
-              value={vehicle}
-              onValueChange={(value) => !timer.isRunning && setVehicle(value as Vehicle)}
-              buttons={[
-                {
-                  value: 'bike',
-                  label: 'Bike',
-                  disabled: timer.isRunning,
-                  style: vehicle === 'bike' ? styles.buttonSelected : styles.buttonUnselected,
-                  labelStyle: vehicle === 'bike' ? styles.labelSelected : styles.labelUnselected,
-                },
-                {
-                  value: 'car',
-                  label: 'Car',
-                  disabled: timer.isRunning,
-                  style: vehicle === 'car' ? styles.buttonSelected : styles.buttonUnselected,
-                  labelStyle: vehicle === 'car' ? styles.labelSelected : styles.labelUnselected,
-                },
-              ]}
-            />
-          </Card.Content>
-        </Card>
-      )}
-
-      {/* Controls */}
-      <View style={styles.controls}>
-        {!timer.isRunning && !timer.isPaused ? (
-          <Button
-            mode="contained"
-            onPress={timer.start}
-            style={styles.startButton}
-            labelStyle={styles.controlButtonLabel}
-          >
-            Start Timer
-          </Button>
-        ) : timer.isRunning ? (
-          <Button
-            mode="contained"
-            onPress={timer.stop}
-            style={styles.stopButton}
-            labelStyle={styles.controlButtonLabel}
-          >
-            Stop Timer
-          </Button>
-        ) : (
-          <View style={styles.pausedControls}>
-            <Button
-              mode="contained"
-              onPress={timer.resume}
-              style={[styles.resumeButton, styles.halfButton]}
-              labelStyle={styles.controlButtonLabel}
-            >
-              Resume
-            </Button>
-            <Button
-              mode="contained"
-              onPress={handleSave}
-              style={[styles.saveButton, styles.halfButton]}
-              labelStyle={styles.controlButtonLabel}
-              disabled={!canSave || saveRecord.isPending}
-            >
-              {saveRecord.isPending ? 'Saving...' : 'Save'}
-            </Button>
-          </View>
-        )}
-
-        {(timer.isRunning || timer.isPaused) && (
-          <Button
-            mode="outlined"
-            onPress={timer.reset}
             style={styles.resetButton}
+            onPress={timer.reset}
             disabled={timer.isRunning}
           >
-            Reset
-          </Button>
+            <Text style={[styles.resetText, timer.isRunning && styles.resetTextDisabled]}>
+              Reset
+            </Text>
+          </TouchableOpacity>
         )}
       </View>
 
+      {/* Route Selection Modal */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Route</Text>
+            {TIMER_ROUTES.map((route) => (
+              <TouchableOpacity
+                key={route.id}
+                style={[styles.option, selectedRouteId === route.id && styles.optionSelected]}
+                onPress={() => {
+                  setSelectedRouteId(route.id);
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={[styles.optionText, selectedRouteId === route.id && styles.optionTextSelected]}>
+                  {route.label}
+                </Text>
+                {selectedRouteId === route.id && (
+                  <Ionicons name="checkmark" size={20} color="#1565C0" />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
+
       {/* Recent Times */}
-      <Card style={styles.card}>
-        <Text style={styles.cardTitle}>Recent Times</Text>
-        <Card.Content>
-          {recordsLoading ? (
-            <Text style={styles.placeholderText}>Loading...</Text>
-          ) : recentRecords.length === 0 ? (
-            <Text style={styles.placeholderText}>
-              No recorded times yet. Start tracking your commute!
-            </Text>
-          ) : (
-            <View style={styles.recordsList}>
-              {recentRecords.map((record) => (
-                <View key={record.id} style={styles.recordRow}>
-                  <View style={styles.recordInfo}>
-                    <Text variant="bodyMedium" style={styles.recordRoute}>
-                      {ALL_ROUTE_LABELS[record.route]}
-                    </Text>
-                    <Text variant="bodySmall" style={styles.recordMeta}>
-                      {record.vehicle} - {formatDate(record.timestamp)}
-                    </Text>
-                  </View>
-                  <Text variant="titleMedium" style={styles.recordDuration}>
-                    {formatDuration(record.durationSeconds)}
+      <View style={styles.historySection}>
+        <Text style={styles.historyTitle}>Recent Times</Text>
+        {recordsLoading ? (
+          <Text style={styles.placeholderText}>Loading...</Text>
+        ) : recentRecords.length === 0 ? (
+          <Text style={styles.placeholderText}>
+            No recorded times yet. Start tracking your commute!
+          </Text>
+        ) : (
+          <View style={styles.recordsList}>
+            {recentRecords.map((record) => (
+              <View key={record.id} style={styles.recordRow}>
+                <View style={styles.recordInfo}>
+                  <Text style={styles.recordRoute}>
+                    {getRecordLabel(record.route, record.vehicle)}
                   </Text>
-                  <IconButton
-                    icon="delete"
-                    size={20}
-                    iconColor="#C62828"
-                    onPress={() => handleDelete(record.id, record.route)}
-                  />
+                  <Text style={styles.recordMeta}>
+                    {record.vehicle} · {formatDate(record.timestamp)}
+                  </Text>
                 </View>
-              ))}
-            </View>
-          )}
-        </Card.Content>
-      </Card>
+                <Text style={styles.recordDuration}>
+                  {formatDuration(record.durationSeconds)}
+                </Text>
+                <IconButton
+                  icon="close"
+                  size={18}
+                  iconColor="#999"
+                  onPress={() => handleDelete(record.id, record.route, record.vehicle)}
+                  style={styles.deleteButton}
+                />
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -288,76 +309,145 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   content: {
-    padding: 16,
-  },
-  card: {
-    marginBottom: 16,
-    backgroundColor: '#fff',
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a1a',
     paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingBottom: 16,
   },
-  buttonSelected: {
-    backgroundColor: '#1565C0',
-    borderColor: '#1565C0',
+  // Main card
+  mainCard: {
+    height: SCREEN_HEIGHT * 0.55,
+    borderRadius: 16,
+    padding: 16,
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
-  buttonUnselected: {
-    backgroundColor: '#fff',
-    borderColor: '#1565C0',
+  // Top row
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  labelSelected: {
+  routeSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  routeSelectorDisabled: {
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+  routeText: {
+    fontSize: 14,
     color: '#fff',
     fontWeight: '600',
   },
-  labelUnselected: {
-    color: '#1565C0',
-    fontWeight: '500',
+  routeTextDisabled: {
+    color: 'rgba(255,255,255,0.6)',
   },
-  timerCard: {
-    marginBottom: 16,
-    backgroundColor: '#1565C0',
+  vehicleRow: {
+    flexDirection: 'row',
+    gap: 8,
   },
-  timerContent: {
+  vehicleButton: {
+    padding: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+  vehicleButtonActive: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  // Center
+  centerContent: {
     alignItems: 'center',
-    paddingVertical: 24,
+    flex: 1,
+    justifyContent: 'center',
   },
   timerDisplay: {
-    fontSize: 64,
+    fontSize: 72,
     fontWeight: 'bold',
     color: '#fff',
     fontVariant: ['tabular-nums'],
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
-  timerRoute: {
-    color: 'rgba(255, 255, 255, 0.8)',
+  runningLabel: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 8,
   },
-  dropdown: {
+  pausedLabel: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 8,
+  },
+  // Controls
+  controlsRow: {
+    alignItems: 'center',
+  },
+  mainButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#1565C0',
-    borderRadius: 4,
+    gap: 8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 30,
   },
-  dropdownDisabled: {
-    borderColor: '#ccc',
-    backgroundColor: '#f5f5f5',
+  mainButtonText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: '600',
   },
-  dropdownText: {
+  pausedControls: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  secondaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 25,
+  },
+  secondaryButtonText: {
     fontSize: 16,
-    color: '#1565C0',
+    color: '#fff',
     fontWeight: '500',
   },
-  dropdownTextDisabled: {
-    color: '#999',
+  primaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#2E7D32',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 25,
   },
+  primaryButtonText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  resetButton: {
+    alignSelf: 'center',
+    marginTop: 12,
+  },
+  resetText: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.7)',
+  },
+  resetTextDisabled: {
+    color: 'rgba(255,255,255,0.3)',
+  },
+  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -366,14 +456,23 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 12,
     minWidth: 300,
     overflow: 'hidden',
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    justifyContent: 'space-between',
+    paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
@@ -382,48 +481,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3F2FD',
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#333',
   },
   optionTextSelected: {
     color: '#1565C0',
     fontWeight: '500',
   },
-  checkIcon: {
-    marginRight: 12,
+  // History section
+  historySection: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
   },
-  controls: {
-    marginBottom: 16,
-    gap: 8,
-  },
-  pausedControls: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  halfButton: {
-    flex: 1,
-  },
-  startButton: {
-    backgroundColor: '#2E7D32',
-    paddingVertical: 8,
-  },
-  stopButton: {
-    backgroundColor: '#C62828',
-    paddingVertical: 8,
-  },
-  resumeButton: {
-    backgroundColor: '#1565C0',
-    paddingVertical: 8,
-  },
-  saveButton: {
-    backgroundColor: '#2E7D32',
-    paddingVertical: 8,
-  },
-  resetButton: {
-    borderColor: '#666',
-  },
-  controlButtonLabel: {
-    fontSize: 18,
+  historyTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
   },
   placeholderText: {
     color: '#999',
@@ -431,28 +506,35 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   recordsList: {
-    gap: 12,
+    gap: 0,
   },
   recordRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: '#f5f5f5',
   },
   recordInfo: {
     flex: 1,
   },
   recordRoute: {
+    fontSize: 14,
+    fontWeight: '500',
     color: '#333',
   },
   recordMeta: {
+    fontSize: 12,
     color: '#999',
     marginTop: 2,
   },
   recordDuration: {
+    fontSize: 16,
     color: '#1565C0',
     fontWeight: '600',
+    marginRight: 4,
+  },
+  deleteButton: {
+    margin: 0,
   },
 });
