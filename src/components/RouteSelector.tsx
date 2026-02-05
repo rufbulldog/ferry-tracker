@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
-import { Text, SegmentedButtons } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, ROUTE_GROUP_LABELS } from '../context/RouteContext';
 
 type RouteGroup = 'bainbridge' | 'kingston';
 
 export function RouteSelector() {
+  const insets = useSafeAreaInsets();
   const { routeGroup, setRouteGroup, direction, setDirection, directionLabels } = useRoute();
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -16,37 +18,55 @@ export function RouteSelector() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Route Group Dropdown */}
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Route Group Dropdown - Pill Style */}
       <TouchableOpacity
         style={styles.dropdown}
         onPress={() => setModalVisible(true)}
         activeOpacity={0.7}
       >
+        <Ionicons name="boat-outline" size={18} color="#1565C0" />
         <Text style={styles.dropdownText}>{ROUTE_GROUP_LABELS[routeGroup]}</Text>
-        <Ionicons name="chevron-down" size={20} color="#1565C0" />
+        <Ionicons name="chevron-down" size={16} color="#999" />
       </TouchableOpacity>
 
-      {/* Direction Buttons */}
-      <SegmentedButtons
-        value={direction}
-        onValueChange={(value) => setDirection(value as 'outbound' | 'inbound')}
-        buttons={[
-          {
-            value: 'outbound',
-            label: directionLabels.outbound,
-            style: direction === 'outbound' ? styles.buttonSelected : styles.buttonUnselected,
-            labelStyle: direction === 'outbound' ? styles.labelSelected : styles.labelUnselected,
-          },
-          {
-            value: 'inbound',
-            label: directionLabels.inbound,
-            style: direction === 'inbound' ? styles.buttonSelected : styles.buttonUnselected,
-            labelStyle: direction === 'inbound' ? styles.labelSelected : styles.labelUnselected,
-          },
-        ]}
-        style={styles.segmentedButtons}
-      />
+      {/* Direction Toggle - Pill Buttons */}
+      <View style={styles.directionRow}>
+        <TouchableOpacity
+          style={[
+            styles.directionButton,
+            direction === 'outbound' && styles.directionButtonActive,
+          ]}
+          onPress={() => setDirection('outbound')}
+          activeOpacity={0.7}
+        >
+          <Text
+            style={[
+              styles.directionText,
+              direction === 'outbound' && styles.directionTextActive,
+            ]}
+          >
+            {directionLabels.outbound}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.directionButton,
+            direction === 'inbound' && styles.directionButtonActive,
+          ]}
+          onPress={() => setDirection('inbound')}
+          activeOpacity={0.7}
+        >
+          <Text
+            style={[
+              styles.directionText,
+              direction === 'inbound' && styles.directionTextActive,
+            ]}
+          >
+            {directionLabels.inbound}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Dropdown Modal */}
       <Modal
@@ -57,27 +77,28 @@ export function RouteSelector() {
       >
         <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
           <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Route</Text>
             <TouchableOpacity
               style={[styles.option, routeGroup === 'bainbridge' && styles.optionSelected]}
               onPress={() => handleSelectRoute('bainbridge')}
             >
-              {routeGroup === 'bainbridge' && (
-                <Ionicons name="checkmark" size={20} color="#1565C0" style={styles.checkIcon} />
-              )}
               <Text style={[styles.optionText, routeGroup === 'bainbridge' && styles.optionTextSelected]}>
                 Bainbridge - Seattle
               </Text>
+              {routeGroup === 'bainbridge' && (
+                <Ionicons name="checkmark" size={20} color="#1565C0" />
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.option, routeGroup === 'kingston' && styles.optionSelected]}
               onPress={() => handleSelectRoute('kingston')}
             >
-              {routeGroup === 'kingston' && (
-                <Ionicons name="checkmark" size={20} color="#1565C0" style={styles.checkIcon} />
-              )}
               <Text style={[styles.optionText, routeGroup === 'kingston' && styles.optionTextSelected]}>
                 Kingston - Edmonds
               </Text>
+              {routeGroup === 'kingston' && (
+                <Ionicons name="checkmark" size={20} color="#1565C0" />
+              )}
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -89,47 +110,63 @@ export function RouteSelector() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    paddingBottom: 12,
+    backgroundColor: '#f5f5f5',
   },
+  // Pill-style dropdown
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
+    alignSelf: 'center',
+    gap: 8,
+    backgroundColor: '#fff',
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#1565C0',
-    borderRadius: 4,
+    borderRadius: 24,
     marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
   dropdownText: {
-    fontSize: 16,
-    color: '#1565C0',
+    fontSize: 15,
+    color: '#333',
+    fontWeight: '600',
+  },
+  // Direction toggle row
+  directionRow: {
+    flexDirection: 'row',
+    backgroundColor: '#e0e0e0',
+    borderRadius: 24,
+    padding: 4,
+  },
+  directionButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    alignItems: 'center',
+  },
+  directionButtonActive: {
+    backgroundColor: '#1565C0',
+    shadowColor: '#1565C0',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  directionText: {
+    fontSize: 15,
+    color: '#666',
     fontWeight: '500',
   },
-  segmentedButtons: {
-    marginBottom: 4,
-  },
-  buttonSelected: {
-    backgroundColor: '#1565C0',
-    borderColor: '#1565C0',
-  },
-  buttonUnselected: {
-    backgroundColor: '#fff',
-    borderColor: '#1565C0',
-  },
-  labelSelected: {
+  directionTextActive: {
     color: '#fff',
     fontWeight: '600',
   },
-  labelUnselected: {
-    color: '#1565C0',
-    fontWeight: '500',
-  },
+  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -138,14 +175,23 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: '#fff',
-    borderRadius: 8,
-    minWidth: 280,
+    borderRadius: 12,
+    minWidth: 300,
     overflow: 'hidden',
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    justifyContent: 'space-between',
+    paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
@@ -154,14 +200,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3F2FD',
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#333',
   },
   optionTextSelected: {
     color: '#1565C0',
     fontWeight: '500',
-  },
-  checkIcon: {
-    marginRight: 12,
   },
 });

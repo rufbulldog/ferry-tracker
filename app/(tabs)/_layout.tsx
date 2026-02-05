@@ -1,17 +1,9 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RouteSelector } from '../../src/components/RouteSelector';
 
 function TabHeader() {
-  const insets = useSafeAreaInsets();
-
-  return (
-    <View style={{ backgroundColor: '#fff', paddingTop: insets.top }}>
-      <RouteSelector />
-    </View>
-  );
+  return <RouteSelector />;
 }
 
 export default function TabLayout() {
