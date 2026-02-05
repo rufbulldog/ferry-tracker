@@ -6,6 +6,7 @@ import { useRecommendation } from '../../src/hooks/useRecommendation';
 import { formatTime } from '../../src/utils/time';
 import { Vehicle } from '../../src/types/storage';
 import { useRoute } from '../../src/context/RouteContext';
+import { useTheme } from '../../src/context/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -13,6 +14,7 @@ export default function RecommendScreen() {
   const [vehicle, setVehicle] = useState<Vehicle>('bike');
   const [currentTime, setCurrentTime] = useState(new Date());
   const { route } = useRoute();
+  const { theme } = useTheme();
 
   // Update current time every minute
   useEffect(() => {
@@ -74,7 +76,7 @@ export default function RecommendScreen() {
   const isLightBackground = !timeUntil;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.pageBg }]} contentContainerStyle={styles.content}>
       {/* Main Recommendation Card */}
       <View style={[styles.mainCard, { backgroundColor: getCardColor() }]}>
         {/* Vehicle toggle at top */}
@@ -155,22 +157,22 @@ export default function RecommendScreen() {
       </View>
 
       {/* Info Section */}
-      <View style={styles.infoSection}>
-        <Text style={styles.infoTitle}>How this works</Text>
-        <Text style={styles.infoText}>
+      <View style={[styles.infoSection, { backgroundColor: theme.colors.cardBg }]}>
+        <Text style={[styles.infoTitle, { color: theme.colors.text }]}>How this works</Text>
+        <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
           Based on your {vehicle === 'bike' ? 'bike' : 'car'}, you need{' '}
-          <Text style={styles.infoBold}>{recommendation.transitMinutes} min</Text> to get to the terminal
+          <Text style={[styles.infoBold, { color: theme.colors.text }]}>{recommendation.transitMinutes} min</Text> to get to the terminal
           {recommendation.bufferMinutes > 0 && (
-            <> plus <Text style={styles.infoBold}>{recommendation.bufferMinutes} min</Text> buffer</>
+            <> plus <Text style={[styles.infoBold, { color: theme.colors.text }]}>{recommendation.bufferMinutes} min</Text> buffer</>
           )}.
         </Text>
 
         {recommendation.reasoning.length > 0 && (
-          <View style={styles.notesContainer}>
+          <View style={[styles.notesContainer, { borderTopColor: theme.colors.border }]}>
             {recommendation.reasoning.map((reason, index) => (
               <View key={index} style={styles.noteRow}>
-                <Ionicons name="information-circle-outline" size={14} color="#666" />
-                <Text style={styles.noteText}>{reason}</Text>
+                <Ionicons name="information-circle-outline" size={14} color={theme.colors.textMuted} />
+                <Text style={[styles.noteText, { color: theme.colors.textMuted }]}>{reason}</Text>
               </View>
             ))}
           </View>
@@ -183,7 +185,6 @@ export default function RecommendScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   content: {
     padding: 16,
@@ -293,30 +294,25 @@ const styles = StyleSheet.create({
   },
   // Info section
   infoSection: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
   },
   infoTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
     marginBottom: 8,
   },
   infoText: {
     fontSize: 14,
-    color: '#666',
     lineHeight: 20,
   },
   infoBold: {
     fontWeight: '600',
-    color: '#333',
   },
   notesContainer: {
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
     gap: 6,
   },
   noteRow: {
@@ -326,7 +322,6 @@ const styles = StyleSheet.create({
   },
   noteText: {
     fontSize: 13,
-    color: '#666',
     flex: 1,
   },
 });

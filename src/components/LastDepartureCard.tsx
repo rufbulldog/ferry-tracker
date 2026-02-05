@@ -4,6 +4,7 @@ import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { DepartureInfo } from '../hooks/useNextDepartures';
 import { formatTime } from '../utils/time';
+import { useTheme } from '../context/ThemeContext';
 
 interface LastDepartureCardProps {
   departure: DepartureInfo;
@@ -11,6 +12,7 @@ interface LastDepartureCardProps {
 }
 
 export function LastDepartureCard({ departure, backendCapacityPercent }: LastDepartureCardProps) {
+  const { theme } = useTheme();
   const {
     vesselName,
     scheduledDeparture,
@@ -55,10 +57,10 @@ export function LastDepartureCard({ departure, backendCapacityPercent }: LastDep
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.cardBg, borderLeftColor: theme.colors.primary }]}>
       {/* Ferry tracker with capacity fill inside */}
       <View style={styles.ferryTracker}>
-        <View style={styles.trackLine}>
+        <View style={[styles.trackLine, { backgroundColor: `${theme.colors.primary}30` }]}>
           {/* Capacity fill inside track - shows how full ferry was when it departed */}
           {capacityPercent !== null && (
             <View
@@ -71,23 +73,23 @@ export function LastDepartureCard({ departure, backendCapacityPercent }: LastDep
               ]}
             />
           )}
-          <View style={[styles.dock, styles.leftDock]} />
-          <View style={[styles.dock, styles.rightDock]} />
+          <View style={[styles.dock, styles.leftDock, { backgroundColor: theme.colors.primary }]} />
+          <View style={[styles.dock, styles.rightDock, { backgroundColor: theme.colors.primary }]} />
           <Animated.View
             style={[
               styles.ferryIcon,
               { left: ferryPosition },
             ]}
           >
-            <Ionicons name="boat" size={18} color="#1565C0" />
+            <Ionicons name="boat" size={18} color={theme.colors.primary} />
           </Animated.View>
         </View>
       </View>
 
       {/* Vessel info - all on one line */}
       <View style={styles.content}>
-        <Text style={styles.vesselName}>{vesselName}</Text>
-        <Text style={styles.departedAt}>departed {formatTime(departureTime)}</Text>
+        <Text style={[styles.vesselName, { color: theme.colors.text }]}>{vesselName}</Text>
+        <Text style={[styles.departedAt, { color: theme.colors.textMuted }]}>departed {formatTime(departureTime)}</Text>
         {delayMinutes > 0 && (
           <Text style={styles.delay}>+{delayMinutes}m late</Text>
         )}
@@ -98,25 +100,16 @@ export function LastDepartureCard({ departure, backendCapacityPercent }: LastDep
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
     borderLeftWidth: 3,
-    borderLeftColor: '#1565C0',
-    // Subtle drop shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   ferryTracker: {
     marginBottom: 6,
   },
   trackLine: {
     height: 24,
-    backgroundColor: 'rgba(21, 101, 192, 0.15)',
     borderRadius: 12,
     position: 'relative',
     justifyContent: 'center',
@@ -134,7 +127,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 5,
     height: 14,
-    backgroundColor: '#1565C0',
     borderRadius: 2,
   },
   leftDock: {
@@ -155,7 +147,6 @@ const styles = StyleSheet.create({
   vesselName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
   },
   delay: {
     fontSize: 11,
@@ -165,6 +156,5 @@ const styles = StyleSheet.create({
   },
   departedAt: {
     fontSize: 12,
-    color: '#666',
   },
 });

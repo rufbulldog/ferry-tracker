@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { DepartureInfo } from '../hooks/useNextDepartures';
 import { TERMINAL_CAMERAS } from '../utils/constants';
 import { formatTime, getMinutesUntil } from '../utils/time';
+import { useTheme } from '../context/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -26,6 +27,7 @@ interface MainDepartureCardProps {
 }
 
 export function MainDepartureCard({ departure, terminalId, terminalName, isAnimatingOut = false, backendIncomingCapacity }: MainDepartureCardProps) {
+  const { theme } = useTheme();
   const {
     vesselName,
     scheduledDeparture,
@@ -187,7 +189,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
   const getStatusColor = (): string => {
     if (isCancelled) return '#C62828';
     switch (status) {
-      case 'loading': return '#1565C0';
+      case 'loading': return theme.colors.primary;
       case 'arriving': return '#7B1FA2';
       case 'returning': return '#F57C00';
       case 'departed': return delayMinutes > 5 ? '#F57C00' : '#2E7D32';
@@ -229,6 +231,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
         style={[
           styles.card,
           styles.cardFront,
+          { backgroundColor: theme.colors.cardBg },
           isCancelled && styles.cancelledContainer,
           {
             transform: [{ rotateY: frontRotate }],
@@ -254,8 +257,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
             {/* Vessel name row with camera button */}
             <View style={styles.vesselRow}>
               <View style={styles.vesselInfo}>
-                <Ionicons name="boat-outline" size={18} color={fillPercent < 40 ? '#666' : '#fff'} />
-                <Text style={[styles.vesselName, fillPercent < 40 && styles.vesselNameDark]}>
+                <Ionicons name="boat-outline" size={18} color={fillPercent < 40 ? theme.colors.textMuted : '#fff'} />
+                <Text style={[styles.vesselName, fillPercent < 40 && { color: theme.colors.text, textShadowColor: 'transparent' }]}>
                   {vesselName}
                 </Text>
                 {isCancelled && (
@@ -265,8 +268,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                 )}
               </View>
               {cameras.length > 0 && !isAnimatingOut && (
-                <TouchableOpacity style={[styles.cameraButton, fillPercent < 40 && styles.cameraButtonLight]} onPress={handleFlip}>
-                  <Ionicons name="videocam" size={18} color={fillPercent < 40 ? '#1565C0' : '#fff'} />
+                <TouchableOpacity style={[styles.cameraButton, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}15` }]} onPress={handleFlip}>
+                  <Ionicons name="videocam" size={18} color={fillPercent < 40 ? theme.colors.primary : '#fff'} />
                 </TouchableOpacity>
               )}
             </View>
@@ -274,7 +277,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
             {/* Ferry tracker - only when vessel is arriving */}
             {showFerryTracker && (
               <View style={styles.ferryTracker}>
-                <View style={[styles.trackLine, fillPercent < 40 && styles.trackLineDark]}>
+                <View style={[styles.trackLine, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}30` }]}>
                   {incomingVesselCapacity !== null && (
                     <View
                       style={[
@@ -286,8 +289,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                       ]}
                     />
                   )}
-                  <View style={[styles.dock, styles.leftDock, fillPercent < 40 && styles.dockDark]} />
-                  <View style={[styles.dock, styles.rightDock, fillPercent < 40 && styles.dockDark]} />
+                  <View style={[styles.dock, styles.leftDock, fillPercent < 40 && { backgroundColor: theme.colors.primary }]} />
+                  <View style={[styles.dock, styles.rightDock, fillPercent < 40 && { backgroundColor: theme.colors.primary }]} />
                   <Animated.View
                     style={[
                       styles.ferryIcon,
@@ -297,10 +300,10 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                       },
                     ]}
                   >
-                    <Ionicons name="boat" size={24} color={fillPercent < 40 ? '#1565C0' : '#fff'} />
+                    <Ionicons name="boat" size={24} color={fillPercent < 40 ? theme.colors.primary : '#fff'} />
                   </Animated.View>
                 </View>
-                <Text style={[styles.ferryStatus, fillPercent < 40 && styles.ferryStatusDark]}>
+                <Text style={[styles.ferryStatus, fillPercent < 40 && { color: theme.colors.text, textShadowColor: 'transparent' }]}>
                   {status === 'arriving' && minutesToArrival !== null && vesselArrivalEta &&
                     `Arrives in ${minutesToArrival} min (${formatTime(vesselArrivalEta)})`}
                   {status === 'returning' && vesselAtOppositeTerminal && 'Waiting at opposite terminal'}
@@ -314,15 +317,15 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
           {/* Center section: Departure time */}
           <View style={styles.centerSection}>
             {hasDelay && (
-              <Text style={[styles.originalTime, fillPercent < 40 && styles.originalTimeDark]}>
+              <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
                 was {formatTime(scheduledDeparture)}
               </Text>
             )}
-            <Text style={[styles.mainTime, isCancelled && styles.cancelledText]}>
+            <Text style={[styles.mainTime, { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
               {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
             </Text>
             {status !== 'departed' && !isCancelled && (
-              <Text style={[styles.countdown, fillPercent < 40 && styles.countdownDark]}>
+              <Text style={[styles.countdown, fillPercent < 40 && { color: theme.colors.primary, textShadowColor: 'transparent' }]}>
                 {hasDelay
                   ? (minutesUntilEstimated > 0 ? `departs in ${minutesUntilEstimated} min` : 'departing now')
                   : (minutesUntilDeparture > 0 ? `departs in ${minutesUntilDeparture} min` : 'departing now')
@@ -340,14 +343,14 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
           <View style={styles.bottomSection}>
             {driveUpSpaces !== null && !isCancelled && status !== 'departed' && (
               <View style={styles.capacityRow}>
-                <Text style={[styles.capacityNumber, fillPercent < 30 && styles.capacityNumberDark]}>
+                <Text style={[styles.capacityNumber, fillPercent < 30 && { color: theme.colors.text, textShadowColor: 'rgba(255, 255, 255, 0.5)' }]}>
                   {driveUpSpaces}
                 </Text>
                 <View style={styles.capacityLabels}>
-                  <Text style={[styles.capacityMain, fillPercent < 30 && styles.capacityMainDark]}>
+                  <Text style={[styles.capacityMain, fillPercent < 30 && { color: theme.colors.text, textShadowColor: 'rgba(255, 255, 255, 0.5)' }]}>
                     spots open
                   </Text>
-                  <Text style={[styles.capacitySecondary, fillPercent < 40 && styles.capacitySecondaryDark]}>
+                  <Text style={[styles.capacitySecondary, fillPercent < 40 && { color: theme.colors.textMuted }]}>
                     {Math.round(fillPercent)}% full
                   </Text>
                 </View>
@@ -367,6 +370,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
         style={[
           styles.card,
           styles.cardBack,
+          { backgroundColor: theme.colors.cardBg },
           {
             transform: [{ rotateY: backRotate }],
             opacity: backOpacity,

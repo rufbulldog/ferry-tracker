@@ -10,6 +10,7 @@ import { MainDepartureCard } from '../../src/components/MainDepartureCard';
 import { LastDepartureCard } from '../../src/components/LastDepartureCard';
 import { AlertBanner } from '../../src/components/AlertBanner';
 import { useRoute } from '../../src/context/RouteContext';
+import { useTheme } from '../../src/context/ThemeContext';
 import { ROUTES, TERMINALS } from '../../src/utils/constants';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -30,6 +31,7 @@ export default function DepartScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
   const { route } = useRoute();
+  const { theme } = useTheme();
 
   const { data: departures, isLoading, error } = useNextDepartures(route);
   const { activeAlert } = useTerminalBulletins(route);
@@ -152,29 +154,29 @@ export default function DepartScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.colors.pageBg }]}
       contentContainerStyle={styles.scrollContent}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />
       }
     >
       {isLoading && !refreshing && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1565C0" />
-          <Text style={styles.loadingText}>Loading ferry data...</Text>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>Loading ferry data...</Text>
         </View>
       )}
 
       {error && (
-        <Card style={styles.errorCard}>
+        <Card style={[styles.errorCard, { backgroundColor: theme.colors.cardBg }]}>
           <Card.Content>
-            <Text variant="bodyLarge" style={styles.errorText}>
+            <Text variant="bodyLarge" style={{ color: theme.colors.error }}>
               Unable to load ferry data
             </Text>
-            <Text variant="bodySmall" style={styles.errorDetail}>
+            <Text variant="bodySmall" style={{ color: theme.colors.textMuted }}>
               {error.message}
             </Text>
-            <Text variant="bodySmall" style={styles.errorHint}>
+            <Text variant="bodySmall" style={{ color: theme.colors.textMuted }}>
               Pull down to refresh
             </Text>
           </Card.Content>
@@ -182,10 +184,10 @@ export default function DepartScreen() {
       )}
 
       {!isLoading && !error && departures?.length === 0 && (
-        <Card style={styles.card}>
+        <Card style={[styles.card, { backgroundColor: theme.colors.cardBg }]}>
           <Card.Content>
-            <Text variant="bodyLarge">No scheduled departures found</Text>
-            <Text variant="bodySmall" style={styles.noDataHint}>
+            <Text variant="bodyLarge" style={{ color: theme.colors.text }}>No scheduled departures found</Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.textMuted }}>
               Pull down to refresh
             </Text>
           </Card.Content>
@@ -268,7 +270,7 @@ export default function DepartScreen() {
       {/* Upcoming departures - below the fold */}
       {upcomingDepartures.length > 0 && (
         <View style={styles.upcomingSection}>
-          <Text variant="titleMedium" style={styles.upcomingTitle}>
+          <Text variant="titleMedium" style={[styles.upcomingTitle, { color: theme.colors.textMuted }]}>
             UPCOMING DEPARTURES
           </Text>
           {upcomingDepartures.map((departure) => (
@@ -287,7 +289,6 @@ export default function DepartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   scrollContent: {
     padding: 16,
@@ -298,11 +299,9 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    color: '#666',
   },
   card: {
     marginBottom: 12,
-    backgroundColor: '#fff',
   },
   cardsContainer: {
     position: 'relative',
@@ -322,27 +321,10 @@ const styles = StyleSheet.create({
   },
   upcomingTitle: {
     marginBottom: 12,
-    color: '#666',
     fontWeight: '600',
     letterSpacing: 0.5,
   },
   errorCard: {
     marginBottom: 16,
-    backgroundColor: '#FFEBEE',
-  },
-  errorText: {
-    color: '#C62828',
-  },
-  errorDetail: {
-    color: '#666',
-    marginTop: 4,
-  },
-  errorHint: {
-    color: '#999',
-    marginTop: 8,
-  },
-  noDataHint: {
-    color: '#999',
-    marginTop: 8,
   },
 });

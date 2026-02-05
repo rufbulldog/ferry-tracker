@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RouteProvider } from '../src/context/RouteContext';
+import { ThemeProvider } from '../src/context/ThemeContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,11 +19,13 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <PaperProvider>
         <SafeAreaProvider>
-          <RouteProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" />
-            </Stack>
-          </RouteProvider>
+          <ThemeProvider>
+            <RouteProvider>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+              </Stack>
+            </RouteProvider>
+          </ThemeProvider>
         </SafeAreaProvider>
       </PaperProvider>
     </QueryClientProvider>

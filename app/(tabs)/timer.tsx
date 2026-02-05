@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTimer } from '../../src/hooks/useTimer';
 import { useRecentTransitRecords, useSaveTransitRecord, useDeleteTransitRecord } from '../../src/hooks/useTransitRecords';
+import { useTheme } from '../../src/context/ThemeContext';
 import { TransitRoute, Vehicle } from '../../src/types/storage';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -70,6 +71,7 @@ export default function TimerScreen() {
   const [selectedRouteId, setSelectedRouteId] = useState<TimerRoute>('bi-home-to-ferry');
   const [vehicle, setVehicle] = useState<Vehicle>('bike');
   const [modalVisible, setModalVisible] = useState(false);
+  const { theme } = useTheme();
 
   const timer = useTimer();
   const { data: recentRecords, isLoading: recordsLoading } = useRecentTransitRecords(10);
@@ -122,7 +124,7 @@ export default function TimerScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + 16 }]}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.pageBg }]} contentContainerStyle={[styles.content, { paddingTop: insets.top + 16 }]}>
       {/* Main Timer Card */}
       <View style={[styles.mainCard, { backgroundColor: getCardColor() }]}>
         {/* Top: Route selector + vehicle toggle */}
@@ -240,22 +242,22 @@ export default function TimerScreen() {
         onRequestClose={() => setModalVisible(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Route</Text>
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.cardBg }]}>
+            <Text style={[styles.modalTitle, { color: theme.colors.text, borderBottomColor: theme.colors.border }]}>Select Route</Text>
             {TIMER_ROUTES.map((route) => (
               <TouchableOpacity
                 key={route.id}
-                style={[styles.option, selectedRouteId === route.id && styles.optionSelected]}
+                style={[styles.option, { borderBottomColor: theme.colors.border }, selectedRouteId === route.id && { backgroundColor: theme.colors.inputBg }]}
                 onPress={() => {
                   setSelectedRouteId(route.id);
                   setModalVisible(false);
                 }}
               >
-                <Text style={[styles.optionText, selectedRouteId === route.id && styles.optionTextSelected]}>
+                <Text style={[styles.optionText, { color: theme.colors.text }, selectedRouteId === route.id && { color: theme.colors.primary }]}>
                   {route.label}
                 </Text>
                 {selectedRouteId === route.id && (
-                  <Ionicons name="checkmark" size={20} color="#1565C0" />
+                  <Ionicons name="checkmark" size={20} color={theme.colors.primary} />
                 )}
               </TouchableOpacity>
             ))}
@@ -264,33 +266,33 @@ export default function TimerScreen() {
       </Modal>
 
       {/* Recent Times */}
-      <View style={styles.historySection}>
-        <Text style={styles.historyTitle}>Recent Times</Text>
+      <View style={[styles.historySection, { backgroundColor: theme.colors.cardBg }]}>
+        <Text style={[styles.historyTitle, { color: theme.colors.text }]}>Recent Times</Text>
         {recordsLoading ? (
-          <Text style={styles.placeholderText}>Loading...</Text>
+          <Text style={[styles.placeholderText, { color: theme.colors.textMuted }]}>Loading...</Text>
         ) : recentRecords.length === 0 ? (
-          <Text style={styles.placeholderText}>
+          <Text style={[styles.placeholderText, { color: theme.colors.textMuted }]}>
             No recorded times yet. Start tracking your commute!
           </Text>
         ) : (
           <View style={styles.recordsList}>
             {recentRecords.map((record) => (
-              <View key={record.id} style={styles.recordRow}>
+              <View key={record.id} style={[styles.recordRow, { borderBottomColor: theme.colors.border }]}>
                 <View style={styles.recordInfo}>
-                  <Text style={styles.recordRoute}>
+                  <Text style={[styles.recordRoute, { color: theme.colors.text }]}>
                     {getRecordLabel(record.route, record.vehicle)}
                   </Text>
-                  <Text style={styles.recordMeta}>
+                  <Text style={[styles.recordMeta, { color: theme.colors.textMuted }]}>
                     {record.vehicle} · {formatDate(record.timestamp)}
                   </Text>
                 </View>
-                <Text style={styles.recordDuration}>
+                <Text style={[styles.recordDuration, { color: theme.colors.primary }]}>
                   {formatDuration(record.durationSeconds)}
                 </Text>
                 <IconButton
                   icon="close"
                   size={18}
-                  iconColor="#999"
+                  iconColor={theme.colors.textMuted}
                   onPress={() => handleDelete(record.id, record.route, record.vehicle)}
                   style={styles.deleteButton}
                 />
@@ -306,7 +308,6 @@ export default function TimerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   content: {
     paddingHorizontal: 16,
@@ -455,7 +456,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     minWidth: 300,
     overflow: 'hidden',
@@ -463,10 +463,8 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
   },
   option: {
     flexDirection: 'row',
@@ -475,33 +473,22 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  optionSelected: {
-    backgroundColor: '#E3F2FD',
   },
   optionText: {
     fontSize: 15,
-    color: '#333',
-  },
-  optionTextSelected: {
-    color: '#1565C0',
     fontWeight: '500',
   },
   // History section
   historySection: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
   },
   historyTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
     marginBottom: 12,
   },
   placeholderText: {
-    color: '#999',
     textAlign: 'center',
     paddingVertical: 16,
   },
@@ -513,7 +500,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f5f5f5',
   },
   recordInfo: {
     flex: 1,
@@ -521,16 +507,13 @@ const styles = StyleSheet.create({
   recordRoute: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#333',
   },
   recordMeta: {
     fontSize: 12,
-    color: '#999',
     marginTop: 2,
   },
   recordDuration: {
     fontSize: 16,
-    color: '#1565C0',
     fontWeight: '600',
     marginRight: 4,
   },

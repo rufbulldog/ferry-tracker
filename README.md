@@ -45,6 +45,77 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 - **History view** - route-specific labels (e.g., "Home → BI Ferry")
 - **Persistent storage** - times saved to backend database
 
+### Settings Tab
+- **Theme selection** - 19 color themes organized by category
+- **Persistent preference** - selected theme saved to AsyncStorage
+- **Team logos** - ESPN logos displayed for team themes
+
+## Theme System
+
+The app supports 19 color themes that apply across all screens. Theme selection persists using AsyncStorage.
+
+### Basic Colors (6)
+| Theme | Primary Color | Description |
+|-------|--------------|-------------|
+| Default | `#1762a8` | Blue (default) |
+| Teal | `#0ea5a4` | Teal/cyan |
+| Slate | `#334155` | Slate grey |
+| Purple | `#7C3AED` | Violet |
+| Rose | `#E11D48` | Pink/rose |
+| Amber | `#D97706` | Warm orange |
+
+### Team Colors (13)
+Sports team themes with official colors and ESPN logos:
+
+| Theme | Primary Color | Team |
+|-------|--------------|------|
+| Beavers | `#DC4405` | Oregon State |
+| Cougars | `#981E32` | Washington State |
+| Trail Blazers | `#E03A3E` | Portland (red) |
+| Trail Blazers Black | `#000000` | Portland (black) |
+| Lutes | `#FBBF16` | PLU |
+| Storm | `#F9A01B` | Seattle Storm (yellow) |
+| Storm Green | `#2C5234` | Seattle Storm (green) |
+| Seahawks | `#69BE28` | Seattle (action green) |
+| Seahawks Wild Grey | `#A5ACAF` | Seattle (grey) |
+| Sounders | `#73BE21` | Seattle (rave green) |
+| Sounders Aqua | `#77C7D3` | Seattle (aqua) |
+| Mariners | `#FFB81C` | Seattle (NW gold) |
+| Mariners Navy | `#003278` | Seattle (navy) |
+
+### Architecture
+
+1. **ThemeContext** (`src/context/ThemeContext.tsx`)
+   - Provides `themeName`, `theme`, and `setTheme()` to all components
+   - Persists selection to AsyncStorage (`@ferry_app_theme`)
+   - Loads saved theme on app startup
+
+2. **Theme Definitions** (`src/utils/themes.ts`)
+   - Each theme defines: `primary`, `pageBg`, `cardBg`, `inputBg`, `text`, `textMuted`, `border`, etc.
+   - Team themes include `logoUrl` for ESPN team logos
+   - Exports: `themes`, `basicThemes`, `teamThemes`, `themeNames`
+
+3. **Usage in Components**
+   ```typescript
+   import { useTheme } from '../context/ThemeContext';
+
+   function MyComponent() {
+     const { theme } = useTheme();
+     return (
+       <View style={{ backgroundColor: theme.colors.cardBg }}>
+         <Text style={{ color: theme.colors.text }}>Hello</Text>
+       </View>
+     );
+   }
+   ```
+
+### Adding a New Theme
+
+1. Add theme name to `ThemeName` type in `themes.ts`
+2. Add theme definition to `themes` object with all required color properties
+3. Add to `basicThemes` or `teamThemes` array
+4. Add to `themeNames` array
+
 ## Supported Routes
 
 | Route | Terminals |
@@ -74,7 +145,8 @@ ferry-app/
 │       ├── index.tsx             # Depart screen
 │       ├── recommend.tsx         # Recommendation screen
 │       ├── trends.tsx            # Trends/analytics screen
-│       └── timer.tsx             # Transit timer screen
+│       ├── timer.tsx             # Transit timer screen
+│       └── settings.tsx          # Settings + theme selection
 │
 ├── src/
 │   ├── api/
@@ -89,7 +161,8 @@ ferry-app/
 │   │   └── RouteSelector.tsx     # Route/direction picker header
 │   │
 │   ├── context/
-│   │   └── RouteContext.tsx      # Shared route state across tabs
+│   │   ├── RouteContext.tsx      # Shared route state across tabs
+│   │   └── ThemeContext.tsx      # Theme state + persistence
 │   │
 │   ├── hooks/
 │   │   ├── useVesselLocations.ts # Real-time vessel polling (5s)
@@ -106,6 +179,7 @@ ferry-app/
 │   │
 │   └── utils/
 │       ├── constants.ts          # Terminal IDs, route config
+│       ├── themes.ts             # Theme definitions (19 themes)
 │       └── time.ts               # Date parsing and formatting
 │
 ├── infra/                        # AWS CDK infrastructure

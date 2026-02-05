@@ -4,6 +4,7 @@ import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, ROUTE_GROUP_LABELS } from '../context/RouteContext';
+import { useTheme } from '../context/ThemeContext';
 
 type RouteGroup = 'bainbridge' | 'kingston';
 
@@ -11,6 +12,7 @@ export function RouteSelector() {
   const insets = useSafeAreaInsets();
   const { routeGroup, setRouteGroup, direction, setDirection, directionLabels } = useRoute();
   const [modalVisible, setModalVisible] = useState(false);
+  const { theme } = useTheme();
 
   const handleSelectRoute = (group: RouteGroup) => {
     setRouteGroup(group);
@@ -18,24 +20,24 @@ export function RouteSelector() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.pageBg }]}>
       {/* Route Group Dropdown - Pill Style */}
       <TouchableOpacity
-        style={styles.dropdown}
+        style={[styles.dropdown, { backgroundColor: theme.colors.cardBg }]}
         onPress={() => setModalVisible(true)}
         activeOpacity={0.7}
       >
-        <Ionicons name="boat-outline" size={18} color="#1565C0" />
-        <Text style={styles.dropdownText}>{ROUTE_GROUP_LABELS[routeGroup]}</Text>
-        <Ionicons name="chevron-down" size={16} color="#999" />
+        <Ionicons name="boat-outline" size={18} color={theme.colors.primary} />
+        <Text style={[styles.dropdownText, { color: theme.colors.text }]}>{ROUTE_GROUP_LABELS[routeGroup]}</Text>
+        <Ionicons name="chevron-down" size={16} color={theme.colors.textMuted} />
       </TouchableOpacity>
 
       {/* Direction Toggle - Pill Buttons */}
-      <View style={styles.directionRow}>
+      <View style={[styles.directionRow, { backgroundColor: theme.colors.inputBg }]}>
         <TouchableOpacity
           style={[
             styles.directionButton,
-            direction === 'outbound' && styles.directionButtonActive,
+            direction === 'outbound' && [styles.directionButtonActive, { backgroundColor: theme.colors.primary }],
           ]}
           onPress={() => setDirection('outbound')}
           activeOpacity={0.7}
@@ -43,6 +45,7 @@ export function RouteSelector() {
           <Text
             style={[
               styles.directionText,
+              { color: theme.colors.textMuted },
               direction === 'outbound' && styles.directionTextActive,
             ]}
           >
@@ -52,7 +55,7 @@ export function RouteSelector() {
         <TouchableOpacity
           style={[
             styles.directionButton,
-            direction === 'inbound' && styles.directionButtonActive,
+            direction === 'inbound' && [styles.directionButtonActive, { backgroundColor: theme.colors.primary }],
           ]}
           onPress={() => setDirection('inbound')}
           activeOpacity={0.7}
@@ -60,6 +63,7 @@ export function RouteSelector() {
           <Text
             style={[
               styles.directionText,
+              { color: theme.colors.textMuted },
               direction === 'inbound' && styles.directionTextActive,
             ]}
           >
@@ -76,28 +80,28 @@ export function RouteSelector() {
         onRequestClose={() => setModalVisible(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Route</Text>
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.cardBg }]}>
+            <Text style={[styles.modalTitle, { color: theme.colors.text, borderBottomColor: theme.colors.border }]}>Select Route</Text>
             <TouchableOpacity
-              style={[styles.option, routeGroup === 'bainbridge' && styles.optionSelected]}
+              style={[styles.option, { borderBottomColor: theme.colors.border }, routeGroup === 'bainbridge' && { backgroundColor: theme.colors.inputBg }]}
               onPress={() => handleSelectRoute('bainbridge')}
             >
-              <Text style={[styles.optionText, routeGroup === 'bainbridge' && styles.optionTextSelected]}>
+              <Text style={[styles.optionText, { color: theme.colors.text }, routeGroup === 'bainbridge' && { color: theme.colors.primary }]}>
                 Bainbridge - Seattle
               </Text>
               {routeGroup === 'bainbridge' && (
-                <Ionicons name="checkmark" size={20} color="#1565C0" />
+                <Ionicons name="checkmark" size={20} color={theme.colors.primary} />
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.option, routeGroup === 'kingston' && styles.optionSelected]}
+              style={[styles.option, { borderBottomColor: theme.colors.border }, routeGroup === 'kingston' && { backgroundColor: theme.colors.inputBg }]}
               onPress={() => handleSelectRoute('kingston')}
             >
-              <Text style={[styles.optionText, routeGroup === 'kingston' && styles.optionTextSelected]}>
+              <Text style={[styles.optionText, { color: theme.colors.text }, routeGroup === 'kingston' && { color: theme.colors.primary }]}>
                 Kingston - Edmonds
               </Text>
               {routeGroup === 'kingston' && (
-                <Ionicons name="checkmark" size={20} color="#1565C0" />
+                <Ionicons name="checkmark" size={20} color={theme.colors.primary} />
               )}
             </TouchableOpacity>
           </View>
@@ -111,7 +115,6 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingBottom: 12,
-    backgroundColor: '#f5f5f5',
   },
   // Pill-style dropdown
   dropdown: {
@@ -119,26 +122,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     gap: 8,
-    backgroundColor: '#fff',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 24,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
   },
   dropdownText: {
     fontSize: 15,
-    color: '#333',
     fontWeight: '600',
   },
   // Direction toggle row
   directionRow: {
     flexDirection: 'row',
-    backgroundColor: '#e0e0e0',
     borderRadius: 24,
     padding: 4,
   },
@@ -150,8 +145,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   directionButtonActive: {
-    backgroundColor: '#1565C0',
-    shadowColor: '#1565C0',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -159,7 +152,6 @@ const styles = StyleSheet.create({
   },
   directionText: {
     fontSize: 15,
-    color: '#666',
     fontWeight: '500',
   },
   directionTextActive: {
@@ -174,7 +166,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     minWidth: 300,
     overflow: 'hidden',
@@ -182,10 +173,8 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
   },
   option: {
     flexDirection: 'row',
@@ -194,17 +183,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  optionSelected: {
-    backgroundColor: '#E3F2FD',
   },
   optionText: {
     fontSize: 15,
-    color: '#333',
-  },
-  optionTextSelected: {
-    color: '#1565C0',
     fontWeight: '500',
   },
 });

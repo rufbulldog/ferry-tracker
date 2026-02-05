@@ -15,6 +15,7 @@ import {
   TransitAverage,
 } from '../../src/hooks/useTransitRecords';
 import { useRoute } from '../../src/context/RouteContext';
+import { useTheme } from '../../src/context/ThemeContext';
 import { TransitRoute, Vehicle } from '../../src/types/storage';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -58,6 +59,7 @@ function formatDuration(seconds: number): string {
 export default function TrendsScreen() {
   const { width: screenWidth } = useWindowDimensions();
   const { route, routeGroup, direction } = useRoute();
+  const { theme } = useTheme();
 
   // Get recent trends for the selected route (last 7 days)
   const { data: routeSnapshots = [], isLoading } = useRecentTrends(route, 7);
@@ -140,47 +142,47 @@ export default function TrendsScreen() {
   });
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.pageBg }]} contentContainerStyle={styles.content}>
       {/* Main Stats Card */}
-      <View style={styles.mainStatsCard}>
+      <View style={[styles.mainStatsCard, { backgroundColor: theme.colors.cardBg }]}>
         <View style={styles.statBlock}>
-          <Text style={styles.statLabel}>Avg Delay</Text>
+          <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>Avg Delay</Text>
           <Text style={[styles.statValue, { color: getDelayColor(avgDelay) }]}>
             {avgDelay > 0 ? '+' : ''}{avgDelay}
           </Text>
-          <Text style={styles.statUnit}>min</Text>
+          <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>min</Text>
         </View>
-        <View style={styles.statDivider} />
+        <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
         <View style={styles.statBlock}>
-          <Text style={styles.statLabel}>Avg Capacity</Text>
+          <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>Avg Capacity</Text>
           <Text style={[styles.statValue, { color: getCapacityColor(avgCapacity) }]}>
             {avgCapacity}
           </Text>
-          <Text style={styles.statUnit}>% full</Text>
+          <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>% full</Text>
         </View>
       </View>
 
       {/* Transit Times Section */}
       {transitAverages.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>My Transit Times</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>My Transit Times</Text>
           <View style={styles.transitGrid}>
             {transitAverages.map((avg, idx) => (
-              <View key={idx} style={styles.transitCard}>
+              <View key={idx} style={[styles.transitCard, { backgroundColor: theme.colors.cardBg }]}>
                 <View style={styles.transitHeader}>
                   <Ionicons
                     name={avg.vehicle === 'bike' ? 'bicycle' : 'car'}
                     size={16}
-                    color="#666"
+                    color={theme.colors.textMuted}
                   />
-                  <Text style={styles.transitRoute}>
+                  <Text style={[styles.transitRoute, { color: theme.colors.textMuted }]}>
                     {avg.displayLabel}
                   </Text>
                 </View>
-                <Text style={styles.transitTime}>
+                <Text style={[styles.transitTime, { color: theme.colors.primary }]}>
                   {formatDuration(avg.averageSeconds)}
                 </Text>
-                <Text style={styles.transitCount}>
+                <Text style={[styles.transitCount, { color: theme.colors.textMuted }]}>
                   {avg.count} trip{avg.count !== 1 ? 's' : ''}
                 </Text>
               </View>
@@ -191,19 +193,19 @@ export default function TrendsScreen() {
 
       {transitAverages.length === 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>My Transit Times</Text>
-          <View style={styles.emptyTransit}>
-            <Ionicons name="timer-outline" size={32} color="#ccc" />
-            <Text style={styles.emptyText}>No transit times recorded yet</Text>
-            <Text style={styles.emptyHint}>Use the Timer tab to track your commute</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>My Transit Times</Text>
+          <View style={[styles.emptyTransit, { backgroundColor: theme.colors.cardBg }]}>
+            <Ionicons name="timer-outline" size={32} color={theme.colors.textMuted} />
+            <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No transit times recorded yet</Text>
+            <Text style={[styles.emptyHint, { color: theme.colors.textMuted }]}>Use the Timer tab to track your commute</Text>
           </View>
         </View>
       )}
 
       {/* Charts Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Departure Accuracy</Text>
-        <View style={styles.chartCard}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Departure Accuracy</Text>
+        <View style={[styles.chartCard, { backgroundColor: theme.colors.cardBg }]}>
           {delayLineData.length > 0 ? (
             <View style={styles.chartContainer}>
               <LineChart
@@ -213,23 +215,23 @@ export default function TrendsScreen() {
                 spacing={lineSpacing}
                 initialSpacing={10}
                 endSpacing={10}
-                color="#1565C0"
+                color={theme.colors.primary}
                 thickness={2}
                 hideDataPoints={false}
-                dataPointsColor="#1565C0"
+                dataPointsColor={theme.colors.primary}
                 dataPointsRadius={4}
-                xAxisLabelTextStyle={{ color: '#1a1a1a', fontSize: 11 }}
-                yAxisTextStyle={{ color: '#1a1a1a', fontSize: 11 }}
-                xAxisColor="#666"
-                yAxisColor="#666"
+                xAxisLabelTextStyle={{ color: theme.colors.text, fontSize: 11 }}
+                yAxisTextStyle={{ color: theme.colors.text, fontSize: 11 }}
+                xAxisColor={theme.colors.textMuted}
+                yAxisColor={theme.colors.textMuted}
                 yAxisLabelWidth={30}
                 yAxisOffset={-5}
-                rulesColor="#ddd"
+                rulesColor={theme.colors.border}
                 rulesType="solid"
                 showReferenceLine1
                 referenceLine1Position={0}
                 referenceLine1Config={{
-                  color: '#2E7D32',
+                  color: theme.colors.success,
                   dashWidth: 4,
                   dashGap: 4,
                 }}
@@ -237,15 +239,15 @@ export default function TrendsScreen() {
             </View>
           ) : (
             <View style={styles.emptyChart}>
-              <Text style={styles.emptyText}>No departure data yet</Text>
+              <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No departure data yet</Text>
             </View>
           )}
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Departure Capacity</Text>
-        <View style={styles.chartCard}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Departure Capacity</Text>
+        <View style={[styles.chartCard, { backgroundColor: theme.colors.cardBg }]}>
           {capacityBarData.length > 0 ? (
             <View style={styles.chartContainer}>
               <BarChart
@@ -258,12 +260,12 @@ export default function TrendsScreen() {
                 endSpacing={10}
                 maxValue={100}
                 noOfSections={4}
-                xAxisLabelTextStyle={{ color: '#1a1a1a', fontSize: 9 }}
-                yAxisTextStyle={{ color: '#1a1a1a', fontSize: 11 }}
-                xAxisColor="#666"
-                yAxisColor="#666"
+                xAxisLabelTextStyle={{ color: theme.colors.text, fontSize: 9 }}
+                yAxisTextStyle={{ color: theme.colors.text, fontSize: 11 }}
+                xAxisColor={theme.colors.textMuted}
+                yAxisColor={theme.colors.textMuted}
                 yAxisLabelWidth={35}
-                rulesColor="#ddd"
+                rulesColor={theme.colors.border}
                 showYAxisIndices={false}
                 yAxisLabelSuffix="%"
                 barBorderRadius={4}
@@ -271,14 +273,14 @@ export default function TrendsScreen() {
             </View>
           ) : (
             <View style={styles.emptyChart}>
-              <Text style={styles.emptyText}>No capacity data yet</Text>
+              <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No capacity data yet</Text>
             </View>
           )}
         </View>
       </View>
 
       {/* Info */}
-      <Text style={styles.infoText}>
+      <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
         {routeSnapshots.length} departures recorded (last 7 days)
       </Text>
     </ScrollView>
@@ -288,7 +290,6 @@ export default function TrendsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   content: {
     padding: 16,
@@ -296,17 +297,11 @@ const styles = StyleSheet.create({
   },
   // Main stats card
   mainStatsCard: {
-    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 24,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   statBlock: {
     flex: 1,
@@ -315,12 +310,10 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 60,
-    backgroundColor: '#e0e0e0',
     marginHorizontal: 16,
   },
   statLabel: {
     fontSize: 14,
-    color: '#666',
     fontWeight: '500',
     marginBottom: 4,
   },
@@ -331,7 +324,6 @@ const styles = StyleSheet.create({
   },
   statUnit: {
     fontSize: 14,
-    color: '#999',
     marginTop: 2,
   },
   // Sections
@@ -341,7 +333,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
     marginBottom: 12,
   },
   // Transit times
@@ -351,16 +342,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   transitCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 12,
     width: '48%',
     minWidth: 150,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   transitHeader: {
     flexDirection: 'row',
@@ -370,37 +355,30 @@ const styles = StyleSheet.create({
   },
   transitRoute: {
     fontSize: 13,
-    color: '#666',
     fontWeight: '500',
   },
   transitTime: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1565C0',
   },
   transitCount: {
     fontSize: 12,
-    color: '#999',
     marginTop: 2,
   },
   emptyTransit: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 24,
     alignItems: 'center',
   },
   emptyText: {
-    color: '#999',
     marginTop: 8,
   },
   emptyHint: {
-    color: '#ccc',
     fontSize: 12,
     marginTop: 4,
   },
   // Charts
   chartCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
   },
@@ -415,7 +393,6 @@ const styles = StyleSheet.create({
   },
   // Footer
   infoText: {
-    color: '#999',
     textAlign: 'center',
     fontSize: 12,
     marginTop: 8,

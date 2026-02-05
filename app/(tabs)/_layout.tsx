@@ -1,21 +1,24 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { RouteSelector } from '../../src/components/RouteSelector';
+import { useTheme } from '../../src/context/ThemeContext';
 
 function TabHeader() {
   return <RouteSelector />;
 }
 
 export default function TabLayout() {
+  const { theme } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#1565C0',
-        tabBarInactiveTintColor: '#999',
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textMuted,
         tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopColor: '#e0e0e0',
+          backgroundColor: theme.colors.cardBg,
+          borderTopColor: theme.colors.border,
         },
       }}
     >
@@ -58,6 +61,15 @@ export default function TabLayout() {
           title: 'Timer',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="timer" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
           ),
         }}
       />

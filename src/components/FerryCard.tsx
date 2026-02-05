@@ -5,6 +5,7 @@ import { FerryProgressIndicator } from './FerryProgressIndicator';
 import { CapacityBar } from './CapacityBar';
 import { DepartureInfo } from '../hooks/useNextDepartures';
 import { formatTime, parseDate, getMinutesUntil } from '../utils/time';
+import { useTheme } from '../context/ThemeContext';
 
 interface FerryCardProps {
   departure: DepartureInfo;
@@ -15,6 +16,7 @@ export function FerryCard({
   departure,
   isMainCard = false,
 }: FerryCardProps) {
+  const { theme } = useTheme();
   const {
     vesselName,
     scheduledDeparture,
@@ -169,13 +171,13 @@ export function FerryCard({
 
   // Compact card for upcoming departures
   return (
-    <Card style={[styles.compactCard, isCancelled && styles.cancelledCard]}>
+    <Card style={[styles.compactCard, { backgroundColor: theme.colors.cardBg }, isCancelled && styles.cancelledCard]}>
       <Card.Content style={styles.compactContent}>
-        <Text variant="titleLarge" style={[styles.compactTime, isCancelled && styles.cancelledText]}>
+        <Text variant="titleLarge" style={[styles.compactTime, { color: theme.colors.primary }, isCancelled && styles.cancelledText]}>
           {formatTime(scheduledDeparture)}
         </Text>
         <View style={styles.compactInfo}>
-          <Text variant="bodyMedium" style={styles.compactVessel}>
+          <Text variant="bodyMedium" style={[styles.compactVessel, { color: theme.colors.text }]}>
             {vesselName}
           </Text>
           <Text variant="bodySmall" style={{ color: getStatusColor() }}>
@@ -183,7 +185,7 @@ export function FerryCard({
           </Text>
         </View>
         {driveUpSpaces !== null && !isCancelled && (
-          <Text variant="bodySmall" style={styles.compactSpaces}>
+          <Text variant="bodySmall" style={[styles.compactSpaces, { color: theme.colors.textMuted }]}>
             {driveUpSpaces} spots
           </Text>
         )}
@@ -272,7 +274,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   compactCard: {
-    backgroundColor: '#fff',
     marginBottom: 8,
   },
   compactContent: {
@@ -282,17 +283,12 @@ const styles = StyleSheet.create({
   },
   compactTime: {
     fontWeight: 'bold',
-    color: '#1565C0',
     minWidth: 80,
   },
   compactInfo: {
     flex: 1,
     marginLeft: 12,
   },
-  compactVessel: {
-    color: '#333',
-  },
-  compactSpaces: {
-    color: '#666',
-  },
+  compactVessel: {},
+  compactSpaces: {},
 });
