@@ -7,7 +7,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_APP_ENV": "dev"
+        "EXPO_PUBLIC_APP_ENV": "dev",
+        "EXPO_PUBLIC_API_URL": "https://yv8hqe5rgc.execute-api.us-west-2.amazonaws.com/prod"
       },
       "ios": {
         "simulator": false
@@ -17,7 +18,8 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_APP_ENV": "prod"
+        "EXPO_PUBLIC_APP_ENV": "prod",
+        "EXPO_PUBLIC_API_URL": "https://yv8hqe5rgc.execute-api.us-west-2.amazonaws.com/prod"
       },
       "ios": {
         "simulator": false
@@ -30,7 +32,8 @@
     "production": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_APP_ENV": "prod"
+        "EXPO_PUBLIC_APP_ENV": "prod",
+        "EXPO_PUBLIC_API_URL": "https://yv8hqe5rgc.execute-api.us-west-2.amazonaws.com/prod"
       },
       "ios": {
         "autoIncrement": true
@@ -39,15 +42,6 @@
         "buildType": "apk"
       },
       "channel": "production"
-    }
-  },
-  "submit": {
-    "production": {
-      "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
-      }
     }
   }
 }

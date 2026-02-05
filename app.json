@@ -15,7 +15,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ferrytracker.app"
+      "bundleIdentifier": "com.ferrytracker.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -35,6 +38,19 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "db0629f9-b086-40d2-8c1c-619c3c0e8e3e"
+      }
+    },
+    "owner": "rufbulldog",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/db0629f9-b086-40d2-8c1c-619c3c0e8e3e"
     }
   }
 }

@@ -34,12 +34,18 @@ interface VesselLocation {
   AtDock: boolean;
 }
 
+interface SpaceForArrivalTerminal {
+  TerminalID: number;
+  DriveUpSpaceCount: number | null;
+  MaxSpaceCount: number;
+}
+
 interface TerminalSailing {
-  DepartureTime: string;
+  Departure: string;  // Note: API uses "Departure" not "DepartureTime"
   VesselID: number;
   VesselName: string;
-  DriveUpSpaceCount: number;
   MaxSpaceCount: number;
+  SpaceForArrivalTerminals: SpaceForArrivalTerminal[];
 }
 
 interface TerminalSailingSpace {
@@ -91,6 +97,47 @@ async function getRecentDepartures(route: string, since: Date): Promise<Set<stri
   return keys;
 }
 
+// Get pending capacity data for a vessel loading at dock
+async function getPendingCapacity(route: string, vesselId: number, scheduledTime: string): Promise<number | null> {
+  const key = `pending#${route}`;
+  const result = await docClient.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    KeyConditionExpression: '#route = :route AND #ts = :ts',
+    ExpressionAttributeNames: {
+      '#route': 'route',
+      '#ts': 'timestamp',
+    },
+    ExpressionAttributeValues: {
+      ':route': key,
+      ':ts': `${vesselId}#${scheduledTime}`,
+    },
+  }));
+
+  if (result.Items && result.Items.length > 0) {
+    return result.Items[0].capacityPercent as number;
+  }
+  return null;
+}
+
+// Save capacity data for a vessel currently loading at dock
+async function savePendingCapacity(
+  route: string,
+  vesselId: number,
+  scheduledTime: string,
+  capacityPercent: number
+): Promise<void> {
+  const now = new Date();
+  await docClient.send(new PutCommand({
+    TableName: TABLE_NAME,
+    Item: {
+      route: `pending#${route}`,
+      timestamp: `${vesselId}#${scheduledTime}`,
+      capacityPercent,
+      ttl: Math.floor(now.getTime() / 1000) + (4 * 60 * 60), // 4 hour TTL
+    },
+  }));
+}
+
 export async function handler() {
   console.log('Starting ferry departure collection...');
 
@@ -116,7 +163,42 @@ export async function handler() {
       // Get recently saved departures to avoid duplicates
       const recentKeys = await getRecentDepartures(route.id, twoHoursAgo);
 
-      // Find vessels that have departed from this route
+      // PHASE 1: Track vessels currently loading at dock
+      const loadingVessels = vessels.filter(v =>
+        v.DepartingTerminalID === route.from &&
+        v.ArrivingTerminalID === route.to &&
+        v.AtDock === true &&
+        v.ScheduledDeparture !== null
+      );
+
+      for (const vessel of loadingVessels) {
+        const scheduledDep = parseWsfDate(vessel.ScheduledDeparture);
+        if (!scheduledDep) continue;
+
+        // Get current capacity from terminal space data
+        const sailings = spaceByTerminal.get(route.from) || [];
+        const sailing = sailings.find(s =>
+          s.VesselID === vessel.VesselID &&
+          parseWsfDate(s.Departure)?.getTime() === scheduledDep.getTime()
+        );
+
+        if (sailing && sailing.MaxSpaceCount > 0) {
+          // Get DriveUpSpaceCount from the SpaceForArrivalTerminals for our destination
+          const arrivalSpace = sailing.SpaceForArrivalTerminals?.find(
+            t => t.TerminalID === route.to
+          );
+          const driveUpCount = arrivalSpace?.DriveUpSpaceCount ?? 0;
+          const maxCount = arrivalSpace?.MaxSpaceCount ?? sailing.MaxSpaceCount;
+          const usedSpaces = maxCount - driveUpCount;
+          const capacityPercent = Math.round((usedSpaces / maxCount) * 100);
+
+          // Save/update pending capacity
+          await savePendingCapacity(route.id, vessel.VesselID, scheduledDep.toISOString(), capacityPercent);
+          console.log(`Tracking loading: ${vessel.VesselName} on ${route.id}, capacity: ${capacityPercent}%`);
+        }
+      }
+
+      // PHASE 2: Record vessels that have departed
       const departedVessels = vessels.filter(v =>
         v.DepartingTerminalID === route.from &&
         v.ArrivingTerminalID === route.to &&
@@ -142,17 +224,28 @@ export async function handler() {
         // Calculate delay
         const delayMinutes = Math.round((actualDep.getTime() - scheduledDep.getTime()) / 60000);
 
-        // Get capacity from terminal space data
-        const sailings = spaceByTerminal.get(route.from) || [];
-        const sailing = sailings.find(s =>
-          s.VesselID === vessel.VesselID &&
-          parseWsfDate(s.DepartureTime)?.getTime() === scheduledDep.getTime()
-        );
+        // Get capacity from pending data (captured while loading)
+        let capacityPercent = await getPendingCapacity(route.id, vessel.VesselID, scheduledDep.toISOString());
 
-        let capacityPercent = 0;
-        if (sailing && sailing.MaxSpaceCount > 0) {
-          const usedSpaces = sailing.MaxSpaceCount - (sailing.DriveUpSpaceCount || 0);
-          capacityPercent = Math.round((usedSpaces / sailing.MaxSpaceCount) * 100);
+        // Fallback: try terminal space data (usually won't have it after departure)
+        if (capacityPercent === null) {
+          const sailings = spaceByTerminal.get(route.from) || [];
+          const sailing = sailings.find(s =>
+            s.VesselID === vessel.VesselID &&
+            parseWsfDate(s.Departure)?.getTime() === scheduledDep.getTime()
+          );
+
+          if (sailing && sailing.MaxSpaceCount > 0) {
+            const arrivalSpace = sailing.SpaceForArrivalTerminals?.find(
+              t => t.TerminalID === route.to
+            );
+            const driveUpCount = arrivalSpace?.DriveUpSpaceCount ?? 0;
+            const maxCount = arrivalSpace?.MaxSpaceCount ?? sailing.MaxSpaceCount;
+            const usedSpaces = maxCount - driveUpCount;
+            capacityPercent = Math.round((usedSpaces / maxCount) * 100);
+          } else {
+            capacityPercent = 0;
+          }
         }
 
         // Save to DynamoDB
