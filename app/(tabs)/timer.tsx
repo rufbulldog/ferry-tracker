@@ -138,7 +138,7 @@ export default function TimerScreen() {
               {selectedRoute.shortLabel}
             </Text>
             {!timer.isRunning && (
-              <Ionicons name="chevron-down" size={16} color="rgba(255,255,255,0.8)" />
+              <Ionicons name="chevron-down" size={20} color="rgba(255,255,255,0.8)" />
             )}
           </TouchableOpacity>
 
@@ -153,7 +153,7 @@ export default function TimerScreen() {
                 >
                   <Ionicons
                     name="bicycle"
-                    size={18}
+                    size={24}
                     color={vehicle === 'bike' ? '#fff' : 'rgba(255,255,255,0.5)'}
                   />
                 </TouchableOpacity>
@@ -166,7 +166,7 @@ export default function TimerScreen() {
                 >
                   <Ionicons
                     name="car"
-                    size={18}
+                    size={24}
                     color={vehicle === 'car' ? '#fff' : 'rgba(255,255,255,0.5)'}
                   />
                 </TouchableOpacity>
