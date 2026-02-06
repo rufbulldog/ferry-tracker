@@ -314,48 +314,50 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
             )}
           </View>
 
-          {/* Center section: Departure time */}
+          {/* Center section: Capacity (primary) */}
           <View style={styles.centerSection}>
-            {hasDelay && (
-              <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
-                was {formatTime(scheduledDeparture)}
-              </Text>
+            {driveUpSpaces !== null && !isCancelled && status !== 'departed' && (
+              <>
+                <Text style={[styles.spotsNumber, fillPercent < 30 && { color: theme.colors.text, textShadowColor: 'rgba(255, 255, 255, 0.5)' }]}>
+                  {driveUpSpaces}
+                </Text>
+                <Text style={[styles.spotsLabel, fillPercent < 40 && { color: theme.colors.text, textShadowColor: 'transparent' }]}>
+                  spots open · {Math.round(fillPercent)}% full
+                </Text>
+              </>
             )}
-            <Text style={[styles.mainTime, { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
-              {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
-            </Text>
-            {status !== 'departed' && !isCancelled && (
-              <Text style={[styles.countdown, fillPercent < 40 && { color: theme.colors.primary, textShadowColor: 'transparent' }]}>
-                {hasDelay
-                  ? (minutesUntilEstimated > 0 ? `departs in ${minutesUntilEstimated} min` : 'departing now')
-                  : (minutesUntilDeparture > 0 ? `departs in ${minutesUntilDeparture} min` : 'departing now')
-                }
-              </Text>
-            )}
-            {status === 'departed' && (
-              <Text style={[styles.departedStatus, delayMinutes > 5 && styles.departedLate]}>
-                {delayMinutes > 0 ? `departed ${delayMinutes}m late` : 'departed on time'}
+            {(isCancelled || status === 'departed') && (
+              <Text style={[styles.departedStatus, isCancelled && styles.cancelledStatus, delayMinutes > 5 && styles.departedLate]}>
+                {isCancelled ? 'CANCELLED' : (delayMinutes > 0 ? `departed ${delayMinutes}m late` : 'departed on time')}
               </Text>
             )}
           </View>
 
-          {/* Bottom section: Capacity */}
+          {/* Bottom section: Departure time (secondary) */}
           <View style={styles.bottomSection}>
-            {driveUpSpaces !== null && !isCancelled && status !== 'departed' && (
-              <View style={styles.capacityRow}>
-                <Text style={[styles.capacityNumber, fillPercent < 30 && { color: theme.colors.text, textShadowColor: 'rgba(255, 255, 255, 0.5)' }]}>
-                  {driveUpSpaces}
+            <View style={[styles.timeContainer, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}15` }]}>
+              <Ionicons
+                name="time-outline"
+                size={18}
+                color={fillPercent < 40 ? theme.colors.primary : 'rgba(255,255,255,0.9)'}
+              />
+              {hasDelay && (
+                <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                  {formatTime(scheduledDeparture)}
                 </Text>
-                <View style={styles.capacityLabels}>
-                  <Text style={[styles.capacityMain, fillPercent < 30 && { color: theme.colors.text, textShadowColor: 'rgba(255, 255, 255, 0.5)' }]}>
-                    spots open
-                  </Text>
-                  <Text style={[styles.capacitySecondary, fillPercent < 40 && { color: theme.colors.textMuted }]}>
-                    {Math.round(fillPercent)}% full
-                  </Text>
-                </View>
-              </View>
-            )}
+              )}
+              <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
+                {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
+              </Text>
+              {status !== 'departed' && !isCancelled && (
+                <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                  · {hasDelay
+                    ? (minutesUntilEstimated > 0 ? `in ${minutesUntilEstimated}m` : 'now')
+                    : (minutesUntilDeparture > 0 ? `in ${minutesUntilDeparture}m` : 'now')
+                  }
+                </Text>
+              )}
+            </View>
             {(status === 'loading' || status === 'scheduled') && !showFerryTracker && !isCancelled && (
               <View style={[styles.statusIndicator, { backgroundColor: getStatusColor() }]}>
                 <Text style={styles.statusIndicatorText}>{getStatusText()}</Text>
@@ -594,101 +596,73 @@ const styles = StyleSheet.create({
     color: '#444',
     textShadowColor: 'transparent',
   },
-  // Center section - departure time
+  // Center section - capacity (primary)
   centerSection: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
   },
-  originalTime: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
-    textDecorationLine: 'line-through',
-    marginBottom: 2,
-  },
-  originalTimeDark: {
-    color: '#999',
-  },
-  mainTime: {
-    fontSize: 56,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    textShadowColor: 'rgba(255, 255, 255, 0.5)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-    letterSpacing: -1,
-  },
-  cancelledText: {
-    textDecorationLine: 'line-through',
-    color: '#999',
-  },
-  countdown: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-    marginTop: 4,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  countdownDark: {
-    color: '#1565C0',
-    textShadowColor: 'transparent',
-  },
-  departedStatus: {
-    fontSize: 14,
-    color: '#2E7D32',
-    fontWeight: '600',
-    marginTop: 4,
-  },
-  departedLate: {
-    color: '#F57C00',
-  },
-  // Bottom section - capacity
-  bottomSection: {
-    alignItems: 'center',
-  },
-  capacityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  capacityNumber: {
-    fontSize: 64,
+  spotsNumber: {
+    fontSize: 72,
     fontWeight: 'bold',
     color: '#fff',
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 4,
-    lineHeight: 68,
+    lineHeight: 76,
   },
-  capacityNumberDark: {
-    color: '#1a1a1a',
-    textShadowColor: 'rgba(255, 255, 255, 0.5)',
-  },
-  capacityLabels: {
-    alignItems: 'flex-start',
-  },
-  capacityMain: {
+  spotsLabel: {
     fontSize: 18,
     color: '#fff',
     fontWeight: '600',
+    marginTop: 4,
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
-  capacityMainDark: {
-    color: '#1a1a1a',
-    textShadowColor: 'rgba(255, 255, 255, 0.5)',
+  departedStatus: {
+    fontSize: 18,
+    color: '#2E7D32',
+    fontWeight: '600',
   },
-  capacitySecondary: {
+  cancelledStatus: {
+    color: '#C62828',
+  },
+  departedLate: {
+    color: '#F57C00',
+  },
+  cancelledText: {
+    textDecorationLine: 'line-through',
+    color: '#999',
+  },
+  // Bottom section - time (secondary)
+  bottomSection: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  originalTime: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    fontWeight: '500',
-    marginTop: 2,
+    color: 'rgba(255,255,255,0.6)',
+    textDecorationLine: 'line-through',
   },
-  capacitySecondaryDark: {
-    color: '#666',
+  timeText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  timeCountdown: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.85)',
+    fontWeight: '500',
   },
   statusIndicator: {
     paddingHorizontal: 16,
