@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { Route } from '../utils/constants';
 
 type RouteGroup = 'bainbridge' | 'kingston';
 type Direction = 'outbound' | 'inbound';
+type AnimationDirection = 'left' | 'right' | null;
 
 interface RouteContextValue {
   routeGroup: RouteGroup;
@@ -11,13 +12,31 @@ interface RouteContextValue {
   setDirection: (dir: Direction) => void;
   route: Route;
   directionLabels: { outbound: string; inbound: string };
+  animationDirection: AnimationDirection;
+  clearAnimation: () => void;
 }
 
 const RouteContext = createContext<RouteContextValue | null>(null);
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   const [routeGroup, setRouteGroup] = useState<RouteGroup>('bainbridge');
-  const [direction, setDirection] = useState<Direction>('outbound');
+  const [direction, setDirectionState] = useState<Direction>('outbound');
+  const [animationDirection, setAnimationDirection] = useState<AnimationDirection>(null);
+
+  const setDirection = useCallback((newDirection: Direction) => {
+    setDirectionState(prev => {
+      if (prev !== newDirection) {
+        // Set animation direction based on the change
+        // inbound = content slides in from right, outbound = content slides in from left
+        setAnimationDirection(newDirection === 'inbound' ? 'right' : 'left');
+      }
+      return newDirection;
+    });
+  }, []);
+
+  const clearAnimation = useCallback(() => {
+    setAnimationDirection(null);
+  }, []);
 
   // Map route group + direction to actual route
   const route: Route = routeGroup === 'bainbridge'
@@ -36,6 +55,8 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       setDirection,
       route,
       directionLabels,
+      animationDirection,
+      clearAnimation,
     }}>
       {children}
     </RouteContext.Provider>

@@ -1,12 +1,12 @@
-import { View, StyleSheet, ScrollView, useWindowDimensions, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, useWindowDimensions, Dimensions, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { LineChart, BarChart } from 'react-native-gifted-charts';
 import { Ionicons } from '@expo/vector-icons';
 import {
   useRecentTrends,
   getHourlyDelays,
-  getDepartureCapacities,
+  getHourlyCapacities,
   calculateAverageDelay,
   calculateAverageCapacity,
 } from '../../src/hooks/useDailyTrends';
@@ -18,7 +18,7 @@ import { useRoute } from '../../src/context/RouteContext';
 import { useTheme } from '../../src/context/ThemeContext';
 import { TransitRoute, Vehicle } from '../../src/types/storage';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Valid transit route/vehicle combinations per route group + direction
 type ValidCombination = { route: TransitRoute; vehicle: Vehicle; label: string };
@@ -58,8 +58,35 @@ function formatDuration(seconds: number): string {
 
 export default function TrendsScreen() {
   const { width: screenWidth } = useWindowDimensions();
-  const { route, routeGroup, direction } = useRoute();
+  const { route, routeGroup, direction, animationDirection, clearAnimation } = useRoute();
   const { theme } = useTheme();
+
+  // Slide animation for direction changes - subtle horizontal slide
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const opacityAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (animationDirection) {
+      // Start with a subtle offset and faded out
+      const startX = animationDirection === 'right' ? 60 : -60;
+      slideAnim.setValue(startX);
+      opacityAnim.setValue(0.3);
+
+      // Animate to center with full opacity
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+      ]).start(() => clearAnimation());
+    }
+  }, [animationDirection, clearAnimation, slideAnim, opacityAnim]);
 
   // Get recent trends for the selected route (last 7 days)
   const { data: routeSnapshots = [], isLoading } = useRecentTrends(route, 7);
@@ -91,7 +118,7 @@ export default function TrendsScreen() {
 
   // Prepare chart data
   const hourlyDelays = useMemo(() => getHourlyDelays(routeSnapshots), [routeSnapshots]);
-  const capacityData = useMemo(() => getDepartureCapacities(routeSnapshots), [routeSnapshots]);
+  const hourlyCapacities = useMemo(() => getHourlyCapacities(routeSnapshots), [routeSnapshots]);
 
   // Stats
   const avgDelay = calculateAverageDelay(routeSnapshots);
@@ -121,22 +148,33 @@ export default function TrendsScreen() {
     ? Math.max(20, Math.min(40, (chartWidth - chartPadding) / hourlyDelays.length))
     : 40;
 
-  const recentCapacityData = capacityData.slice(-8);
-  const barCount = Math.max(recentCapacityData.length, 1);
+  const barCount = Math.max(hourlyCapacities.length, 1);
   const barSpacing = Math.max(12, Math.min(24, (chartWidth - chartPadding) / barCount * 0.6));
-  const barWidth = Math.max(16, Math.min(24, barSpacing * 0.8));
+  const barWidth = Math.max(12, Math.min(20, barSpacing * 0.8));
 
-  const delayLineData = hourlyDelays.map(d => ({
-    value: d.delay,
-    label: `${d.hour}`,
-  }));
+  const delayLineData = hourlyDelays.map((d, index) => {
+    // Only show label every few data points to avoid clutter
+    const showLabel = index === 0 || index === hourlyDelays.length - 1 ||
+      (hourlyDelays.length > 8 ? index % Math.ceil(hourlyDelays.length / 6) === 0 : true);
+    // Format hour as "5a" or "10p"
+    const ampm = d.hour >= 12 ? 'p' : 'a';
+    const hour12 = d.hour === 0 ? 12 : d.hour > 12 ? d.hour - 12 : d.hour;
+    return {
+      value: d.delay,
+      label: showLabel ? `${hour12}${ampm}` : '',
+    };
+  });
 
-  const capacityBarData = recentCapacityData.map(d => {
-    const shortTime = d.time.replace(':00 AM', 'a').replace(':00 PM', 'p')
-      .replace(' AM', 'a').replace(' PM', 'p');
+  const capacityBarData = hourlyCapacities.map((d, index) => {
+    // Only show label every few data points to avoid clutter
+    const showLabel = index === 0 || index === hourlyCapacities.length - 1 ||
+      (hourlyCapacities.length > 8 ? index % Math.ceil(hourlyCapacities.length / 6) === 0 : true);
+    // Format hour as "5a" or "10p"
+    const ampm = d.hour >= 12 ? 'p' : 'a';
+    const hour12 = d.hour === 0 ? 12 : d.hour > 12 ? d.hour - 12 : d.hour;
     return {
       value: d.capacity,
-      label: shortTime,
+      label: showLabel ? `${hour12}${ampm}` : '',
       frontColor: d.capacity > 90 ? '#C62828' : d.capacity > 70 ? '#F57C00' : '#2E7D32',
     };
   });
@@ -144,7 +182,7 @@ export default function TrendsScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.pageBg }]} contentContainerStyle={styles.content}>
       {/* Main Stats Card */}
-      <View style={[styles.mainStatsCard, { backgroundColor: theme.colors.cardBg }]}>
+      <Animated.View style={[styles.mainStatsCard, { backgroundColor: theme.colors.cardBg, transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
         <View style={styles.statBlock}>
           <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>Avg Delay</Text>
           <Text style={[styles.statValue, { color: getDelayColor(avgDelay) }]}>
@@ -160,7 +198,7 @@ export default function TrendsScreen() {
           </Text>
           <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>% full</Text>
         </View>
-      </View>
+      </Animated.View>
 
       {/* Transit Times Section */}
       {transitAverages.length > 0 && (

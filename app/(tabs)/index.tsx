@@ -30,8 +30,35 @@ const TERMINAL_NAMES: Record<number, string> = {
 export default function DepartScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
-  const { route } = useRoute();
+  const { route, animationDirection, clearAnimation } = useRoute();
   const { theme } = useTheme();
+
+  // Simple slide + fade animation for direction changes
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const opacityAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (animationDirection) {
+      // Start with a subtle offset and faded out
+      const startX = animationDirection === 'right' ? 60 : -60;
+      slideAnim.setValue(startX);
+      opacityAnim.setValue(0.3);
+
+      // Animate to center with full opacity
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+      ]).start(() => clearAnimation());
+    }
+  }, [animationDirection, clearAnimation, slideAnim, opacityAnim]);
 
   const { data: departures, isLoading, error } = useNextDepartures(route);
   const { activeAlert } = useTerminalBulletins(route);
@@ -39,7 +66,7 @@ export default function DepartScreen() {
   // Get latest departure data from backend for capacity fallback
   const { latestDeparture, latestIncoming } = useLatestDeparturePair(route);
 
-  // Animation state
+  // Animation state for ferry departure transitions
   const [transitionPhase, setTransitionPhase] = useState<'idle' | 'animating'>('idle');
   const [departingCard, setDepartingCard] = useState<DepartureInfo | null>(null);
   const prevNextDepartureRef = useRef<DepartureInfo | null>(null);
@@ -72,7 +99,7 @@ export default function DepartScreen() {
   const nextDeparture = upcomingFerries[0];
   const upcomingDepartures = upcomingFerries.slice(1, 6);
 
-  // Animation sequence
+  // Animation sequence for ferry departure
   const runDepartureTransition = useCallback(() => {
     Animated.parallel([
       // Departing card shrinks and moves up
@@ -199,14 +226,22 @@ export default function DepartScreen() {
         <AlertBanner alert={activeAlert} />
       )}
 
-      {/* Cards container for animation */}
-      <View style={styles.cardsContainer}>
+      {/* Cards container with slide animation */}
+      <Animated.View
+        style={[
+          styles.cardsContainer,
+          { transform: [{ translateX: slideAnim }], opacity: opacityAnim },
+        ]}
+      >
         {/* Last departure card - hidden during animation */}
         {lastDeparture && transitionPhase === 'idle' && (
-          <LastDepartureCard
-            departure={lastDeparture}
-            backendCapacityPercent={latestDeparture?.capacityPercent}
-          />
+          <>
+            <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>DEPARTED</Text>
+            <LastDepartureCard
+              departure={lastDeparture}
+              backendCapacityPercent={latestDeparture?.capacityPercent}
+            />
+          </>
         )}
 
         {/* Departing card (animating out to LastDeparture position) */}
@@ -258,20 +293,23 @@ export default function DepartScreen() {
 
         {/* Normal main card when not animating */}
         {transitionPhase === 'idle' && nextDeparture && (
-          <MainDepartureCard
-            departure={nextDeparture}
-            terminalId={ROUTES[route].from}
-            terminalName={TERMINAL_NAMES[ROUTES[route].from] || 'Terminal'}
-            backendIncomingCapacity={latestIncoming?.capacityPercent}
-          />
+          <>
+            <Text style={[styles.sectionLabel, { color: theme.colors.textMuted }]}>NEXT SAILING</Text>
+            <MainDepartureCard
+              departure={nextDeparture}
+              terminalId={ROUTES[route].from}
+              terminalName={TERMINAL_NAMES[ROUTES[route].from] || 'Terminal'}
+              backendIncomingCapacity={latestIncoming?.capacityPercent}
+            />
+          </>
         )}
-      </View>
+      </Animated.View>
 
       {/* Upcoming departures - below the fold */}
       {upcomingDepartures.length > 0 && (
         <View style={styles.upcomingSection}>
-          <Text variant="titleMedium" style={[styles.upcomingTitle, { color: theme.colors.textMuted }]}>
-            UPCOMING DEPARTURES
+          <Text style={[styles.sectionLabel, { color: theme.colors.textMuted }]}>
+            UPCOMING
           </Text>
           {upcomingDepartures.map((departure) => (
             <FerryCard
@@ -317,12 +355,14 @@ const styles = StyleSheet.create({
     marginTop: LAST_DEPARTURE_HEIGHT + 12,
   },
   upcomingSection: {
-    marginTop: 24,
+    marginTop: 16,
   },
-  upcomingTitle: {
-    marginBottom: 12,
+  sectionLabel: {
+    fontSize: 11,
     fontWeight: '600',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    marginBottom: 6,
+    marginTop: 12,
   },
   errorCard: {
     marginBottom: 16,

@@ -37,8 +37,8 @@ export interface DepartureInfo {
 const TURNAROUND_MINUTES = 15;
 
 export function useNextDepartures(route: Route) {
-  const { data: allVessels, isLoading: vesselsLoading, error: vesselsError } = useVesselLocations();
-  const { data: terminals, isLoading: terminalsLoading, error: terminalsError } = useTerminalSailingSpace();
+  const { data: allVessels, isLoading: vesselsLoading, isFetching: vesselsFetching, error: vesselsError } = useVesselLocations();
+  const { data: terminals, isLoading: terminalsLoading, isFetching: terminalsFetching, error: terminalsError } = useTerminalSailingSpace();
 
   const departures = useMemo(() => {
     if (!terminals) return [];
@@ -327,6 +327,7 @@ export function useNextDepartures(route: Route) {
   return {
     data: departures,
     isLoading: vesselsLoading || terminalsLoading,
+    isFetching: vesselsFetching || terminalsFetching,
     error: vesselsError || terminalsError,
   };
 }

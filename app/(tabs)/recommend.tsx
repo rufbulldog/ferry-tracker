@@ -1,6 +1,6 @@
-import { View, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useRecommendation } from '../../src/hooks/useRecommendation';
 import { formatTime } from '../../src/utils/time';
@@ -8,13 +8,40 @@ import { Vehicle } from '../../src/types/storage';
 import { useRoute } from '../../src/context/RouteContext';
 import { useTheme } from '../../src/context/ThemeContext';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function RecommendScreen() {
   const [vehicle, setVehicle] = useState<Vehicle>('bike');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const { route } = useRoute();
+  const { route, animationDirection, clearAnimation } = useRoute();
   const { theme } = useTheme();
+
+  // Slide animation for direction changes - subtle horizontal slide
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const opacityAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (animationDirection) {
+      // Start with a subtle offset and faded out
+      const startX = animationDirection === 'right' ? 60 : -60;
+      slideAnim.setValue(startX);
+      opacityAnim.setValue(0.3);
+
+      // Animate to center with full opacity
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+      ]).start(() => clearAnimation());
+    }
+  }, [animationDirection, clearAnimation, slideAnim, opacityAnim]);
 
   // Update current time every minute
   useEffect(() => {
@@ -78,7 +105,7 @@ export default function RecommendScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.pageBg }]} contentContainerStyle={styles.content}>
       {/* Main Recommendation Card */}
-      <View style={[styles.mainCard, { backgroundColor: getCardColor() }]}>
+      <Animated.View style={[styles.mainCard, { backgroundColor: getCardColor(), transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
         {/* Vehicle toggle at top */}
         <View style={styles.vehicleRow}>
           <TouchableOpacity
@@ -154,7 +181,7 @@ export default function RecommendScreen() {
             )}
           </View>
         )}
-      </View>
+      </Animated.View>
 
       {/* Info Section */}
       <View style={[styles.infoSection, { backgroundColor: theme.colors.cardBg }]}>

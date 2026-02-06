@@ -252,7 +252,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
 
         {/* Content overlay */}
         <View style={styles.content}>
-          {/* Top section: Vessel info + ferry tracker */}
+          {/* Top section: Vessel info + time + ferry tracker */}
           <View style={styles.topSection}>
             {/* Vessel name row with camera button */}
             <View style={styles.vesselRow}>
@@ -273,6 +273,33 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                 </TouchableOpacity>
               )}
             </View>
+
+            {/* Departure time - show above ferry tracker when docked */}
+            {!showFerryTracker && (
+              <View style={[styles.timeContainer, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}15` }]}>
+                <Ionicons
+                  name="time-outline"
+                  size={18}
+                  color={fillPercent < 40 ? theme.colors.primary : 'rgba(255,255,255,0.9)'}
+                />
+                {hasDelay && (
+                  <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                    {formatTime(scheduledDeparture)}
+                  </Text>
+                )}
+                <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
+                  {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
+                </Text>
+                {status !== 'departed' && !isCancelled && (
+                  <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                    · {hasDelay
+                      ? (minutesUntilEstimated > 0 ? `in ${minutesUntilEstimated}m` : 'now')
+                      : (minutesUntilDeparture > 0 ? `in ${minutesUntilDeparture}m` : 'now')
+                    }
+                  </Text>
+                )}
+              </View>
+            )}
 
             {/* Ferry tracker - only when vessel is arriving */}
             {showFerryTracker && (
@@ -312,19 +339,51 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                 </Text>
               </View>
             )}
+
+            {/* Departure time - show below ferry tracker when in transit */}
+            {showFerryTracker && (
+              <View style={[styles.timeContainer, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}15` }]}>
+                <Ionicons
+                  name="time-outline"
+                  size={18}
+                  color={fillPercent < 40 ? theme.colors.primary : 'rgba(255,255,255,0.9)'}
+                />
+                {hasDelay && (
+                  <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                    {formatTime(scheduledDeparture)}
+                  </Text>
+                )}
+                <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
+                  {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
+                </Text>
+                {status !== 'departed' && !isCancelled && (
+                  <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                    · {hasDelay
+                      ? (minutesUntilEstimated > 0 ? `in ${minutesUntilEstimated}m` : 'now')
+                      : (minutesUntilDeparture > 0 ? `in ${minutesUntilDeparture}m` : 'now')
+                    }
+                  </Text>
+                )}
+              </View>
+            )}
           </View>
 
           {/* Center section: Capacity (primary) */}
           <View style={styles.centerSection}>
             {driveUpSpaces !== null && !isCancelled && status !== 'departed' && (
-              <>
+              <View style={styles.capacityRow}>
                 <Text style={[styles.spotsNumber, fillPercent < 30 && { color: theme.colors.text, textShadowColor: 'rgba(255, 255, 255, 0.5)' }]}>
                   {driveUpSpaces}
                 </Text>
-                <Text style={[styles.spotsLabel, fillPercent < 40 && { color: theme.colors.text, textShadowColor: 'transparent' }]}>
-                  spots open · {Math.round(fillPercent)}% full
-                </Text>
-              </>
+                <View style={styles.capacityLabels}>
+                  <Text style={[styles.spotsLabel, fillPercent < 30 && { color: theme.colors.text, textShadowColor: 'rgba(255, 255, 255, 0.5)' }]}>
+                    spots open
+                  </Text>
+                  <Text style={[styles.capacityPercent, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                    {Math.round(fillPercent)}% full
+                  </Text>
+                </View>
+              </View>
             )}
             {(isCancelled || status === 'departed') && (
               <Text style={[styles.departedStatus, isCancelled && styles.cancelledStatus, delayMinutes > 5 && styles.departedLate]}>
@@ -333,31 +392,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
             )}
           </View>
 
-          {/* Bottom section: Departure time (secondary) */}
+          {/* Bottom section: Status indicator */}
           <View style={styles.bottomSection}>
-            <View style={[styles.timeContainer, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}15` }]}>
-              <Ionicons
-                name="time-outline"
-                size={18}
-                color={fillPercent < 40 ? theme.colors.primary : 'rgba(255,255,255,0.9)'}
-              />
-              {hasDelay && (
-                <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
-                  {formatTime(scheduledDeparture)}
-                </Text>
-              )}
-              <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
-                {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
-              </Text>
-              {status !== 'departed' && !isCancelled && (
-                <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
-                  · {hasDelay
-                    ? (minutesUntilEstimated > 0 ? `in ${minutesUntilEstimated}m` : 'now')
-                    : (minutesUntilDeparture > 0 ? `in ${minutesUntilDeparture}m` : 'now')
-                  }
-                </Text>
-              )}
-            </View>
             {(status === 'loading' || status === 'scheduled') && !showFerryTracker && !isCancelled && (
               <View style={[styles.statusIndicator, { backgroundColor: getStatusColor() }]}>
                 <Text style={styles.statusIndicatorText}>{getStatusText()}</Text>
@@ -601,6 +637,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+    paddingTop: 20,
+  },
+  capacityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   spotsNumber: {
     fontSize: 72,
@@ -611,14 +653,22 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
     lineHeight: 76,
   },
+  capacityLabels: {
+    alignItems: 'flex-start',
+  },
   spotsLabel: {
-    fontSize: 18,
+    fontSize: 20,
     color: '#fff',
     fontWeight: '600',
-    marginTop: 4,
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
+  },
+  capacityPercent: {
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '500',
+    marginTop: 2,
   },
   departedStatus: {
     fontSize: 18,
@@ -635,14 +685,16 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
     color: '#999',
   },
-  // Bottom section - time (secondary)
+  // Bottom section - status indicator
   bottomSection: {
     alignItems: 'center',
-    gap: 8,
+    minHeight: 36,
   },
+  // Time container (now in top section)
   timeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'flex-start',
     gap: 6,
     backgroundColor: 'rgba(0,0,0,0.2)',
     paddingHorizontal: 14,

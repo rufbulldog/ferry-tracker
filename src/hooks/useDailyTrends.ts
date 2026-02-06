@@ -76,7 +76,8 @@ export function getDepartureCapacities(snapshots: DepartureSnapshot[]): { time: 
 export function getHourlyCapacities(snapshots: DepartureSnapshot[]): { hour: number; capacity: number }[] {
   const hourlyData: Map<number, number[]> = new Map();
 
-  snapshots.forEach(snapshot => {
+  // Only include snapshots with valid capacity data (exclude zeros which mean no data)
+  snapshots.filter(s => s.capacityPercent > 0).forEach(snapshot => {
     const hour = new Date(snapshot.scheduledTime).getHours();
     if (!hourlyData.has(hour)) {
       hourlyData.set(hour, []);
