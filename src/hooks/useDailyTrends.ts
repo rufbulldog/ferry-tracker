@@ -93,3 +93,31 @@ export function getHourlyCapacities(snapshots: DepartureSnapshot[]): { hour: num
 
   return result.sort((a, b) => a.hour - b.hour);
 }
+
+// Get daily breakdown of delays for week/month charts
+export function getDailyDelays(snapshots: DepartureSnapshot[]): { date: string; delay: number; dayOfWeek: number }[] {
+  const dailyData: Map<string, number[]> = new Map();
+
+  // Filter out zero delays (no data) and group by date
+  snapshots.filter(s => s.delayMinutes !== 0 || s.capacityPercent > 0).forEach(snapshot => {
+    const date = new Date(snapshot.scheduledTime);
+    const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    if (!dailyData.has(dateKey)) {
+      dailyData.set(dateKey, []);
+    }
+    dailyData.get(dateKey)!.push(snapshot.delayMinutes);
+  });
+
+  const result: { date: string; delay: number; dayOfWeek: number }[] = [];
+  dailyData.forEach((delays, dateKey) => {
+    const avg = delays.reduce((a, b) => a + b, 0) / delays.length;
+    const date = new Date(dateKey);
+    result.push({
+      date: dateKey,
+      delay: Math.round(avg),
+      dayOfWeek: date.getDay()
+    });
+  });
+
+  return result.sort((a, b) => a.date.localeCompare(b.date));
+}

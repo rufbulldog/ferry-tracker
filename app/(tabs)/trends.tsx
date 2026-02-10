@@ -4,8 +4,10 @@ import { useMemo, useRef, useEffect } from 'react';
 import { LineChart, BarChart } from 'react-native-gifted-charts';
 import { Ionicons } from '@expo/vector-icons';
 import {
+  useTodayTrends,
   useRecentTrends,
   getHourlyDelays,
+  getDailyDelays,
   getHourlyCapacities,
   calculateAverageDelay,
   calculateAverageCapacity,
@@ -88,8 +90,10 @@ export default function TrendsScreen() {
     }
   }, [animationDirection, clearAnimation, slideAnim, opacityAnim]);
 
-  // Get recent trends for the selected route (last 7 days)
-  const { data: routeSnapshots = [], isLoading } = useRecentTrends(route, 7);
+  // Get trends for different time periods
+  const { data: todaySnapshots = [] } = useTodayTrends(route);
+  const { data: weekSnapshots = [], isLoading } = useRecentTrends(route, 7);
+  const { data: monthSnapshots = [] } = useRecentTrends(route, 30);
 
   // Get transit time averages
   const { averages: allTransitAverages } = useAllTransitAverages();
@@ -116,13 +120,15 @@ export default function TrendsScreen() {
       });
   }, [allTransitAverages, validCombinations]);
 
-  // Prepare chart data
-  const hourlyDelays = useMemo(() => getHourlyDelays(routeSnapshots), [routeSnapshots]);
-  const hourlyCapacities = useMemo(() => getHourlyCapacities(routeSnapshots), [routeSnapshots]);
+  // Prepare chart data for each time period
+  const todayDelays = useMemo(() => getHourlyDelays(todaySnapshots), [todaySnapshots]);
+  const weekDelays = useMemo(() => getDailyDelays(weekSnapshots), [weekSnapshots]);
+  const monthDelays = useMemo(() => getDailyDelays(monthSnapshots), [monthSnapshots]);
+  const hourlyCapacities = useMemo(() => getHourlyCapacities(weekSnapshots), [weekSnapshots]);
 
-  // Stats
-  const avgDelay = calculateAverageDelay(routeSnapshots);
-  const avgCapacity = calculateAverageCapacity(routeSnapshots);
+  // Stats (based on week data for consistency)
+  const avgDelay = calculateAverageDelay(weekSnapshots);
+  const avgCapacity = calculateAverageCapacity(weekSnapshots);
 
   // Color for avg delay
   const getDelayColor = (delay: number) => {
@@ -144,26 +150,52 @@ export default function TrendsScreen() {
   const chartWidth = screenWidth - 64;
   const chartPadding = 40;
 
-  const lineSpacing = hourlyDelays.length > 1
-    ? Math.max(20, Math.min(40, (chartWidth - chartPadding) / hourlyDelays.length))
-    : 40;
+  // Helper to calculate line spacing
+  const getLineSpacing = (dataLength: number) =>
+    dataLength > 1 ? Math.max(20, Math.min(40, (chartWidth - chartPadding) / dataLength)) : 40;
 
   const barCount = Math.max(hourlyCapacities.length, 1);
   const barSpacing = Math.max(12, Math.min(24, (chartWidth - chartPadding) / barCount * 0.6));
   const barWidth = Math.max(12, Math.min(20, barSpacing * 0.8));
 
-  const delayLineData = hourlyDelays.map((d, index) => {
-    // Only show label every few data points to avoid clutter
-    const showLabel = index === 0 || index === hourlyDelays.length - 1 ||
-      (hourlyDelays.length > 8 ? index % Math.ceil(hourlyDelays.length / 6) === 0 : true);
-    // Format hour as "5a" or "10p"
-    const ampm = d.hour >= 12 ? 'p' : 'a';
-    const hour12 = d.hour === 0 ? 12 : d.hour > 12 ? d.hour - 12 : d.hour;
-    return {
+  // Format hourly delay data (for today chart)
+  const formatHourlyData = (delays: { hour: number; delay: number }[]) =>
+    delays.map((d, index) => {
+      const showLabel = index === 0 || index === delays.length - 1 ||
+        (delays.length > 8 ? index % Math.ceil(delays.length / 6) === 0 : true);
+      const ampm = d.hour >= 12 ? 'p' : 'a';
+      const hour12 = d.hour === 0 ? 12 : d.hour > 12 ? d.hour - 12 : d.hour;
+      return {
+        value: d.delay,
+        label: showLabel ? `${hour12}${ampm}` : '',
+      };
+    });
+
+  // Format daily delay data for week chart (show day names)
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const formatWeekData = (delays: { date: string; delay: number; dayOfWeek: number }[]) =>
+    delays.map((d) => ({
       value: d.delay,
-      label: showLabel ? `${hour12}${ampm}` : '',
-    };
-  });
+      label: dayNames[d.dayOfWeek],
+    }));
+
+  // Format daily delay data for month chart (show spaced dates)
+  const formatMonthData = (delays: { date: string; delay: number; dayOfWeek: number }[]) =>
+    delays.map((d, index) => {
+      // Show label every ~5 days to avoid clutter
+      const showLabel = index === 0 || index === delays.length - 1 ||
+        (delays.length > 10 ? index % Math.ceil(delays.length / 6) === 0 : true);
+      const date = new Date(d.date);
+      const dayNum = date.getDate();
+      return {
+        value: d.delay,
+        label: showLabel ? `${dayNum}` : '',
+      };
+    });
+
+  const todayLineData = formatHourlyData(todayDelays);
+  const weekLineData = formatWeekData(weekDelays);
+  const monthLineData = formatMonthData(monthDelays);
 
   const capacityBarData = hourlyCapacities.map((d, index) => {
     // Only show label every few data points to avoid clutter
@@ -240,17 +272,20 @@ export default function TrendsScreen() {
         </View>
       )}
 
-      {/* Charts Section */}
+      {/* Departure Accuracy Charts */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Departure Accuracy</Text>
-        <View style={[styles.chartCard, { backgroundColor: theme.colors.cardBg }]}>
-          {delayLineData.length > 0 ? (
+
+        {/* Today */}
+        <Text style={[styles.chartSubtitle, { color: theme.colors.textMuted }]}>Today</Text>
+        <View style={[styles.chartCard, { backgroundColor: theme.colors.cardBg, marginBottom: 12 }]}>
+          {todayLineData.length > 0 ? (
             <View style={styles.chartContainer}>
               <LineChart
-                data={delayLineData}
+                data={todayLineData}
                 width={chartWidth - chartPadding}
-                height={140}
-                spacing={lineSpacing}
+                height={120}
+                spacing={getLineSpacing(todayDelays.length)}
                 initialSpacing={10}
                 endSpacing={10}
                 color={theme.colors.primary}
@@ -277,7 +312,89 @@ export default function TrendsScreen() {
             </View>
           ) : (
             <View style={styles.emptyChart}>
-              <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No departure data yet</Text>
+              <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No data for today</Text>
+            </View>
+          )}
+        </View>
+
+        {/* This Week */}
+        <Text style={[styles.chartSubtitle, { color: theme.colors.textMuted }]}>This Week</Text>
+        <View style={[styles.chartCard, { backgroundColor: theme.colors.cardBg, marginBottom: 12 }]}>
+          {weekLineData.length > 0 ? (
+            <View style={styles.chartContainer}>
+              <LineChart
+                data={weekLineData}
+                width={chartWidth - chartPadding}
+                height={120}
+                spacing={getLineSpacing(weekDelays.length)}
+                initialSpacing={10}
+                endSpacing={10}
+                color={theme.colors.primary}
+                thickness={2}
+                hideDataPoints={false}
+                dataPointsColor={theme.colors.primary}
+                dataPointsRadius={4}
+                xAxisLabelTextStyle={{ color: theme.colors.text, fontSize: 11 }}
+                yAxisTextStyle={{ color: theme.colors.text, fontSize: 11 }}
+                xAxisColor={theme.colors.textMuted}
+                yAxisColor={theme.colors.textMuted}
+                yAxisLabelWidth={30}
+                yAxisOffset={-5}
+                rulesColor={theme.colors.border}
+                rulesType="solid"
+                showReferenceLine1
+                referenceLine1Position={0}
+                referenceLine1Config={{
+                  color: theme.colors.success,
+                  dashWidth: 4,
+                  dashGap: 4,
+                }}
+              />
+            </View>
+          ) : (
+            <View style={styles.emptyChart}>
+              <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No data for this week</Text>
+            </View>
+          )}
+        </View>
+
+        {/* This Month */}
+        <Text style={[styles.chartSubtitle, { color: theme.colors.textMuted }]}>This Month</Text>
+        <View style={[styles.chartCard, { backgroundColor: theme.colors.cardBg }]}>
+          {monthLineData.length > 0 ? (
+            <View style={styles.chartContainer}>
+              <LineChart
+                data={monthLineData}
+                width={chartWidth - chartPadding}
+                height={120}
+                spacing={getLineSpacing(monthDelays.length)}
+                initialSpacing={10}
+                endSpacing={10}
+                color={theme.colors.primary}
+                thickness={2}
+                hideDataPoints={false}
+                dataPointsColor={theme.colors.primary}
+                dataPointsRadius={4}
+                xAxisLabelTextStyle={{ color: theme.colors.text, fontSize: 11 }}
+                yAxisTextStyle={{ color: theme.colors.text, fontSize: 11 }}
+                xAxisColor={theme.colors.textMuted}
+                yAxisColor={theme.colors.textMuted}
+                yAxisLabelWidth={30}
+                yAxisOffset={-5}
+                rulesColor={theme.colors.border}
+                rulesType="solid"
+                showReferenceLine1
+                referenceLine1Position={0}
+                referenceLine1Config={{
+                  color: theme.colors.success,
+                  dashWidth: 4,
+                  dashGap: 4,
+                }}
+              />
+            </View>
+          ) : (
+            <View style={styles.emptyChart}>
+              <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No data for this month</Text>
             </View>
           )}
         </View>
@@ -319,7 +436,7 @@ export default function TrendsScreen() {
 
       {/* Info */}
       <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
-        {routeSnapshots.length} departures recorded (last 7 days)
+        {monthSnapshots.length} departures recorded (last 30 days)
       </Text>
     </ScrollView>
   );
@@ -372,6 +489,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 12,
+  },
+  chartSubtitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    marginBottom: 8,
   },
   // Transit times
   transitGrid: {
