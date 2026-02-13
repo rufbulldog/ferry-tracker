@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, ReactNode } from 'react';
 import { Route } from '../utils/constants';
 
 type RouteGroup = 'bainbridge' | 'kingston';
@@ -14,24 +14,37 @@ interface RouteContextValue {
   directionLabels: { outbound: string; inbound: string };
   animationDirection: AnimationDirection;
   clearAnimation: () => void;
+  setLocationDefaults: (group: RouteGroup, dir: Direction) => void;
 }
 
 const RouteContext = createContext<RouteContextValue | null>(null);
 
 export function RouteProvider({ children }: { children: ReactNode }) {
-  const [routeGroup, setRouteGroup] = useState<RouteGroup>('bainbridge');
+  const [routeGroup, setRouteGroupState] = useState<RouteGroup>('bainbridge');
   const [direction, setDirectionState] = useState<Direction>('outbound');
   const [animationDirection, setAnimationDirection] = useState<AnimationDirection>(null);
+  const userHasSelected = useRef(false);
+
+  const setRouteGroup = useCallback((group: RouteGroup) => {
+    userHasSelected.current = true;
+    setRouteGroupState(group);
+  }, []);
 
   const setDirection = useCallback((newDirection: Direction) => {
+    userHasSelected.current = true;
     setDirectionState(prev => {
       if (prev !== newDirection) {
-        // Set animation direction based on the change
-        // inbound = content slides in from right, outbound = content slides in from left
         setAnimationDirection(newDirection === 'inbound' ? 'right' : 'left');
       }
       return newDirection;
     });
+  }, []);
+
+  // Set defaults from GPS — only applies if user hasn't manually changed the selection
+  const setLocationDefaults = useCallback((group: RouteGroup, dir: Direction) => {
+    if (userHasSelected.current) return;
+    setRouteGroupState(group);
+    setDirectionState(dir);
   }, []);
 
   const clearAnimation = useCallback(() => {
@@ -57,6 +70,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       directionLabels,
       animationDirection,
       clearAnimation,
+      setLocationDefaults,
     }}>
       {children}
     </RouteContext.Provider>

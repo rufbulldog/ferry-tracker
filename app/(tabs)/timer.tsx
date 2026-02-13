@@ -1,11 +1,13 @@
 import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, Pressable, Dimensions } from 'react-native';
 import { Text, IconButton } from 'react-native-paper';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTimer } from '../../src/hooks/useTimer';
 import { useRecentTransitRecords, useSaveTransitRecord, useDeleteTransitRecord } from '../../src/hooks/useTransitRecords';
 import { useTheme } from '../../src/context/ThemeContext';
+import { useUserLocation } from '../../src/hooks/useUserLocation';
+import { findNearestLocation, getTimerRouteDefault } from '../../src/utils/locations';
 import { TransitRoute, Vehicle } from '../../src/types/storage';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -72,6 +74,8 @@ export default function TimerScreen() {
   const [vehicle, setVehicle] = useState<Vehicle>('bike');
   const [modalVisible, setModalVisible] = useState(false);
   const { theme } = useTheme();
+  const { location } = useUserLocation();
+  const gpsApplied = useRef(false);
 
   const timer = useTimer();
   const { data: recentRecords, isLoading: recordsLoading } = useRecentTransitRecords(10);
@@ -79,6 +83,19 @@ export default function TimerScreen() {
   const deleteRecord = useDeleteTransitRecord();
 
   const selectedRoute = TIMER_ROUTES.find(r => r.id === selectedRouteId) || TIMER_ROUTES[0];
+
+  // Auto-select timer route based on GPS (only once, before user interacts)
+  useEffect(() => {
+    if (gpsApplied.current || !location) return;
+    const nearest = findNearestLocation(location.latitude, location.longitude);
+    if (nearest && nearest.distanceMeters < 5000) {
+      const defaultRoute = getTimerRouteDefault(nearest.location.id);
+      if (defaultRoute && TIMER_ROUTES.some(r => r.id === defaultRoute)) {
+        setSelectedRouteId(defaultRoute as TimerRoute);
+        gpsApplied.current = true;
+      }
+    }
+  }, [location]);
 
   // Force valid vehicle when route changes
   useEffect(() => {

@@ -17,7 +17,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.ferrytracker.app",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Ferry Tracker uses your location to auto-select the nearest ferry route and commute leg."
       }
     },
     "android": {
@@ -34,7 +35,13 @@
       "output": "single"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Ferry Tracker uses your location to auto-select the nearest ferry route and commute leg."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
