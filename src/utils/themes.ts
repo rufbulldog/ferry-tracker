@@ -1,20 +1,7 @@
-/**
- * Theme definitions for Ferry App
- * Matches themes from kamilche-cabin native app
- */
-
 export type ThemeName =
-  | 'default'
-  | 'teal'
-  | 'slate'
-  | 'purple'
-  | 'rose'
-  | 'amber'
   | 'beavers'
-  | 'cougars'
   | 'blazers'
   | 'blazers-black'
-  | 'lutes'
   | 'storm'
   | 'storm-green'
   | 'seahawks'
@@ -49,144 +36,6 @@ export interface Theme {
 }
 
 export const themes: Record<ThemeName, Theme> = {
-  default: {
-    name: 'default',
-    label: 'Default (Blue)',
-    colors: {
-      primary: '#1762a8',
-      primaryHover: '#135288',
-      primary500: '#2b6cb0',
-      pageBg: '#1A202C',
-      cardBg: '#2D3748',
-      inputBg: '#394867',
-      hoverBg: '#445577',
-      text: '#E6EEF8',
-      textMuted: '#9AA6B8',
-      pillText: '#2b6cb0',
-      border: '#2b6cb0',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.04)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
-    },
-  },
-
-  teal: {
-    name: 'teal',
-    label: 'Teal',
-    colors: {
-      primary: '#0ea5a4',
-      primaryHover: '#0b8f89',
-      primary500: '#14b8a6',
-      pageBg: '#071829',
-      cardBg: '#0f2b33',
-      inputBg: '#153a43',
-      hoverBg: '#1d4a55',
-      text: '#E6FFF9',
-      textMuted: '#9FD7CF',
-      pillText: '#14b8a6',
-      border: '#14b8a6',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.04)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
-    },
-  },
-
-  slate: {
-    name: 'slate',
-    label: 'Slate',
-    colors: {
-      primary: '#334155',
-      primaryHover: '#24303a',
-      primary500: '#2b4a6f',
-      pageBg: '#0f1724',
-      cardBg: '#1f2937',
-      inputBg: '#111827',
-      hoverBg: '#2d3a4d',
-      text: '#E6EEF8',
-      textMuted: '#98a0ab',
-      pillText: '#2b4a6f',
-      border: '#2b4a6f',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.04)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
-    },
-  },
-
-  purple: {
-    name: 'purple',
-    label: 'Purple',
-    colors: {
-      primary: '#7C3AED',
-      primaryHover: '#6D28D9',
-      primary500: '#8B5CF6',
-      pageBg: '#13111C',
-      cardBg: '#1E1B2E',
-      inputBg: '#2A2640',
-      hoverBg: '#363152',
-      text: '#F3F0FF',
-      textMuted: '#A8A3C0',
-      pillText: '#8B5CF6',
-      border: '#8B5CF6',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.04)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
-    },
-  },
-
-  rose: {
-    name: 'rose',
-    label: 'Rose',
-    colors: {
-      primary: '#E11D48',
-      primaryHover: '#BE123C',
-      primary500: '#F43F5E',
-      pageBg: '#1A0F14',
-      cardBg: '#2D1F26',
-      inputBg: '#3D2A33',
-      hoverBg: '#4D3640',
-      text: '#FFF1F3',
-      textMuted: '#C9A8B0',
-      pillText: '#F43F5E',
-      border: '#F43F5E',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.04)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
-    },
-  },
-
-  amber: {
-    name: 'amber',
-    label: 'Amber',
-    colors: {
-      primary: '#D97706',
-      primaryHover: '#B45309',
-      primary500: '#F59E0B',
-      pageBg: '#1A1408',
-      cardBg: '#2D2410',
-      inputBg: '#3D3118',
-      hoverBg: '#4D3E20',
-      text: '#FFFBEB',
-      textMuted: '#C9B88A',
-      pillText: '#F59E0B',
-      border: '#F59E0B',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.04)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
-    },
-  },
-
   beavers: {
     name: 'beavers',
     label: 'Beavers',
@@ -203,30 +52,6 @@ export const themes: Record<ThemeName, Theme> = {
       textMuted: '#B8BDC4',
       pillText: '#D24A0B',
       border: '#D24A0B',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.05)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
-    },
-  },
-
-  cougars: {
-    name: 'cougars',
-    label: 'Cougars',
-    logoUrl: 'https://a.espncdn.com/i/teamlogos/ncaa/500/265.png',
-    colors: {
-      primary: '#981E32',
-      primaryHover: '#7a1829',
-      primary500: '#8F2237',
-      pageBg: '#14171a',
-      cardBg: '#1e2428',
-      inputBg: '#273036',
-      hoverBg: '#333d44',
-      text: '#F5F7F9',
-      textMuted: '#A4AEB7',
-      pillText: '#8F2237',
-      border: '#8F2237',
       borderSubtleDark: 'rgba(255, 255, 255, 0.05)',
       success: '#38A169',
       error: '#E53E3E',
@@ -275,30 +100,6 @@ export const themes: Record<ThemeName, Theme> = {
       textMuted: '#B6BFC7',
       pillText: '#E03A3E',
       border: '#E03A3E',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.05)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
-    },
-  },
-
-  lutes: {
-    name: 'lutes',
-    label: 'Lutes',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/en/4/43/PLU_Lutes_logo.png',
-    colors: {
-      primary: '#FBBF16',
-      primaryHover: '#D9A514',
-      primary500: '#E6B015',
-      pageBg: '#0f0f10',
-      cardBg: '#1b1b1d',
-      inputBg: '#242427',
-      hoverBg: '#2f2f33',
-      text: '#FFFFFF',
-      textMuted: '#B8BDC4',
-      pillText: '#E6B015',
-      border: '#E6B015',
       borderSubtleDark: 'rgba(255, 255, 255, 0.05)',
       success: '#38A169',
       error: '#E53E3E',
@@ -500,41 +301,16 @@ export const themes: Record<ThemeName, Theme> = {
   },
 };
 
-export const DEFAULT_THEME: ThemeName = 'default';
+export const DEFAULT_THEME: ThemeName = 'seahawks';
 
 export function getTheme(name: ThemeName): Theme {
   return themes[name] || themes[DEFAULT_THEME];
 }
 
 export const themeNames: ThemeName[] = [
-  'default',
-  'teal',
-  'slate',
-  'purple',
-  'rose',
-  'amber',
   'beavers',
-  'cougars',
   'blazers',
   'blazers-black',
-  'lutes',
-  'storm',
-  'storm-green',
-  'seahawks',
-  'seahawks-gray',
-  'sounders',
-  'sounders-aqua',
-  'mariners',
-  'mariners-navy',
-];
-
-export const basicThemes: ThemeName[] = ['default', 'teal', 'slate', 'purple', 'rose', 'amber'];
-export const teamThemes: ThemeName[] = [
-  'beavers',
-  'cougars',
-  'blazers',
-  'blazers-black',
-  'lutes',
   'storm',
   'storm-green',
   'seahawks',
