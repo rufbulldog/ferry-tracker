@@ -6,13 +6,10 @@ import {
   DeleteCommand,
   ScanCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
-const snsClient = new SNSClient({});
-
 const DEPARTURES_TABLE = process.env.DEPARTURES_TABLE!;
 const TRANSIT_TABLE = process.env.TRANSIT_TABLE!;
 
@@ -153,23 +150,6 @@ async function deleteTransitRecord(id: string): Promise<APIGatewayProxyResult> {
   return response(200, { deleted: id });
 }
 
-// POST /send-eta
-async function sendEtaSms(body: string): Promise<APIGatewayProxyResult> {
-  const data = JSON.parse(body);
-  const { phoneNumber, message } = data;
-
-  if (!phoneNumber || !message) {
-    return response(400, { error: 'phoneNumber and message are required' });
-  }
-
-  await snsClient.send(new PublishCommand({
-    PhoneNumber: phoneNumber,
-    Message: message,
-  }));
-
-  return response(200, { sent: true, phoneNumber, message });
-}
-
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Request:', event.httpMethod, event.path, event.queryStringParameters);
 
@@ -219,12 +199,6 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       const id = path.split('/').pop();
       if (!id) return response(400, { error: 'id required' });
       return deleteTransitRecord(id);
-    }
-
-    // Send ETA SMS endpoint
-    if (path === '/send-eta' && method === 'POST') {
-      if (!event.body) return response(400, { error: 'body required' });
-      return sendEtaSms(event.body);
     }
 
     return response(404, { error: 'Not found' });

@@ -6,7 +6,6 @@ import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
 
 export class InfraStack extends cdk.Stack {
@@ -78,12 +77,6 @@ export class InfraStack extends cdk.Stack {
     departuresTable.grantReadData(apiFn);
     transitTable.grantReadWriteData(apiFn);
 
-    // Grant SNS SMS publish permission to API Lambda
-    apiFn.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sns:Publish'],
-      resources: ['*'],
-    }));
-
     // WSF Proxy Lambda - forwards requests to WSF API (for web CORS)
     const proxyFn = new nodejs.NodejsFunction(this, 'ProxyFunction', {
       functionName: 'ferry-wsf-proxy',
@@ -126,10 +119,6 @@ export class InfraStack extends cdk.Stack {
     // /transit-records/{id}
     const transitRecord = transitRecords.addResource('{id}');
     transitRecord.addMethod('DELETE', lambdaIntegration);
-
-    // /send-eta
-    const sendEta = api.root.addResource('send-eta');
-    sendEta.addMethod('POST', lambdaIntegration);
 
     // WSF Proxy routes
     const proxyIntegration = new apigateway.LambdaIntegration(proxyFn);
