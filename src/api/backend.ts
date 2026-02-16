@@ -74,6 +74,14 @@ export async function getRecentTrends(route: string, days: number = 7): Promise<
   return response.data.departures;
 }
 
+// Send ETA SMS via backend SNS
+export async function sendEtaSms(phoneNumber: string, message: string): Promise<void> {
+  if (!API_URL) {
+    throw new Error('API_URL not configured');
+  }
+  await api.post('/send-eta', { phoneNumber, message });
+}
+
 // Get the most recent departure(s) for real-time display
 export async function getLatestDepartures(route: string, limit: number = 1): Promise<DepartureSnapshot[]> {
   if (!API_URL) {

@@ -170,6 +170,14 @@ export default function RecommendScreen() {
                 )}
               </Text>
             </View>
+            {recommendation.nextDeparture.delayMinutes > 0 && (
+              <View style={styles.delayRow}>
+                <Ionicons name="warning" size={13} color="#ffcdd2" />
+                <Text style={styles.delayText}>
+                  ~{recommendation.nextDeparture.delayMinutes} min behind schedule
+                </Text>
+              </View>
+            )}
             {recommendation.capacityPercent !== null && (
               <Text style={[
                 styles.capacityText,
@@ -307,6 +315,16 @@ const styles = StyleSheet.create({
   },
   departureTextDark: {
     color: '#666',
+  },
+  delayRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  delayText: {
+    fontSize: 13,
+    color: '#ffcdd2',
+    fontWeight: '600',
   },
   capacityText: {
     fontSize: 13,
