@@ -1,7 +1,8 @@
 export type ThemeName =
   | 'beavers'
+  | 'beavers-white'
   | 'blazers'
-  | 'blazers-black'
+  | 'blazers-white'
   | 'storm'
   | 'storm-green'
   | 'seahawks'
@@ -9,7 +10,9 @@ export type ThemeName =
   | 'sounders'
   | 'sounders-aqua'
   | 'mariners'
-  | 'mariners-navy';
+  | 'mariners-navy'
+  | 'kraken'
+  | 'kraken-navy';
 
 export interface Theme {
   name: ThemeName;
@@ -60,6 +63,30 @@ export const themes: Record<ThemeName, Theme> = {
     },
   },
 
+  'beavers-white': {
+    name: 'beavers-white',
+    label: 'Beavers White',
+    logoUrl: 'https://a.espncdn.com/i/teamlogos/ncaa/500/204.png',
+    colors: {
+      primary: '#DC4405',
+      primaryHover: '#b53905',
+      primary500: '#D24A0B',
+      pageBg: '#F2F2F2',
+      cardBg: '#FFFFFF',
+      inputBg: '#F0F0F0',
+      hoverBg: '#E8E8E8',
+      text: '#1A1A1A',
+      textMuted: '#666666',
+      pillText: '#DC4405',
+      border: '#DC4405',
+      borderSubtleDark: 'rgba(0, 0, 0, 0.06)',
+      success: '#2E7D32',
+      error: '#C62828',
+      warning: '#E65100',
+      info: '#1565C0',
+    },
+  },
+
   blazers: {
     name: 'blazers',
     label: 'Trail Blazers',
@@ -84,27 +111,27 @@ export const themes: Record<ThemeName, Theme> = {
     },
   },
 
-  'blazers-black': {
-    name: 'blazers-black',
-    label: 'Trail Blazers Black',
+  'blazers-white': {
+    name: 'blazers-white',
+    label: 'Trail Blazers White',
     logoUrl: 'https://a.espncdn.com/i/teamlogos/nba/500/por.png',
     colors: {
-      primary: '#000000',
-      primaryHover: '#1a1a1a',
-      primary500: '#111111',
-      pageBg: '#0e0f11',
-      cardBg: '#181a1c',
-      inputBg: '#212428',
-      hoverBg: '#2c3034',
-      text: '#F6F8FA',
-      textMuted: '#B6BFC7',
+      primary: '#E03A3E',
+      primaryHover: '#c83235',
+      primary500: '#d3373b',
+      pageBg: '#F2F2F2',
+      cardBg: '#FFFFFF',
+      inputBg: '#F0F0F0',
+      hoverBg: '#E8E8E8',
+      text: '#1A1A1A',
+      textMuted: '#666666',
       pillText: '#E03A3E',
       border: '#E03A3E',
-      borderSubtleDark: 'rgba(255, 255, 255, 0.05)',
-      success: '#38A169',
-      error: '#E53E3E',
-      warning: '#D69E2E',
-      info: '#3182CE',
+      borderSubtleDark: 'rgba(0, 0, 0, 0.06)',
+      success: '#2E7D32',
+      error: '#C62828',
+      warning: '#E65100',
+      info: '#1565C0',
     },
   },
 
@@ -299,6 +326,53 @@ export const themes: Record<ThemeName, Theme> = {
       info: '#3182CE',
     },
   },
+  kraken: {
+    name: 'kraken',
+    label: 'Kraken',
+    logoUrl: 'https://a.espncdn.com/i/teamlogos/nhl/500/sea.png',
+    colors: {
+      primary: '#99D9D9',
+      primaryHover: '#7BC4C4',
+      primary500: '#99D9D9',
+      pageBg: '#001628',
+      cardBg: '#002240',
+      inputBg: '#003058',
+      hoverBg: '#004070',
+      text: '#F0FAFA',
+      textMuted: '#9BBFC5',
+      pillText: '#99D9D9',
+      border: '#99D9D9',
+      borderSubtleDark: 'rgba(255, 255, 255, 0.05)',
+      success: '#38A169',
+      error: '#E53E3E',
+      warning: '#D69E2E',
+      info: '#3182CE',
+    },
+  },
+
+  'kraken-navy': {
+    name: 'kraken-navy',
+    label: 'Kraken Navy',
+    logoUrl: 'https://a.espncdn.com/i/teamlogos/nhl/500/sea.png',
+    colors: {
+      primary: '#001F5B',
+      primaryHover: '#001845',
+      primary500: '#001F5B',
+      pageBg: '#001628',
+      cardBg: '#002240',
+      inputBg: '#003058',
+      hoverBg: '#004070',
+      text: '#F0FAFA',
+      textMuted: '#9BBFC5',
+      pillText: '#99D9D9',
+      border: '#99D9D9',
+      borderSubtleDark: 'rgba(255, 255, 255, 0.05)',
+      success: '#38A169',
+      error: '#E53E3E',
+      warning: '#D69E2E',
+      info: '#3182CE',
+    },
+  },
 };
 
 export const DEFAULT_THEME: ThemeName = 'seahawks';
@@ -309,8 +383,9 @@ export function getTheme(name: ThemeName): Theme {
 
 export const themeNames: ThemeName[] = [
   'beavers',
+  'beavers-white',
   'blazers',
-  'blazers-black',
+  'blazers-white',
   'storm',
   'storm-green',
   'seahawks',
@@ -319,4 +394,6 @@ export const themeNames: ThemeName[] = [
   'sounders-aqua',
   'mariners',
   'mariners-navy',
+  'kraken',
+  'kraken-navy',
 ];

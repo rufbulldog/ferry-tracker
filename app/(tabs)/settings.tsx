@@ -20,7 +20,7 @@ function ThemeSwatch({ themeId, theme, isSelected, onSelect }: ThemeSwatchProps)
       style={[
         styles.swatch,
         { backgroundColor: swatchBg },
-        isSelected && styles.swatchSelected,
+        isSelected && [styles.swatchSelected, { borderColor: theme.colors.border }],
       ]}
       onPress={onSelect}
       activeOpacity={0.7}
@@ -34,7 +34,7 @@ function ThemeSwatch({ themeId, theme, isSelected, onSelect }: ThemeSwatchProps)
       )}
       {isSelected && (
         <View style={styles.checkBadge}>
-          <Ionicons name="checkmark" size={14} color="#fff" />
+          <Ionicons name="checkmark" size={12} color="#fff" />
         </View>
       )}
     </TouchableOpacity>
@@ -110,33 +110,32 @@ const styles = StyleSheet.create({
   swatchGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 10,
   },
   swatch: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-    padding: 8,
+    width: 70,
+    height: 70,
+    borderRadius: 10,
+    padding: 6,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   swatchSelected: {
     borderWidth: 3,
-    borderColor: '#fff',
   },
   logoImageDirect: {
-    width: 48,
-    height: 48,
-    marginTop: 4,
+    width: 40,
+    height: 40,
+    marginTop: 2,
   },
   checkBadge: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: 3,
+    right: 3,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 10,
-    width: 20,
-    height: 20,
+    borderRadius: 9,
+    width: 18,
+    height: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
