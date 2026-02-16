@@ -7,6 +7,7 @@ export type ThemeName =
   | 'storm-green'
   | 'seahawks'
   | 'seahawks-gray'
+  | 'seahawks-rivalries'
   | 'sounders'
   | 'sounders-aqua'
   | 'mariners'
@@ -207,6 +208,30 @@ export const themes: Record<ThemeName, Theme> = {
     },
   },
 
+  'seahawks-rivalries': {
+    name: 'seahawks-rivalries',
+    label: 'Seahawks Rivalries',
+    logoUrl: 'https://a.espncdn.com/i/teamlogos/nfl/500/sea.png',
+    colors: {
+      primary: '#A5ACAF',
+      primaryHover: '#8F989E',
+      primary500: '#A5ACAF',
+      pageBg: '#101820',
+      cardBg: '#1A242E',
+      inputBg: '#222E3A',
+      hoverBg: '#2C3946',
+      text: '#F4F7FA',
+      textMuted: '#B7C0C9',
+      pillText: '#4DD9A0',
+      border: '#4DD9A0',
+      borderSubtleDark: 'rgba(255, 255, 255, 0.05)',
+      success: '#38A169',
+      error: '#E53E3E',
+      warning: '#D69E2E',
+      info: '#3182CE',
+    },
+  },
+
   'seahawks-gray': {
     name: 'seahawks-gray',
     label: 'Seahawks Wild Grey',
@@ -389,6 +414,7 @@ export const themeNames: ThemeName[] = [
   'storm',
   'storm-green',
   'seahawks',
+  'seahawks-rivalries',
   'seahawks-gray',
   'sounders',
   'sounders-aqua',

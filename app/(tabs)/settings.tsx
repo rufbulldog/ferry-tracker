@@ -13,13 +13,15 @@ interface ThemeSwatchProps {
 }
 
 function ThemeSwatch({ themeId, theme, isSelected, onSelect }: ThemeSwatchProps) {
-  const swatchBg = theme.colors.primary;
+  const isLight = themeId.endsWith('-white');
+  const swatchBg = isLight ? '#FFFFFF' : theme.colors.primary;
 
   return (
     <TouchableOpacity
       style={[
         styles.swatch,
         { backgroundColor: swatchBg },
+        isLight && { borderWidth: 2, borderColor: theme.colors.primary },
         isSelected && [styles.swatchSelected, { borderColor: theme.colors.border }],
       ]}
       onPress={onSelect}
