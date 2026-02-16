@@ -1,26 +1,30 @@
 # Ferry Tracker
 
-A React Native app for tracking Washington State Ferries in real-time. Shows upcoming departures, vessel locations, drive-up space availability, departure recommendations, trend analytics, and personal transit timing.
+A React Native app for tracking Washington State Ferries in real-time. Shows upcoming departures, vessel locations, drive-up space availability, personalized departure recommendations, trend analytics, and personal transit timing.
 
 ## Features
 
 ### Recommend Tab
 - **Large recommendation card** - prominent "leave by" time display (55% of screen)
 - **Color-coded urgency** - green (plenty of time), orange (urgent), red (past due)
+- **Personalized predictions** - uses your recorded commute times to calculate leave-by time (falls back to static defaults until enough data is collected)
 - **Vehicle toggle** - switch between bike and car for different travel times
-- **Travel time calculations** - accounts for your commute time to the terminal
 - **Buffer time** - adds appropriate buffer based on vehicle type
+- **Delay awareness** - adds +5 min buffer when an active service delay alert is detected
 - **Capacity awareness** - shows ferry fill percentage at bottom of card
+- **Pull-to-refresh** - pull down to refresh all data and GPS location
 
 ### Depart Tab
 - **Visual capacity indicator** - tank-fill animation shows how full the ferry is
 - **3-zone card layout** - vessel info at top, departure time center, capacity at bottom
-- **Live vessel tracking** - animated ferry icon shows incoming vessel position
+- **Live vessel tracking** - animated ferry icon shows incoming vessel position between terminals
 - **Drive-up space availability** - large number display shows spots remaining
-- **Camera viewer** - flip card to see terminal webcam feeds
+- **Camera viewer** - flip card to see terminal webcam feeds (WSDOT cameras)
 - **Estimated departure times** - predictions based on vessel arrival + turnaround time
-- **Recently departed section** - scroll up to see ferries that just left
+- **Departure transition animation** - smooth animation when a ferry departs and next one takes its place
+- **Recently departed section** - shows ferries that just left with capacity data
 - **Auto-refresh** - vessel data updates every 5 seconds, terminal data every 10 seconds
+- **Pull-to-refresh** - manual refresh for all data
 
 ### Trends Tab
 - **Prominent stats card** - large display of average delay and capacity
@@ -34,7 +38,7 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 ### Timer Tab
 - **Large timer card** - prominent display with state-based colors
   - Blue (idle), Red (running), Orange (paused)
-- **Personal transit timing** - track your commute times
+- **Personal transit timing** - track your commute times to improve recommendations
 - **5 route options** with vehicle restrictions:
   - Home → Bainbridge Ferry (bike or car)
   - Seattle dock → Work (bike only)
@@ -46,42 +50,78 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 - **Persistent storage** - times saved to backend database
 
 ### Settings Tab
-- **Theme selection** - 19 color themes organized by category
+- **Theme selection** - 15 team color themes with logo swatches
 - **Persistent preference** - selected theme saved to AsyncStorage
-- **Team logos** - ESPN logos displayed for team themes
+- **Team logos** - ESPN logos displayed in theme picker
+
+### Send ETA (Floating Action Button)
+- **One-tap ETA message** - floating button visible across all tabs when on the Seattle → Bainbridge route
+- **Pre-populated iMessage** - opens native SMS with `⛴️ Boarded, ETA: <time>` pre-filled to a configured contact
+- **Smart ETA calculation** - 35 min ferry crossing + your recorded ferry-to-home bike average (or 15 min default)
+- **No backend required** - uses native `Linking.openURL` with `sms:` scheme
+
+### Service Delay Alerts
+- **Real-time bulletins** - polls WSF terminal bulletins every 60 seconds
+- **Smart filtering** - shows route-specific and general alerts, hides alerts for other routes
+- **Expandable banner** - red for urgent delays, blue for informational notices
+- **Recommendation integration** - active delay alerts automatically add +5 min buffer to leave-by times
+
+### GPS Auto-Routing
+- **Automatic route selection** - uses device location to select the nearest ferry terminal on launch
+- **Foreground refresh** - re-fetches location when the app returns to foreground
+- **Manual refresh** - pull-to-refresh also updates GPS location
+
+## Personalized Predictions
+
+The Recommend tab uses your recorded transit times to provide increasingly accurate leave-by recommendations.
+
+### How It Works
+1. **Record trips** - use the Timer tab to time your commutes (e.g., home to ferry terminal)
+2. **Averages build up** - each recorded trip is stored in the backend database
+3. **Predictions improve** - the recommendation engine averages all your recorded trips for a given route and vehicle type
+4. **Fallback defaults** - before you have data, static estimates are used
+
+### Example
+```
+You have 5 recorded bike trips from work to the Seattle ferry terminal.
+Average: 10 min (calculated from your actual trip durations)
+Buffer: 2 min
+Active delay alert: +5 min
+
+Leave by = Next departure time - (10 + 2 + 5) = 17 min before departure
+```
+
+The reasoning is displayed on the card, e.g., "Bike travel: 10 min (avg of 5 trips) + 2 min buffer"
+
+### Static Fallback Times
+
+| Route | Bike | Car |
+|-------|------|-----|
+| Home → Bainbridge Ferry | 7 min + 2 min buffer | 5 min + 10 min buffer |
+| Seattle → Bainbridge | 10 min + 2 min buffer | N/A |
+| Home → Kingston Ferry | N/A | 30 min + 20 min buffer |
 
 ## Theme System
 
-The app supports 19 color themes that apply across all screens. Theme selection persists using AsyncStorage.
-
-### Basic Colors (6)
-| Theme | Primary Color | Description |
-|-------|--------------|-------------|
-| Default | `#1762a8` | Blue (default) |
-| Teal | `#0ea5a4` | Teal/cyan |
-| Slate | `#334155` | Slate grey |
-| Purple | `#7C3AED` | Violet |
-| Rose | `#E11D48` | Pink/rose |
-| Amber | `#D97706` | Warm orange |
-
-### Team Colors (13)
-Sports team themes with official colors and ESPN logos:
+The app supports 15 team color themes that apply across all screens. Each theme includes dark and light variants. Theme selection persists using AsyncStorage. Default theme is Seahawks.
 
 | Theme | Primary Color | Team |
 |-------|--------------|------|
 | Beavers | `#DC4405` | Oregon State |
-| Cougars | `#981E32` | Washington State |
-| Trail Blazers | `#E03A3E` | Portland (red) |
-| Trail Blazers Black | `#000000` | Portland (black) |
-| Lutes | `#FBBF16` | PLU |
-| Storm | `#F9A01B` | Seattle Storm (yellow) |
+| Beavers White | `#DC4405` | Oregon State (light mode) |
+| Trail Blazers | `#E03A3E` | Portland |
+| Trail Blazers White | `#E03A3E` | Portland (light mode) |
+| Storm | `#F9A01B` | Seattle Storm (gold) |
 | Storm Green | `#2C5234` | Seattle Storm (green) |
-| Seahawks | `#69BE28` | Seattle (action green) |
-| Seahawks Wild Grey | `#A5ACAF` | Seattle (grey) |
-| Sounders | `#73BE21` | Seattle (rave green) |
-| Sounders Aqua | `#77C7D3` | Seattle (aqua) |
-| Mariners | `#FFB81C` | Seattle (NW gold) |
-| Mariners Navy | `#003278` | Seattle (navy) |
+| Seahawks | `#69BE28` | Seattle Seahawks (action green) |
+| Seahawks Wild Grey | `#A5ACAF` | Seattle Seahawks (wolf grey) |
+| Seahawks Rivalries | `#A5ACAF` | Seattle Seahawks (2025 wolf grey + iridescent green) |
+| Sounders | `#73BE21` | Seattle Sounders (rave green) |
+| Sounders Aqua | `#77C7D3` | Seattle Sounders (aqua) |
+| Mariners | `#FFB81C` | Seattle Mariners (NW gold) |
+| Mariners Navy | `#003278` | Seattle Mariners (navy) |
+| Kraken | `#99D9D9` | Seattle Kraken (ice blue) |
+| Kraken Navy | `#001F5B` | Seattle Kraken (boundless blue) |
 
 ### Architecture
 
@@ -92,8 +132,8 @@ Sports team themes with official colors and ESPN logos:
 
 2. **Theme Definitions** (`src/utils/themes.ts`)
    - Each theme defines: `primary`, `pageBg`, `cardBg`, `inputBg`, `text`, `textMuted`, `border`, etc.
-   - Team themes include `logoUrl` for ESPN team logos
-   - Exports: `themes`, `basicThemes`, `teamThemes`, `themeNames`
+   - All themes include `logoUrl` for ESPN team logos
+   - White variants use light backgrounds with team accent colors for interactive elements
 
 3. **Usage in Components**
    ```typescript
@@ -113,8 +153,7 @@ Sports team themes with official colors and ESPN logos:
 
 1. Add theme name to `ThemeName` type in `themes.ts`
 2. Add theme definition to `themes` object with all required color properties
-3. Add to `basicThemes` or `teamThemes` array
-4. Add to `themeNames` array
+3. Add to `themeNames` array
 
 ## Supported Routes
 
@@ -130,6 +169,7 @@ Sports team themes with official colors and ESPN logos:
 - **TanStack Query** (React Query) for data fetching and caching
 - **React Native Paper** for UI components
 - **Expo Router** for tab navigation
+- **Expo Location** for GPS-based route selection
 - **react-native-gifted-charts** for trend visualizations
 - **AWS CDK** for backend infrastructure (API Gateway, Lambda, DynamoDB)
 - **EAS Build** for native iOS/Android builds
@@ -141,7 +181,7 @@ ferry-app/
 ├── app/                          # Expo Router screens
 │   ├── _layout.tsx               # Root layout with providers
 │   └── (tabs)/
-│       ├── _layout.tsx           # Tab navigator config
+│       ├── _layout.tsx           # Tab navigator with route selector header
 │       ├── index.tsx             # Depart screen
 │       ├── recommend.tsx         # Recommendation screen
 │       ├── trends.tsx            # Trends/analytics screen
@@ -150,14 +190,20 @@ ferry-app/
 │
 ├── src/
 │   ├── api/
-│   │   ├── backend.ts            # Backend API client
+│   │   ├── backend.ts            # Backend API client (trends, transit records)
 │   │   ├── client.ts             # Axios instances for WSF APIs
-│   │   ├── types.ts              # TypeScript interfaces
+│   │   ├── types.ts              # TypeScript interfaces for WSF data
 │   │   ├── vessels.ts            # Vessel locations API
 │   │   └── terminals.ts          # Terminal sailing space API
 │   │
 │   ├── components/
-│   │   ├── FerryCard.tsx         # Departure card with progress
+│   │   ├── AlertBanner.tsx       # Service delay alert banner
+│   │   ├── CapacityBar.tsx       # Animated capacity fill bar
+│   │   ├── CheckInFAB.tsx        # Send ETA floating action button
+│   │   ├── FerryCard.tsx         # Compact departure card
+│   │   ├── FerryProgressIndicator.tsx  # Vessel position between terminals
+│   │   ├── LastDepartureCard.tsx  # Recently departed ferry card
+│   │   ├── MainDepartureCard.tsx  # Large flippable main departure card
 │   │   └── RouteSelector.tsx     # Route/direction picker header
 │   │
 │   ├── context/
@@ -165,28 +211,32 @@ ferry-app/
 │   │   └── ThemeContext.tsx      # Theme state + persistence
 │   │
 │   ├── hooks/
-│   │   ├── useVesselLocations.ts # Real-time vessel polling (5s)
-│   │   ├── useTerminalConditions.ts # Terminal data polling (10s)
-│   │   ├── useRouteVessels.ts    # Filter vessels by route
-│   │   ├── useNextDepartures.ts  # Combined departure data
-│   │   ├── useRecommendation.ts  # Leave-by time calculations
 │   │   ├── useDailyTrends.ts     # Trend data management
-│   │   ├── useTimer.ts           # Timer state management
-│   │   └── useTransitRecords.ts  # Transit time CRUD
+│   │   ├── useLatestDeparture.ts  # Backend departure data for capacity
+│   │   ├── useNextDepartures.ts   # Combined departure data
+│   │   ├── useRecommendation.ts   # Leave-by time calculations
+│   │   ├── useRouteVessels.ts     # Filter vessels by route
+│   │   ├── useTerminalBulletins.ts # Service delay alerts
+│   │   ├── useTerminalConditions.ts # Terminal data polling (10s)
+│   │   ├── useTimer.ts            # Timer state management
+│   │   ├── useTransitRecords.ts   # Transit time CRUD
+│   │   ├── useUserLocation.ts     # GPS location with foreground refresh
+│   │   └── useVesselLocations.ts  # Real-time vessel polling (5s)
 │   │
 │   ├── types/
 │   │   └── storage.ts            # Storage data types
 │   │
 │   └── utils/
-│       ├── constants.ts          # Terminal IDs, route config
-│       ├── themes.ts             # Theme definitions (19 themes)
+│       ├── constants.ts          # Terminal IDs, route config, ETA constants
+│       ├── themes.ts             # Theme definitions (15 themes)
 │       └── time.ts               # Date parsing and formatting
 │
 ├── infra/                        # AWS CDK infrastructure
 │   ├── lib/infra-stack.ts        # CDK stack definition
 │   └── lambda/
-│       ├── api/index.ts          # REST API handler
-│       └── collector/index.ts    # Scheduled data collector
+│       ├── api/index.ts          # REST API (trends, transit records)
+│       ├── collector/index.ts    # Scheduled departure data collector
+│       └── proxy/index.ts        # WSF API CORS proxy
 │
 ├── eas.json                      # EAS Build config
 └── .env                          # API keys (not committed)
@@ -209,6 +259,11 @@ GET /ferries/api/terminals/rest/terminalsailingspace
 ```
 - Scheduled departures with space availability
 - Contains: departure times, vessel assignments, drive-up/reservation spots
+
+### Terminal Bulletins API
+- Service delay alerts, cancellations, and general notices
+- Polled every 60 seconds
+- Keywords trigger alert classification: cancel, delay, behind schedule, out of service, emergency
 
 ### Terminal IDs
 ```typescript
@@ -235,15 +290,15 @@ When a vessel is arriving late, the app calculates:
 Estimated Departure = Vessel ETA + 15 min turnaround
 ```
 
-## Travel Time Configuration
+## Backend Infrastructure
 
-The Recommend tab uses these travel times:
+The backend runs on AWS (CDK-managed):
 
-| Route | Bike | Car |
-|-------|------|-----|
-| Home → Bainbridge Ferry | 7 min + 2 min buffer | 5 min + 10 min buffer |
-| Seattle → Bainbridge | 10 min + 2 min buffer | N/A |
-| Home → Kingston Ferry | N/A | 30 min + 20 min buffer |
+- **API Gateway** - REST API for trends, transit records, and WSF proxy
+- **Lambda (API)** - handles CRUD for transit records and serves trend data
+- **Lambda (Collector)** - runs every 2 minutes, captures departure data (capacity, delays) to DynamoDB
+- **Lambda (Proxy)** - forwards WSF API requests with API key, adds CORS headers
+- **DynamoDB** - two tables: `ferry-departures` (trends) and `transit-records` (timer data)
 
 ## Running Locally
 
@@ -278,10 +333,7 @@ The WSF API doesn't support CORS, so web browser testing won't work locally. Use
 ## Building & Deployment
 
 ### Backend (AWS CDK)
-The backend runs on AWS using Lambda, API Gateway, and DynamoDB.
-
 ```bash
-# Deploy the backend
 cd infra
 npm install
 npm run deploy
@@ -294,10 +346,7 @@ After deployment, copy the API URL from the output and add it to your `.env` fil
 # Login to Expo
 eas login
 
-# Configure project
-eas build:configure
-
-# Build for iOS
+# Build for iOS (installable via QR code)
 eas build --profile preview --platform ios
 
 # Build for Android
@@ -313,14 +362,6 @@ Add to `.env`:
 EXPO_PUBLIC_WSF_API_KEY=your-key-here
 EXPO_PUBLIC_API_URL=https://your-api-id.execute-api.us-west-2.amazonaws.com/prod
 ```
-
-## Future Enhancements
-
-- [ ] Push notifications for departure reminders
-- [ ] Map view with vessel positions
-- [ ] Historical trend analysis (week/month views)
-- [ ] Weather integration for commute recommendations
-- [ ] Additional routes (Mukilteo-Clinton, Bremerton, etc.)
 
 ## License
 
