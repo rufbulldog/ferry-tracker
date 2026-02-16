@@ -1,6 +1,7 @@
-import { View, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Animated } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, Dimensions, TouchableOpacity, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { useRecommendation } from '../../src/hooks/useRecommendation';
 import { formatTime } from '../../src/utils/time';
@@ -13,6 +14,8 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 export default function RecommendScreen() {
   const [vehicle, setVehicle] = useState<Vehicle>('bike');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [refreshing, setRefreshing] = useState(false);
+  const queryClient = useQueryClient();
   const { route, animationDirection, clearAnimation } = useRoute();
   const { theme } = useTheme();
 
@@ -50,6 +53,16 @@ export default function RecommendScreen() {
     }, 60_000);
     return () => clearInterval(interval);
   }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await queryClient.invalidateQueries({ queryKey: ['vesselLocations'] });
+    await queryClient.invalidateQueries({ queryKey: ['terminalSailingSpace'] });
+    await queryClient.invalidateQueries({ queryKey: ['terminalBulletins'] });
+    await queryClient.invalidateQueries({ queryKey: ['transitRecords'] });
+    setCurrentTime(new Date());
+    setRefreshing(false);
+  }, [queryClient]);
 
   const recommendation = useRecommendation(route, vehicle);
 
@@ -103,7 +116,13 @@ export default function RecommendScreen() {
   const isLightBackground = !timeUntil;
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: theme.colors.pageBg }]} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.colors.pageBg }]}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />
+      }
+    >
       {/* Main Recommendation Card */}
       <Animated.View style={[styles.mainCard, { backgroundColor: getCardColor(), transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
         {/* Vehicle toggle at top */}
