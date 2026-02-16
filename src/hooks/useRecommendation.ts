@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useNextDepartures, DepartureInfo } from './useNextDepartures';
-import { Route } from '../utils/constants';
+import { Route, FERRY_CROSSING_MINUTES, FERRY_TO_HOME_FALLBACK_MINUTES } from '../utils/constants';
 import { Vehicle, TransitRoute } from '../types/storage';
 import { addMinutes, formatTime } from '../utils/time';
 import { useTransitRecords } from './useTransitRecords';
@@ -59,11 +59,6 @@ const TRANSIT_ROUTE_MAP: Partial<Record<Route, Partial<Record<Vehicle, TransitRo
     car: 'home-to-ferry',
   },
 };
-
-// ETA constants
-export const FERRY_CROSSING_MINUTES = 35;
-export const FERRY_TO_HOME_FALLBACK_MINUTES = 15;
-export const ETA_CONTACT_NUMBER = 'REDACTED';
 
 // Extra buffer added when there's an active delay alert
 const DELAY_ALERT_BUFFER_MINUTES = 5;

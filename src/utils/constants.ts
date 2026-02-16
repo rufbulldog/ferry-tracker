@@ -34,6 +34,11 @@ export const TERMINAL_CAMERAS: Record<number, { name: string; url: string }[]> =
   ],
 };
 
+// ETA / Check-in constants
+export const ETA_CONTACT_NUMBER = 'REDACTED';
+export const FERRY_CROSSING_MINUTES = 35;
+export const FERRY_TO_HOME_FALLBACK_MINUTES = 15;
+
 export type Route = 'seattle-bainbridge' | 'bainbridge-seattle' | 'kingston-edmonds' | 'edmonds-kingston';
 
 export const ROUTES: Record<Route, { from: number; to: number; label: string }> = {

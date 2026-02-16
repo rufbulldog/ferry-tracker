@@ -7,7 +7,7 @@ import {
   ETA_CONTACT_NUMBER,
   FERRY_CROSSING_MINUTES,
   FERRY_TO_HOME_FALLBACK_MINUTES,
-} from '../hooks/useRecommendation';
+} from '../utils/constants';
 import { addMinutes, formatTime } from '../utils/time';
 
 export function CheckInFAB() {
