@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 5.0.0"
+    "version": ">= 5.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -42,6 +43,18 @@
         "buildType": "apk"
       },
       "channel": "production"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "REDACTED",
+        "ascAppId": "REDACTED_ASC_APP_ID",
+        "appleTeamId": "REDACTED_APPLE_TEAM_ID",
+        "ascApiKeyPath": "./keys/AuthKey_REDACTED_ASC_KEY_ID.p8",
+        "ascApiKeyId": "REDACTED_ASC_KEY_ID",
+        "ascApiKeyIssuerId": "REDACTED_ASC_KEY_ISSUER_ID"
+      }
     }
   }
 }
