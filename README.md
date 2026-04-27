@@ -4,17 +4,18 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 
 ## Features
 
-### Recommend Tab
+### Leave Tab
 - **Large recommendation card** - prominent "leave by" time display (55% of screen)
 - **Color-coded urgency** - green (plenty of time), orange (urgent), red (past due)
 - **Personalized predictions** - uses your recorded commute times to calculate leave-by time (falls back to static defaults until enough data is collected)
 - **Vehicle toggle** - switch between bike and car for different travel times
-- **Buffer time** - adds appropriate buffer based on vehicle type
+- **Buffer time** - adds appropriate buffer based on vehicle type; drops to 1 min floor once you have 5+ recorded trips for that route and vehicle
 - **Delay awareness** - adds +5 min buffer when an active service delay alert is detected
 - **Capacity awareness** - shows ferry fill percentage at bottom of card
+- **Arrival ETA card** - compact secondary card showing estimated home/office arrival time, anchored to the next scheduled ferry arrival plus your recorded transit time (Seattle→Bainbridge shows home ETA; Bainbridge→Seattle shows office ETA; Kingston/Edmonds routes not supported)
 - **Pull-to-refresh** - pull down to refresh all data and GPS location
 
-### Depart Tab
+### Time Tab
 - **Visual capacity indicator** - tank-fill animation shows how full the ferry is
 - **3-zone card layout** - vessel info at top, departure time center, capacity at bottom
 - **Live vessel tracking** - animated ferry icon shows incoming vessel position between terminals
@@ -55,9 +56,10 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 - **Team logos** - ESPN logos displayed in theme picker
 
 ### Send ETA (Floating Action Button)
-- **One-tap ETA message** - floating button visible across all tabs when on the Seattle → Bainbridge route
+- **One-tap ETA message** - floating button visible on the Seattle → Bainbridge route only
 - **Pre-populated iMessage** - opens native SMS with `⛴️ Boarded, ETA: <time>` pre-filled to a configured contact
-- **Smart ETA calculation** - 35 min ferry crossing + your recorded ferry-to-home bike average (or 15 min default)
+- **ETA matches the Leave tab** - sources its ETA from `useArrivalEta`: next scheduled ferry arrival time + your recorded ferry-to-home bike transit (typical stat, or 15 min default); identical to the arrival card shown on the Leave tab
+- **Disabled when idle** - button is shown at 50% opacity and non-tappable when there is no upcoming departure
 - **No backend required** - uses native `Linking.openURL` with `sms:` scheme
 
 ### Service Delay Alerts
@@ -73,25 +75,29 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 
 ## Personalized Predictions
 
-The Recommend tab uses your recorded transit times to provide increasingly accurate leave-by recommendations.
+The Leave tab uses your recorded transit times to provide increasingly accurate leave-by recommendations.
 
 ### How It Works
 1. **Record trips** - use the Timer tab to time your commutes (e.g., home to ferry terminal)
-2. **Averages build up** - each recorded trip is stored in the backend database
-3. **Predictions improve** - the recommendation engine averages all your recorded trips for a given route and vehicle type
-4. **Fallback defaults** - before you have data, static estimates are used
+2. **Data builds up** - each recorded trip is stored in the backend database
+3. **Predictions improve** - the recommendation engine applies a robust "typical" transit time based on sample size:
+   - N=1: the single recorded value
+   - N=2–4: median of all recorded trips
+   - N≥5: 20% trimmed mean (drops top and bottom 20%, averages the middle 60%)
+4. **Buffer shrinks** - once you have 5+ recorded trips for a route/vehicle, the static buffer drops to a 1-min floor
+5. **Fallback defaults** - before you have data, static estimates are used
 
 ### Example
 ```
-You have 5 recorded bike trips from work to the Seattle ferry terminal.
-Average: 10 min (calculated from your actual trip durations)
-Buffer: 2 min
+You have 8 recorded bike trips from work to the Seattle ferry terminal.
+Trimmed mean: 10 min
+Buffer: 1 min (floor applied at 5+ samples)
 Active delay alert: +5 min
 
-Leave by = Next departure time - (10 + 2 + 5) = 17 min before departure
+Leave by = Next departure time - (10 + 1 + 5) = 16 min before departure
 ```
 
-The reasoning is displayed on the card, e.g., "Bike travel: 10 min (avg of 5 trips) + 2 min buffer"
+The reasoning is displayed on the card, e.g., "Bike travel: 10 min (trimmed mean of 8 trips) + 1 min buffer"
 
 ### Static Fallback Times
 
@@ -182,8 +188,8 @@ ferry-app/
 │   ├── _layout.tsx               # Root layout with providers
 │   └── (tabs)/
 │       ├── _layout.tsx           # Tab navigator with route selector header
-│       ├── index.tsx             # Depart screen
-│       ├── recommend.tsx         # Recommendation screen
+│       ├── index.tsx             # Time screen
+│       ├── recommend.tsx         # Leave screen (recommendation + arrival ETA card)
 │       ├── trends.tsx            # Trends/analytics screen
 │       ├── timer.tsx             # Transit timer screen
 │       └── settings.tsx          # Settings + theme selection
@@ -212,6 +218,7 @@ ferry-app/
 │   │
 │   ├── hooks/
 │   │   ├── useDailyTrends.ts     # Trend data management
+│   │   ├── useArrivalEta.ts      # Arrival ETA from next departure + typical transit time
 │   │   ├── useLatestDeparture.ts  # Backend departure data for capacity
 │   │   ├── useNextDepartures.ts   # Combined departure data
 │   │   ├── useRecommendation.ts   # Leave-by time calculations
@@ -229,7 +236,8 @@ ferry-app/
 │   └── utils/
 │       ├── constants.ts          # Terminal IDs, route config, ETA constants
 │       ├── themes.ts             # Theme definitions (15 themes)
-│       └── time.ts               # Date parsing and formatting
+│       ├── time.ts               # Date parsing and formatting
+│       └── transitStats.ts       # Robust "typical" transit time (raw/median/trimmed-mean)
 │
 ├── infra/                        # AWS CDK infrastructure
 │   ├── lib/infra-stack.ts        # CDK stack definition
