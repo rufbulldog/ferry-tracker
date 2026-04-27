@@ -5,6 +5,7 @@ import { Vehicle, TransitRoute } from '../types/storage';
 import { addMinutes, formatTime } from '../utils/time';
 import { useTransitRecords } from './useTransitRecords';
 import { useTerminalBulletins } from './useTerminalBulletins';
+import { computeTypicalTransitSeconds } from '../utils/transitStats';
 
 interface RecommendationResult {
   leaveByTime: Date | null;
@@ -63,6 +64,11 @@ const TRANSIT_ROUTE_MAP: Partial<Record<Route, Partial<Record<Vehicle, TransitRo
 // Extra buffer added when there's an active delay alert
 const DELAY_ALERT_BUFFER_MINUTES = 5;
 
+// When we have enough recorded trips to use a robust statistic, the static
+// buffer is mostly redundant — keep just a 1-min floor as a safety margin.
+const RECORDED_DATA_MIN_SAMPLES = 5;
+const RECORDED_BUFFER_FLOOR_MINUTES = 1;
+
 export function useRecommendation(
   ferryRoute: Route,
   vehicle: Vehicle
@@ -117,31 +123,36 @@ export function useRecommendation(
       };
     }
 
-    // Look up recorded average transit time
+    // Look up recorded transit time using a robust "typical" stat
     const mappedTransitRoute = TRANSIT_ROUTE_MAP[ferryRoute]?.[vehicle];
     let transitMinutes = config.travel;
-    let usingRecordedAvg = false;
+    let bufferMinutes = config.buffer;
+    let typicalMethod: 'raw' | 'median' | 'trimmed-mean' | null = null;
     let recordCount = 0;
 
     if (mappedTransitRoute && transitRecords && transitRecords.length > 0) {
       const matching = transitRecords.filter(
         r => r.route === mappedTransitRoute && r.vehicle === vehicle
       );
-      if (matching.length > 0) {
-        const totalSeconds = matching.reduce((sum, r) => sum + r.durationSeconds, 0);
-        const avgSeconds = totalSeconds / matching.length;
-        transitMinutes = Math.ceil(avgSeconds / 60);
-        usingRecordedAvg = true;
-        recordCount = matching.length;
+      const typical = computeTypicalTransitSeconds(matching);
+      if (typical) {
+        transitMinutes = Math.ceil(typical.seconds / 60);
+        typicalMethod = typical.method;
+        recordCount = typical.sampleSize;
+        if (recordCount >= RECORDED_DATA_MIN_SAMPLES) {
+          bufferMinutes = RECORDED_BUFFER_FLOOR_MINUTES;
+        }
       }
     }
 
-    // Start with static buffer
-    let bufferMinutes = config.buffer;
-
     const modeLabel = vehicle === 'bike' ? 'Bike' : 'Car';
-    if (usingRecordedAvg) {
-      reasoning.push(`${modeLabel} travel: ${transitMinutes} min (avg of ${recordCount} trip${recordCount !== 1 ? 's' : ''}) + ${bufferMinutes} min buffer`);
+    if (typicalMethod) {
+      const methodLabel =
+        typicalMethod === 'trimmed-mean' ? 'trimmed mean' :
+        typicalMethod === 'median' ? 'median' : 'recorded';
+      reasoning.push(
+        `${modeLabel} travel: ${transitMinutes} min (${methodLabel} of ${recordCount} trip${recordCount !== 1 ? 's' : ''}) + ${bufferMinutes} min buffer`
+      );
     } else {
       reasoning.push(`${modeLabel} travel: ${transitMinutes} min (default) + ${bufferMinutes} min buffer`);
     }
@@ -164,15 +175,14 @@ export function useRecommendation(
     let etaMessage: string | null = null;
 
     if (ferryRoute === 'seattle-bainbridge') {
-      // Look up ferry-to-home bike average
       let ferryToHomeMinutes = FERRY_TO_HOME_FALLBACK_MINUTES;
       if (transitRecords && transitRecords.length > 0) {
         const homeRecords = transitRecords.filter(
           r => r.route === 'ferry-to-home' && r.vehicle === 'bike'
         );
-        if (homeRecords.length > 0) {
-          const totalSeconds = homeRecords.reduce((sum, r) => sum + r.durationSeconds, 0);
-          ferryToHomeMinutes = Math.ceil(totalSeconds / homeRecords.length / 60);
+        const typical = computeTypicalTransitSeconds(homeRecords);
+        if (typical) {
+          ferryToHomeMinutes = Math.ceil(typical.seconds / 60);
         }
       }
 

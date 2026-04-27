@@ -28,7 +28,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Depart',
+            title: 'Time',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="boat" size={size} color={color} />
             ),
@@ -39,7 +39,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="recommend"
           options={{
-            title: 'Recommend',
+            title: 'Leave',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="bulb" size={size} color={color} />
             ),

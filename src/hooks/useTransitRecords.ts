@@ -5,6 +5,7 @@ import {
   deleteTransitRecord,
 } from '../api/backend';
 import { TransitRecord, TransitRoute, Vehicle } from '../types/storage';
+import { computeTypicalTransitSeconds } from '../utils/transitStats';
 
 export function useTransitRecords() {
   return useQuery({
@@ -52,12 +53,8 @@ export function useAverageTransitTime(route: TransitRoute, vehicle: Vehicle) {
 
   const matching = records.filter(r => r.route === route && r.vehicle === vehicle);
 
-  if (matching.length === 0) {
-    return null;
-  }
-
-  const totalSeconds = matching.reduce((sum, r) => sum + r.durationSeconds, 0);
-  return Math.round(totalSeconds / matching.length);
+  const typical = computeTypicalTransitSeconds(matching);
+  return typical ? Math.round(typical.seconds) : null;
 }
 
 // Get recent records for display (last 10)
@@ -96,32 +93,28 @@ export function useAllTransitAverages() {
     return { averages: [], isLoading };
   }
 
-  // Group by route + vehicle
-  const groups = new Map<string, { total: number; count: number; route: TransitRoute; vehicle: Vehicle }>();
+  // Group records by route + vehicle
+  const groups = new Map<string, { items: TransitRecord[]; route: TransitRoute; vehicle: Vehicle }>();
 
   records.forEach(r => {
     const key = `${r.route}-${r.vehicle}`;
     const existing = groups.get(key);
     if (existing) {
-      existing.total += r.durationSeconds;
-      existing.count += 1;
+      existing.items.push(r);
     } else {
-      groups.set(key, {
-        total: r.durationSeconds,
-        count: 1,
-        route: r.route,
-        vehicle: r.vehicle,
-      });
+      groups.set(key, { items: [r], route: r.route, vehicle: r.vehicle });
     }
   });
 
   const averages: TransitAverage[] = [];
   groups.forEach(g => {
+    const typical = computeTypicalTransitSeconds(g.items);
+    if (!typical) return;
     averages.push({
       route: g.route,
       vehicle: g.vehicle,
-      averageSeconds: Math.round(g.total / g.count),
-      count: g.count,
+      averageSeconds: Math.round(typical.seconds),
+      count: typical.sampleSize,
     });
   });
 

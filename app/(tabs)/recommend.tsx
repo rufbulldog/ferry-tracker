@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { useRecommendation } from '../../src/hooks/useRecommendation';
+import { useArrivalEta } from '../../src/hooks/useArrivalEta';
 import { formatTime } from '../../src/utils/time';
 import { Vehicle } from '../../src/types/storage';
 import { useRoute } from '../../src/context/RouteContext';
@@ -65,6 +66,7 @@ export default function RecommendScreen() {
   }, [queryClient]);
 
   const recommendation = useRecommendation(route, vehicle);
+  const { arrival } = useArrivalEta(route);
 
   // Calculate time until leave-by
   const getTimeUntilLeave = (): { minutes: number; isUrgent: boolean; isPast: boolean } | null => {
@@ -210,6 +212,25 @@ export default function RecommendScreen() {
         )}
       </Animated.View>
 
+      {/* Arrival card (compact, neutral) */}
+      {arrival && arrival.etaTime && (
+        <View style={[styles.arrivalCard, { backgroundColor: theme.colors.cardBg }]}>
+          <View style={styles.arrivalRow}>
+            <Ionicons name="flag" size={18} color={theme.colors.textMuted} />
+            <Text style={[styles.arrivalLabel, { color: theme.colors.textMuted }]}>{arrival.label}</Text>
+            <Text style={[styles.arrivalTime, { color: theme.colors.text }]}>
+              {formatTime(arrival.etaTime)}
+            </Text>
+          </View>
+          {arrival.ferryArrivalTime && (
+            <Text style={[styles.arrivalSubtext, { color: theme.colors.textMuted }]}>
+              Ferry {formatTime(arrival.ferryArrivalTime)} + {arrival.transitMinutes} min{' '}
+              {arrival.vehicle === 'bike' ? 'bike' : 'drive'}
+            </Text>
+          )}
+        </View>
+      )}
+
       {/* Info Section */}
       <View style={[styles.infoSection, { backgroundColor: theme.colors.cardBg }]}>
         <Text style={[styles.infoTitle, { color: theme.colors.text }]}>How this works</Text>
@@ -219,6 +240,15 @@ export default function RecommendScreen() {
           {recommendation.bufferMinutes > 0 && (
             <> plus <Text style={[styles.infoBold, { color: theme.colors.text }]}>{recommendation.bufferMinutes} min</Text> buffer</>
           )}.
+          {arrival && arrival.etaTime && (
+            <>
+              {' '}You'll {arrival.kind === 'home' ? 'be home' : 'get to the office'} around{' '}
+              <Text style={[styles.infoBold, { color: theme.colors.text }]}>{formatTime(arrival.etaTime)}</Text>
+              {arrival.sampleSize > 0 ? (
+                <> based on {arrival.sampleSize} recorded {arrival.kind === 'home' ? 'ride home' : 'commute'}{arrival.sampleSize !== 1 ? 's' : ''}.</>
+              ) : '.'}
+            </>
+          )}
         </Text>
 
         {recommendation.reasoning.length > 0 && (
@@ -245,11 +275,37 @@ const styles = StyleSheet.create({
   },
   // Main card
   mainCard: {
-    height: SCREEN_HEIGHT * 0.55,
+    height: SCREEN_HEIGHT * 0.42,
     borderRadius: 16,
     padding: 16,
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  // Compact arrival card
+  arrivalCard: {
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 12,
+  },
+  arrivalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  arrivalLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    flex: 1,
+  },
+  arrivalTime: {
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  arrivalSubtext: {
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 26,
   },
   // Vehicle toggle
   vehicleRow: {
