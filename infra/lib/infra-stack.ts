@@ -42,7 +42,7 @@ export class InfraStack extends cdk.Stack {
       functionName: 'ferry-collector',
       entry: path.join(__dirname, '../lambda/collector/index.ts'),
       handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       timeout: cdk.Duration.seconds(30),
       memorySize: 256,
       environment: {
@@ -65,7 +65,7 @@ export class InfraStack extends cdk.Stack {
       functionName: 'ferry-api',
       entry: path.join(__dirname, '../lambda/api/index.ts'),
       handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       timeout: cdk.Duration.seconds(10),
       memorySize: 256,
       environment: {
@@ -82,7 +82,7 @@ export class InfraStack extends cdk.Stack {
       functionName: 'ferry-wsf-proxy',
       entry: path.join(__dirname, '../lambda/proxy/index.ts'),
       handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       timeout: cdk.Duration.seconds(10),
       memorySize: 256,
       environment: {
