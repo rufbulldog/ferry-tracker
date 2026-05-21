@@ -5,13 +5,42 @@ export interface KnownLocation {
   lon: number;
 }
 
-export const KNOWN_LOCATIONS: KnownLocation[] = [
-  { id: 'home', label: 'Home (Bainbridge)', lat: 0.0, lon: 0.0 },
-  { id: 'work', label: 'Work (Seattle)', lat: 0.0, lon: 0.0 },
+// Personal locations (home/work) are loaded from environment variables so they
+// stay out of source control. Set EXPO_PUBLIC_HOME_LAT / _LON / EXPO_PUBLIC_WORK_LAT / _LON
+// in your local .env (see .env.example). If unset, home/work are simply omitted from
+// the known-location list and the app falls back to terminals only.
+function parseEnvCoord(v: string | undefined): number | null {
+  if (!v) return null;
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function buildPersonalLocations(): KnownLocation[] {
+  const personal: KnownLocation[] = [];
+  const homeLat = parseEnvCoord(process.env.EXPO_PUBLIC_HOME_LAT);
+  const homeLon = parseEnvCoord(process.env.EXPO_PUBLIC_HOME_LON);
+  if (homeLat !== null && homeLon !== null) {
+    personal.push({ id: 'home', label: 'Home', lat: homeLat, lon: homeLon });
+  }
+  const workLat = parseEnvCoord(process.env.EXPO_PUBLIC_WORK_LAT);
+  const workLon = parseEnvCoord(process.env.EXPO_PUBLIC_WORK_LON);
+  if (workLat !== null && workLon !== null) {
+    personal.push({ id: 'work', label: 'Work', lat: workLat, lon: workLon });
+  }
+  return personal;
+}
+
+// Ferry terminals are public information (published by WSDOT) and safe to commit.
+const PUBLIC_TERMINALS: KnownLocation[] = [
   { id: 'bi-terminal', label: 'Bainbridge Ferry Terminal', lat: 47.6235, lon: -122.5104 },
   { id: 'seattle-terminal', label: 'Seattle Ferry Terminal', lat: 47.6023, lon: -122.3384 },
   { id: 'kingston-terminal', label: 'Kingston Ferry Terminal', lat: 47.7964, lon: -122.4949 },
   { id: 'edmonds-terminal', label: 'Edmonds Ferry Terminal', lat: 47.8106, lon: -122.3844 },
+];
+
+export const KNOWN_LOCATIONS: KnownLocation[] = [
+  ...buildPersonalLocations(),
+  ...PUBLIC_TERMINALS,
 ];
 
 // Haversine distance in meters between two lat/lon points
