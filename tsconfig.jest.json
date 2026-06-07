@@ -1,0 +1,15 @@
+{
+  "//": "Standalone CommonJS tsconfig used only by ts-jest (jest.config.js). Intentionally does NOT extend expo/tsconfig.base, whose module:'preserve' / moduleResolution:'bundler' / customConditions settings don't run under Node.",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["jest"],
+    "noEmit": false
+  },
+  "include": ["src/**/*.ts"]
+}
