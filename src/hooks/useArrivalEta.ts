@@ -5,6 +5,11 @@ import { Route, FERRY_CROSSING_MINUTES, FERRY_TO_HOME_FALLBACK_MINUTES } from '.
 import { TransitRoute, Vehicle } from '../types/storage';
 import { addMinutes } from '../utils/time';
 import { computeTypicalTransitSeconds, TypicalMethod } from '../utils/transitStats';
+import {
+  selectActiveDeparture,
+  projectedDockTime,
+  etaDepartureBasis,
+} from '../utils/arrivalEtaLogic';
 
 export type ArrivalKind = 'home' | 'office';
 
@@ -56,20 +61,17 @@ export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
 
   return useMemo(() => {
     const config = ARRIVAL_CONFIG[ferryRoute];
-    const nextDeparture = departures?.find(
-      d => d.status !== 'departed' && !d.isCancelled
-    ) || null;
+    const activeDeparture = selectActiveDeparture(departures);
 
     if (!config) {
-      return { arrival: null, nextDeparture, supported: false };
+      return { arrival: null, nextDeparture: activeDeparture, supported: false };
     }
 
-    if (!nextDeparture) {
+    if (!activeDeparture) {
       return { arrival: null, nextDeparture: null, supported: true };
     }
 
-    // Use estimated departure when present, otherwise scheduled
-    const departureTime = nextDeparture.estimatedDeparture || nextDeparture.scheduledDeparture;
+    const departureTime = etaDepartureBasis(activeDeparture);
     const ferryArrivalTime = addMinutes(departureTime, FERRY_CROSSING_MINUTES);
 
     let transitMinutes = config.fallbackMinutes;
@@ -102,7 +104,7 @@ export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
         vehicle: config.vehicle,
         transitRoute: config.transitRoute,
       },
-      nextDeparture,
+      nextDeparture: activeDeparture,
       supported: true,
     };
   }, [departures, ferryRoute, transitRecords]);

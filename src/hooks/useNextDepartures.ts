@@ -34,7 +34,10 @@ export interface DepartureInfo {
   incomingVesselCapacity: number | null; // Capacity % of the vessel coming in (for arriving status)
 }
 
-const TURNAROUND_MINUTES = 15;
+// Minimum flip time once a vessel docks *after* its scheduled departure (i.e. it's
+// genuinely late). A boat that docks before its scheduled time keeps the planned time —
+// the schedule already budgets the normal turnaround.
+export const MIN_TURNAROUND_MINUTES = 5;
 
 export function useNextDepartures(route: Route) {
   const { data: allVessels, isLoading: vesselsLoading, isFetching: vesselsFetching, error: vesselsError } = useVesselLocations();
@@ -176,11 +179,9 @@ export function useNextDepartures(route: Route) {
             }
           }
 
-          if (vesselArrivalEta) {
-            const estDep = addMinutes(vesselArrivalEta, TURNAROUND_MINUTES);
-            if (estDep > scheduledDeparture) {
-              estimatedDeparture = estDep;
-            }
+          // Only late if the vessel won't dock until after its scheduled departure.
+          if (vesselArrivalEta && vesselArrivalEta > scheduledDeparture) {
+            estimatedDeparture = addMinutes(vesselArrivalEta, MIN_TURNAROUND_MINUTES);
           }
         } else if (vesselInfo.AtDock && vesselInfo.DepartingTerminalID === arrivingTerminalId) {
           // Vessel is at the OPPOSITE terminal (destination), waiting to return
@@ -212,9 +213,8 @@ export function useNextDepartures(route: Route) {
             const arrivalAtOurTerminal = addMinutes(vesselDepFromOpposite, crossingMinutes);
             vesselArrivalEta = arrivalAtOurTerminal;
 
-            const estDep = addMinutes(arrivalAtOurTerminal, TURNAROUND_MINUTES);
-            if (estDep > scheduledDeparture) {
-              estimatedDeparture = estDep;
+            if (arrivalAtOurTerminal > scheduledDeparture) {
+              estimatedDeparture = addMinutes(arrivalAtOurTerminal, MIN_TURNAROUND_MINUTES);
             }
           }
         }

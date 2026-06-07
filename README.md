@@ -12,7 +12,7 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 - **Buffer time** - adds appropriate buffer based on vehicle type; drops to 1 min floor once you have 5+ recorded trips for that route and vehicle
 - **Delay awareness** - adds +5 min buffer when an active service delay alert is detected
 - **Capacity awareness** - shows ferry fill percentage at bottom of card
-- **Arrival ETA card** - compact secondary card showing estimated home/office arrival time, anchored to the next scheduled ferry arrival plus your recorded transit time (Seattle→Bainbridge shows home ETA; Bainbridge→Seattle shows office ETA; Kingston/Edmonds routes not supported)
+- **Arrival ETA card** - compact secondary card showing estimated home/office arrival time; ETA is built from the planned (scheduled) departure time + 35-min crossing + your recorded transit time (Seattle→Bainbridge shows home ETA; Bainbridge→Seattle shows office ETA; Kingston/Edmonds routes not supported). Deviates from the schedule only when a delay is known: uses actual departure if the boat has already left, or projects departure as dock-time + 5-min turnaround if the vessel won't arrive until after its scheduled time
 - **Pull-to-refresh** - pull down to refresh all data and GPS location
 
 ### Time Tab
@@ -58,7 +58,7 @@ A React Native app for tracking Washington State Ferries in real-time. Shows upc
 ### Send ETA (Floating Action Button)
 - **One-tap ETA message** - floating button visible on the Seattle → Bainbridge route only
 - **Pre-populated iMessage** - opens native SMS with `⛴️ Boarded, ETA: <time>` pre-filled to a configured contact
-- **ETA matches the Leave tab** - sources its ETA from `useArrivalEta`: next scheduled ferry arrival time + your recorded ferry-to-home bike transit (typical stat, or 15 min default); identical to the arrival card shown on the Leave tab
+- **ETA matches the Leave tab** - sources its ETA from `useArrivalEta`: planned (scheduled) departure time + 35-min crossing + your recorded ferry-to-home bike transit (typical stat, or 15 min default); identical to the arrival card shown on the Leave tab. Selects the sailing you're about to board — if a ferry pulled away within the last 5 minutes, that's treated as the boat you just boarded; otherwise uses the next upcoming sailing
 - **Disabled when idle** - button is shown at 50% opacity and non-tappable when there is no upcoming departure
 - **No backend required** - uses native `Linking.openURL` with `sms:` scheme
 
@@ -234,6 +234,7 @@ ferry-app/
 │   │   └── storage.ts            # Storage data types
 │   │
 │   └── utils/
+│       ├── arrivalEtaLogic.ts    # Pure ETA functions (selectActiveDeparture, etaDepartureBasis, projectedDockTime)
 │       ├── constants.ts          # Terminal IDs, route config, ETA constants
 │       ├── themes.ts             # Theme definitions (15 themes)
 │       ├── time.ts               # Date parsing and formatting
@@ -293,10 +294,11 @@ The app determines departure status by matching real-time vessel data to schedul
 | **Departed** | Vessel has left dock for this sailing |
 
 ### Estimated Departure
-When a vessel is arriving late, the app calculates:
+When a vessel won't dock until after its scheduled departure (i.e. it's genuinely late), the app calculates:
 ```
-Estimated Departure = Vessel ETA + 15 min turnaround
+Estimated Departure = Vessel ETA + 5 min turnaround
 ```
+A vessel that docks before its scheduled time keeps the planned departure — the schedule already budgets the normal turnaround.
 
 ## Backend Infrastructure
 

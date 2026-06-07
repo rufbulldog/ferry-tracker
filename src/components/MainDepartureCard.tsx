@@ -356,7 +356,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                 <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
                   {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
                 </Text>
-                {status !== 'departed' && !isCancelled && (
+                {/* status is narrowed to 'arriving' | 'returning' here, so no need to exclude 'departed' */}
+                {!isCancelled && (
                   <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
                     · {hasDelay
                       ? (minutesUntilEstimated > 0 ? `in ${minutesUntilEstimated}m` : 'now')
