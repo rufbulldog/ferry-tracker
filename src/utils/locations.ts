@@ -1,33 +1,10 @@
+import { getPersonalLocations } from '../store/personalLocations';
+
 export interface KnownLocation {
   id: string;
   label: string;
   lat: number;
   lon: number;
-}
-
-// Personal locations (home/work) are loaded from environment variables so they
-// stay out of source control. Set EXPO_PUBLIC_HOME_LAT / _LON / EXPO_PUBLIC_WORK_LAT / _LON
-// in your local .env (see .env.example). If unset, home/work are simply omitted from
-// the known-location list and the app falls back to terminals only.
-function parseEnvCoord(v: string | undefined): number | null {
-  if (!v) return null;
-  const n = parseFloat(v);
-  return Number.isFinite(n) ? n : null;
-}
-
-function buildPersonalLocations(): KnownLocation[] {
-  const personal: KnownLocation[] = [];
-  const homeLat = parseEnvCoord(process.env.EXPO_PUBLIC_HOME_LAT);
-  const homeLon = parseEnvCoord(process.env.EXPO_PUBLIC_HOME_LON);
-  if (homeLat !== null && homeLon !== null) {
-    personal.push({ id: 'home', label: 'Home', lat: homeLat, lon: homeLon });
-  }
-  const workLat = parseEnvCoord(process.env.EXPO_PUBLIC_WORK_LAT);
-  const workLon = parseEnvCoord(process.env.EXPO_PUBLIC_WORK_LON);
-  if (workLat !== null && workLon !== null) {
-    personal.push({ id: 'work', label: 'Work', lat: workLat, lon: workLon });
-  }
-  return personal;
 }
 
 // Ferry terminals are public information (published by WSDOT) and safe to commit.
@@ -38,10 +15,13 @@ const PUBLIC_TERMINALS: KnownLocation[] = [
   { id: 'edmonds-terminal', label: 'Edmonds Ferry Terminal', lat: 47.8106, lon: -122.3844 },
 ];
 
-export const KNOWN_LOCATIONS: KnownLocation[] = [
-  ...buildPersonalLocations(),
-  ...PUBLIC_TERMINALS,
-];
+// Personal home/work locations come from on-device settings (AsyncStorage), not
+// from EXPO_PUBLIC_ env vars — so they never ship inside the app bundle. See
+// src/store/personalLocations.ts and the Settings screen. When unset, the app
+// falls back to the public terminals only.
+export function getKnownLocations(): KnownLocation[] {
+  return [...getPersonalLocations(), ...PUBLIC_TERMINALS];
+}
 
 // Haversine distance in meters between two lat/lon points
 export function haversineDistance(
@@ -65,7 +45,7 @@ export function findNearestLocation(
 ): { location: KnownLocation; distanceMeters: number } | null {
   let nearest: { location: KnownLocation; distanceMeters: number } | null = null;
 
-  for (const loc of KNOWN_LOCATIONS) {
+  for (const loc of getKnownLocations()) {
     const d = haversineDistance(lat, lon, loc.lat, loc.lon);
     if (!nearest || d < nearest.distanceMeters) {
       nearest = { location: loc, distanceMeters: d };

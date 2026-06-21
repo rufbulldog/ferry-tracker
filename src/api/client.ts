@@ -1,27 +1,11 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
 
-const API_KEY = process.env.EXPO_PUBLIC_WSF_API_KEY;
+// All Washington State Ferries data is fetched through our own backend proxy,
+// which holds the WSF API key server-side (see infra/lambda/proxy). No API key
+// ships in the app bundle. The base URL is the public API Gateway endpoint.
 const PROXY_URL = process.env.EXPO_PUBLIC_API_URL;
+const wsfBaseURL = `${PROXY_URL}/wsf`;
 
-// On web, use the proxy to avoid CORS issues
-const isWeb = Platform.OS === 'web';
-
-export const scheduleApi = axios.create({
-  baseURL: 'https://www.wsdot.wa.gov/ferries/api/schedule/rest',
-  params: { apiaccesscode: API_KEY },
-});
-
-export const vesselsApi = isWeb
-  ? axios.create({ baseURL: `${PROXY_URL}/wsf` })
-  : axios.create({
-      baseURL: 'https://www.wsdot.wa.gov/ferries/api/vessels/rest',
-      params: { apiaccesscode: API_KEY },
-    });
-
-export const terminalsApi = isWeb
-  ? axios.create({ baseURL: `${PROXY_URL}/wsf` })
-  : axios.create({
-      baseURL: 'https://www.wsdot.wa.gov/ferries/api/terminals/rest',
-      params: { apiaccesscode: API_KEY },
-    });
+export const scheduleApi = axios.create({ baseURL: wsfBaseURL });
+export const vesselsApi = axios.create({ baseURL: wsfBaseURL });
+export const terminalsApi = axios.create({ baseURL: wsfBaseURL });

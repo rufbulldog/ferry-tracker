@@ -16,8 +16,41 @@ function response(statusCode: number, body: unknown): APIGatewayProxyResult {
   };
 }
 
+/**
+ * Map an API Gateway resource template (+ path params) to the upstream WSF REST
+ * path. Returns null for unknown routes. Exported for unit testing.
+ *
+ * The WSF API key is appended by the caller and never leaves the backend.
+ */
+export function wsfPathFor(
+  resource: string,
+  params: Record<string, string | undefined> | null,
+): string | null {
+  switch (resource) {
+    case '/wsf/vessels':
+      return 'vessels/rest/vessellocations';
+    case '/wsf/terminals':
+      return 'terminals/rest/terminalsailingspace';
+    case '/wsf/bulletins/{terminalId}': {
+      const id = params?.terminalId;
+      return id
+        ? `terminals/rest/terminalbulletins/${encodeURIComponent(id)}`
+        : null;
+    }
+    case '/wsf/schedule/{routeId}/{onlyRemaining}': {
+      const routeId = params?.routeId;
+      const onlyRemaining = params?.onlyRemaining;
+      return routeId && onlyRemaining
+        ? `schedule/rest/scheduletoday/${encodeURIComponent(routeId)}/${encodeURIComponent(onlyRemaining)}`
+        : null;
+    }
+    default:
+      return null;
+  }
+}
+
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  console.log('Proxy request:', event.httpMethod, event.path);
+  console.log('Proxy request:', event.httpMethod, event.resource);
 
   try {
     // Handle CORS preflight
@@ -25,32 +58,18 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       return response(200, {});
     }
 
-    const path = event.path;
-
-    // /wsf/vessels - Vessel locations
-    if (path === '/wsf/vessels') {
-      const url = `${WSF_BASE_URL}/vessels/rest/vessellocations?apiaccesscode=${WSF_API_KEY}`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        return response(res.status, { error: `WSF API error: ${res.status}` });
-      }
-      const data = await res.json();
-      return response(200, data);
+    const wsfPath = wsfPathFor(event.resource, event.pathParameters);
+    if (!wsfPath) {
+      return response(404, { error: 'Not found' });
     }
 
-    // /wsf/terminals - Terminal sailing space
-    if (path === '/wsf/terminals') {
-      const url = `${WSF_BASE_URL}/terminals/rest/terminalsailingspace?apiaccesscode=${WSF_API_KEY}`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        return response(res.status, { error: `WSF API error: ${res.status}` });
-      }
-      const data = await res.json();
-      return response(200, data);
+    const url = `${WSF_BASE_URL}/${wsfPath}?apiaccesscode=${WSF_API_KEY}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      return response(res.status, { error: `WSF API error: ${res.status}` });
     }
-
-    return response(404, { error: 'Not found' });
-
+    const data = await res.json();
+    return response(200, data);
   } catch (error) {
     console.error('Proxy error:', error);
     return response(500, { error: 'Internal server error' });

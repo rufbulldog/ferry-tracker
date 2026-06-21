@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PaperProvider } from 'react-native-paper';
@@ -7,6 +7,7 @@ import { RouteProvider, useRoute } from '../src/context/RouteContext';
 import { ThemeProvider } from '../src/context/ThemeContext';
 import { useUserLocation } from '../src/hooks/useUserLocation';
 import { findNearestLocation, getRouteDefaults } from '../src/utils/locations';
+import { loadPersonalLocations } from '../src/store/personalLocations';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,15 +21,21 @@ const queryClient = new QueryClient({
 function LocationDefaultsSetter() {
   const { location } = useUserLocation();
   const { setLocationDefaults } = useRoute();
+  const [personalLoaded, setPersonalLoaded] = useState(false);
+
+  // Load saved home/work locations once at startup (from on-device storage).
+  useEffect(() => {
+    loadPersonalLocations().finally(() => setPersonalLoaded(true));
+  }, []);
 
   useEffect(() => {
-    if (!location) return;
+    if (!location || !personalLoaded) return;
     const nearest = findNearestLocation(location.latitude, location.longitude);
     if (nearest && nearest.distanceMeters < 10000) {
       const defaults = getRouteDefaults(nearest.location.id);
       setLocationDefaults(defaults.routeGroup, defaults.direction);
     }
-  }, [location, setLocationDefaults]);
+  }, [location, personalLoaded, setLocationDefaults]);
 
   return null;
 }

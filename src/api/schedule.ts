@@ -6,7 +6,7 @@ export async function fetchScheduleToday(
   onlyRemainingTimes: boolean = true
 ): Promise<ScheduledSailing[]> {
   const { data } = await scheduleApi.get<ScheduledSailing[]>(
-    `/scheduletoday/${routeId}/${onlyRemainingTimes}`
+    `/schedule/${routeId}/${onlyRemainingTimes}`
   );
   return data;
 }
