@@ -73,4 +73,4 @@ There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK dep
 - **iOS-only by default.** Don't suggest `eas submit android` unless the user has explicitly confirmed Google Play Console + service account JSON are configured.
 - **No web testing.** Even though `app.json` configures a web bundler, the app isn't designed to run in a browser.
 - **Same-env channels.** `preview` and `production` share an env signature, so an OTA bundle pushed to one is functionally identical to one pushed to the other — but they reach different audiences (your device vs. TestFlight testers). Don't push to one and forget the other if you intend to ship to everyone.
-- **No Jest config currently wired.** If `test-runner` reports no test runner, surface that and ask whether to set one up or skip tests for this ship.
+- **Jest is wired up.** The app has a `src`-scoped Jest config (`jest.config.js` + `tsconfig.jest.json`) — run `npm test` from the repo root. The CDK backend has its own suite under `infra/` (`cd infra && npm test`). Run both before a ship.
