@@ -83,7 +83,9 @@ export class InfraStack extends cdk.Stack {
       entry: path.join(__dirname, '../lambda/proxy/index.ts'),
       handler: 'handler',
       runtime: lambda.Runtime.NODEJS_22_X,
-      timeout: cdk.Duration.seconds(10),
+      // WSF's schedule endpoint is slow (large payload); 10s was too tight and
+      // timed out. 29s is the API Gateway REST integration ceiling.
+      timeout: cdk.Duration.seconds(29),
       memorySize: 256,
       environment: {
         WSF_API_KEY: wsfApiKey.valueAsString,
