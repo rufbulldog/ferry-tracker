@@ -1,0 +1,13 @@
+{
+  "specDir": "docs/spec",
+  "ignoreDirs": ["android", "ios", "cdk.out"],
+  "audit": {
+    "l4Patterns": [
+      "^README\\.md$",
+      "^CLAUDE\\.md$",
+      "^AGENTS\\.md$",
+      "^README-[A-Z-]+\\.md$"
+    ],
+    "commonEnglishTableNames": []
+  }
+}

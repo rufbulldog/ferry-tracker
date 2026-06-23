@@ -1,0 +1,478 @@
+{
+  "version": 2,
+  "generated_at": "2026-06-23T02:13:37.725Z",
+  "files": {
+    "app/(tabs)/_layout.tsx": {
+      "content_sha256": "278ed1f81830c755f9f6bb048dcf89dc94623316a23aca3ba3288532f9c8b5ab",
+      "spec_path": "docs/spec/app/(tabs)/_layout.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.613Z"
+    },
+    "app/(tabs)/index.tsx": {
+      "content_sha256": "9bc1a1972bc8d2cb06b95bac6bfe18692831c6d44c55a17bf8ebbc18cd74e2c8",
+      "spec_path": "docs/spec/app/(tabs)/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.621Z"
+    },
+    "app/(tabs)/recommend.tsx": {
+      "content_sha256": "98293d5c02ddb0b969475034fc3aedb1cc24ddaa34022b6866fcdfecc51c2436",
+      "spec_path": "docs/spec/app/(tabs)/recommend.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.623Z"
+    },
+    "app/(tabs)/settings.tsx": {
+      "content_sha256": "7de3e41079035ee4f72837a4455e010625187137ab72f41f4506e7b6f19f1990",
+      "spec_path": "docs/spec/app/(tabs)/settings.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.624Z"
+    },
+    "app/(tabs)/timer.tsx": {
+      "content_sha256": "34c2cc30f83a2d9be9ac7630c2607ce51c6d46568d0eb312ee377d4e8717c271",
+      "spec_path": "docs/spec/app/(tabs)/timer.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.625Z"
+    },
+    "app/(tabs)/trends.tsx": {
+      "content_sha256": "5b80a75ac0a20b59d3385f62220687f8d3f531929c0a29c83bdff98be59b5e22",
+      "spec_path": "docs/spec/app/(tabs)/trends.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.627Z"
+    },
+    "app/_layout.tsx": {
+      "content_sha256": "7bdd179888097553f7295c902e54d70dc172f05a4a742250722ffd3167bacf04",
+      "spec_path": "docs/spec/app/_layout.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:33.888Z"
+    },
+    "infra/bin/infra.js": {
+      "content_sha256": "c6bd2874db20c0d7e12f092afed506ddf435c81929e44a0d97cbd06de9ad6ab8",
+      "spec_path": "docs/spec/infra/bin/infra.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.628Z"
+    },
+    "infra/bin/infra.ts": {
+      "content_sha256": "957d0baf4f00f00f114d75e71f0fe3a7dc7658adb61dc5d8bdd6e7984ca74439",
+      "spec_path": "docs/spec/infra/bin/infra.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.629Z"
+    },
+    "infra/lambda/api/index.js": {
+      "content_sha256": "adaacc214c1ccfed25e93ba4aa7531010f53cf97d878218d79a7d0bf8031d4e6",
+      "spec_path": "docs/spec/infra/lambda/api/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.629Z"
+    },
+    "infra/lambda/api/index.ts": {
+      "content_sha256": "309dadc0321003148284524c0d9d3298467bedd4a8f7e7be6395635487c0e594",
+      "spec_path": "docs/spec/infra/lambda/api/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.629Z"
+    },
+    "infra/lambda/collector/index.js": {
+      "content_sha256": "2d269e641cd8f35f30e061527bc70a96324ba5a97e988eed3c47bd9d4e663927",
+      "spec_path": "docs/spec/infra/lambda/collector/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.630Z"
+    },
+    "infra/lambda/collector/index.ts": {
+      "content_sha256": "b88de029293f056c5e72a9432f056b4fc695486ee73707d4b6806d039749e99e",
+      "spec_path": "docs/spec/infra/lambda/collector/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.630Z"
+    },
+    "infra/lambda/proxy/index.js": {
+      "content_sha256": "c13c89be9e9937cc802d9e5dcdaba2c2b7a6d4ae81d590366d2a3d3fcb863d05",
+      "spec_path": "docs/spec/infra/lambda/proxy/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.637Z"
+    },
+    "infra/lambda/proxy/index.ts": {
+      "content_sha256": "08a217f8224775846e00c869edcd1703c9436926a8d744033f6eb9c32af33fbe",
+      "spec_path": "docs/spec/infra/lambda/proxy/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.637Z"
+    },
+    "infra/lib/infra-stack.js": {
+      "content_sha256": "e6b90c10a0544cc0229a8bf0bec547799d90c5d900f4f45bca97ce3da0812fbe",
+      "spec_path": "docs/spec/infra/lib/infra-stack.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.638Z"
+    },
+    "infra/lib/infra-stack.ts": {
+      "content_sha256": "2b2974a0306c69fd565547304d09033b5edd37e33e4e559606662b57bdc47cdf",
+      "spec_path": "docs/spec/infra/lib/infra-stack.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.638Z"
+    },
+    "src/api/backend.ts": {
+      "content_sha256": "b4cbd4bcc0c1c2884a1f0e0a9d103312b009e82ac097c5286692cefc5cb51f0d",
+      "spec_path": "docs/spec/src/api/backend.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.639Z"
+    },
+    "src/api/client.ts": {
+      "content_sha256": "c8050d98ed9a44df5b686567e13f723aa6afc22b016afedd906e4dfa13aebfef",
+      "spec_path": "docs/spec/src/api/client.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.639Z"
+    },
+    "src/api/schedule.ts": {
+      "content_sha256": "06cdb3bee8125e63fa82e2bb4a8a76e76c744ecc6c550c612eb76a33cfad9a81",
+      "spec_path": "docs/spec/src/api/schedule.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.639Z"
+    },
+    "src/api/terminals.ts": {
+      "content_sha256": "b2b926e0de0ae38c0b76befabe20a789cfb8329686e1aa42914b0a4bb3f0cecd",
+      "spec_path": "docs/spec/src/api/terminals.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.640Z"
+    },
+    "src/api/types.ts": {
+      "content_sha256": "6ccba02e4663178744acccc14bd322e363d0af723a61882af20cd19bbe2d4622",
+      "spec_path": "docs/spec/src/api/types.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.640Z"
+    },
+    "src/api/vessels.ts": {
+      "content_sha256": "84168b8e47a9b456ae2817e1e9d1b467cfcdc534d369625aa7c2b5c14e422a18",
+      "spec_path": "docs/spec/src/api/vessels.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.640Z"
+    },
+    "src/components/AlertBanner.tsx": {
+      "content_sha256": "b45c3cff84df291b80f27edb8a96a66d8a67986579f3f1a01ee5e7fe6fbcc4ee",
+      "spec_path": "docs/spec/src/components/AlertBanner.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.640Z"
+    },
+    "src/components/CapacityBar.tsx": {
+      "content_sha256": "d5ce253c804239955ae3160951266561880fdfbb7ce54cac8cc8997fcdc1de78",
+      "spec_path": "docs/spec/src/components/CapacityBar.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.641Z"
+    },
+    "src/components/CheckInFAB.tsx": {
+      "content_sha256": "a3c2b5cf8dae743cb9183e4dce8234eaa3c3ddd427680de82df72b930387d211",
+      "spec_path": "docs/spec/src/components/CheckInFAB.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.642Z"
+    },
+    "src/components/FerryCard.tsx": {
+      "content_sha256": "d4ada51ba5f625987a15a51e97057cf16d99b03c006810c1581442ad5149a66f",
+      "spec_path": "docs/spec/src/components/FerryCard.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.642Z"
+    },
+    "src/components/FerryProgressIndicator.tsx": {
+      "content_sha256": "279eaa7460f7aa23bdebe3d58b6dcd04c7a6067b428f644d8dbb6b315eedb65b",
+      "spec_path": "docs/spec/src/components/FerryProgressIndicator.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.643Z"
+    },
+    "src/components/LastDepartureCard.tsx": {
+      "content_sha256": "10be0428bc0de4f19e684b67db767c69498230e13e333a50c4102671fb10c763",
+      "spec_path": "docs/spec/src/components/LastDepartureCard.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.643Z"
+    },
+    "src/components/MainDepartureCard.tsx": {
+      "content_sha256": "4fe333522280aad69e24a6d53c130fc6b870b4a8fbdfe3339323cb7df93b2654",
+      "spec_path": "docs/spec/src/components/MainDepartureCard.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.643Z"
+    },
+    "src/components/RouteSelector.tsx": {
+      "content_sha256": "9a777fd1685e080a990532365bc9352cde6732712b215ed89c6ae109cede7478",
+      "spec_path": "docs/spec/src/components/RouteSelector.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.644Z"
+    },
+    "src/context/RouteContext.tsx": {
+      "content_sha256": "3fa0953b7746006d13e4e71dd797f0ecd9aa88ec2869bdf7b8d3ecc4b2473c87",
+      "spec_path": "docs/spec/src/context/RouteContext.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.644Z"
+    },
+    "src/context/ThemeContext.tsx": {
+      "content_sha256": "5b11727011b99f7ff4c2285df04baf3fd22e69585fdd909f05feb78813b5a641",
+      "spec_path": "docs/spec/src/context/ThemeContext.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.655Z"
+    },
+    "src/hooks/useArrivalEta.ts": {
+      "content_sha256": "8fefe2d819948523e433279522c2f5eac2bea4dc4170235ea97bb4c2b9e86080",
+      "spec_path": "docs/spec/src/hooks/useArrivalEta.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.656Z"
+    },
+    "src/hooks/useDailyTrends.ts": {
+      "content_sha256": "23569ca914a0dba2f241df03bbc58542bdd900912fdf9a1a06c8f2d27f244fc5",
+      "spec_path": "docs/spec/src/hooks/useDailyTrends.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.656Z"
+    },
+    "src/hooks/useLatestDeparture.ts": {
+      "content_sha256": "97080a7523a501617448d82cd925cbf01e3c38db35fc8499cd49eb92fb249a2d",
+      "spec_path": "docs/spec/src/hooks/useLatestDeparture.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.662Z"
+    },
+    "src/hooks/useNextDepartures.ts": {
+      "content_sha256": "c28d540d04d479673fc30ac4c44fcdb15c70c9b9a91965e74728108d8f2ba34d",
+      "spec_path": "docs/spec/src/hooks/useNextDepartures.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.666Z"
+    },
+    "src/hooks/useRecommendation.ts": {
+      "content_sha256": "6a514caa74ccb849d2983841cad11d4bf4fb4ae290f1124cf04348aaed98b439",
+      "spec_path": "docs/spec/src/hooks/useRecommendation.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.672Z"
+    },
+    "src/hooks/useRouteVessels.ts": {
+      "content_sha256": "e0a02fccff3428337fda65445c301cb1cc7f0d074b5967101775f4f0a30b42e6",
+      "spec_path": "docs/spec/src/hooks/useRouteVessels.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.673Z"
+    },
+    "src/hooks/useTerminalBulletins.ts": {
+      "content_sha256": "b9d90d4c2878cb88a2159265ad0a96703bd6995eed7063a5bfb8ddabd920b8b9",
+      "spec_path": "docs/spec/src/hooks/useTerminalBulletins.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.696Z"
+    },
+    "src/hooks/useTerminalConditions.ts": {
+      "content_sha256": "b5cf70eeec1aa19ea77453b1203c7a4526f1fec8ce6fdc5a80c22b0705f26c03",
+      "spec_path": "docs/spec/src/hooks/useTerminalConditions.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.698Z"
+    },
+    "src/hooks/useTimer.ts": {
+      "content_sha256": "483dfe2e134fbb839dd2a92cb12afefefddedd63c18f50248f33f73f171c7f2c",
+      "spec_path": "docs/spec/src/hooks/useTimer.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.702Z"
+    },
+    "src/hooks/useTransitRecords.ts": {
+      "content_sha256": "20a53d800bf1c354b64b227dd16acf26dd43f78d45139030269e07b50b408a07",
+      "spec_path": "docs/spec/src/hooks/useTransitRecords.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.708Z"
+    },
+    "src/hooks/useUserLocation.ts": {
+      "content_sha256": "91ade0fdbac3b53e0cfe4209e72a55a3bcb387d9b73c93176be4bf4e8629e3e0",
+      "spec_path": "docs/spec/src/hooks/useUserLocation.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.718Z"
+    },
+    "src/hooks/useVesselLocations.ts": {
+      "content_sha256": "7abcaf744f3a021473ca8de544968392bd8d1008a7cda4123c732419b446832d",
+      "spec_path": "docs/spec/src/hooks/useVesselLocations.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.718Z"
+    },
+    "src/store/personalLocations.ts": {
+      "content_sha256": "4812d11b2b45de28578017cc97436174f1047dd0c6745cfc942b5d4b4000f2c6",
+      "spec_path": "docs/spec/src/store/personalLocations.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.719Z"
+    },
+    "src/types/storage.ts": {
+      "content_sha256": "2a4974e8f099e92486afd033fa3feef467fb705c9f80354c5dee638b3a3e4586",
+      "spec_path": "docs/spec/src/types/storage.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.719Z"
+    },
+    "src/utils/arrivalEtaLogic.ts": {
+      "content_sha256": "87156c2661f1dd80d5585cbcf63a17e116aff9450bfdfaea37f368ee0f33aba8",
+      "spec_path": "docs/spec/src/utils/arrivalEtaLogic.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.720Z"
+    },
+    "src/utils/constants.ts": {
+      "content_sha256": "6c8f35315f22c6c2abe36af185d07acc0ad235ef23a4cce3deaf1b7c0c8d9201",
+      "spec_path": "docs/spec/src/utils/constants.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.720Z"
+    },
+    "src/utils/locations.ts": {
+      "content_sha256": "6df5827c5239e6a9947929c9eaae0a49afec03725a21ab975e0d71ce184d68d0",
+      "spec_path": "docs/spec/src/utils/locations.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.720Z"
+    },
+    "src/utils/themes.ts": {
+      "content_sha256": "a69ec20cde5f7b7c6a3e8d00757364b5b376df704374ee78c825922d2141927c",
+      "spec_path": "docs/spec/src/utils/themes.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.721Z"
+    },
+    "src/utils/time.ts": {
+      "content_sha256": "a117e1a270999359127885c958ae1dce0f0c1407a1a8f55f152008c0155288fd",
+      "spec_path": "docs/spec/src/utils/time.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.721Z"
+    },
+    "src/utils/transitStats.ts": {
+      "content_sha256": "dfe39c08ee55de1d011a7ad7c43965c81972928c56e1ed3bb108b30aa25ad9c1",
+      "spec_path": "docs/spec/src/utils/transitStats.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.721Z"
+    }
+  },
+  "modules": {
+    "app": {
+      "input_hashes_sha256": "cd9e2d5197411588de0ce38829c406b1d1a8e19f50e0d2b9bdd803b81c2f9dce",
+      "spec_path": "docs/spec/app/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.722Z"
+    },
+    "app/(tabs)": {
+      "input_hashes_sha256": "26c8bb99f15defb968e3769d9e0509cdfa066e06bd8721b38e12ec6aee672591",
+      "spec_path": "docs/spec/app/(tabs)/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.722Z"
+    },
+    "infra/bin": {
+      "input_hashes_sha256": "80db745028249664456090ce818b0e33095fa4b63857381db316a1d1eba830a2",
+      "spec_path": "docs/spec/infra/bin/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.723Z"
+    },
+    "infra/lambda/api": {
+      "input_hashes_sha256": "7ae51a4f625cb0a19d6ae4f83a7613660a1e198a713116027280b3dc27b69e05",
+      "spec_path": "docs/spec/infra/lambda/api/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.723Z"
+    },
+    "infra/lambda/collector": {
+      "input_hashes_sha256": "937d506330ac62d467025a29fb33bbe55aae8c198101353c087adb20456b170e",
+      "spec_path": "docs/spec/infra/lambda/collector/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.723Z"
+    },
+    "infra/lambda/proxy": {
+      "input_hashes_sha256": "25a08fa711936da42c3ecc34c5a3a3101bcea86e4ed33c8f06fcb90402f2dd7a",
+      "spec_path": "docs/spec/infra/lambda/proxy/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.723Z"
+    },
+    "infra/lib": {
+      "input_hashes_sha256": "f1c131ee1ca2315e7debde976c0490de9ab210c26d712403168ed432c33f1a19",
+      "spec_path": "docs/spec/infra/lib/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.723Z"
+    },
+    "src/api": {
+      "input_hashes_sha256": "2a7a1f286e895ba1baef2aa8236863187356aac1d2e0daf3958bf1449048aa4c",
+      "spec_path": "docs/spec/src/api/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.723Z"
+    },
+    "src/components": {
+      "input_hashes_sha256": "22e3fdb409a916c130df94da6bc6bfdbac449b2e1398c92a2dd7eb97e29681a9",
+      "spec_path": "docs/spec/src/components/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.724Z"
+    },
+    "src/context": {
+      "input_hashes_sha256": "35c5563bdd7aa2fab37e012dfb7741499219aed76a23fabbd664a1ed99efee8a",
+      "spec_path": "docs/spec/src/context/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.724Z"
+    },
+    "src/hooks": {
+      "input_hashes_sha256": "a01cd74309a904383a990af7a4fdda43ce230118626b999cd643dd80e0575bad",
+      "spec_path": "docs/spec/src/hooks/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.724Z"
+    },
+    "src/store": {
+      "input_hashes_sha256": "ced230a401e992eb8a7a1f71afaee08f0313401a3e0919d28bda5fff70725d4e",
+      "spec_path": "docs/spec/src/store/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.725Z"
+    },
+    "src/types": {
+      "input_hashes_sha256": "7db63b9e5e9cd6ae57b14acd79f10b59ef067d3f3132a52c4fc4af7030fb8ea1",
+      "spec_path": "docs/spec/src/types/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.725Z"
+    },
+    "src/utils": {
+      "input_hashes_sha256": "399098372ca15836eefd94fddf1ae9f95f8f7a5228ef8d02579ac68043f5716f",
+      "spec_path": "docs/spec/src/utils/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-06-23T02:13:37.725Z"
+    }
+  },
+  "systems": {}
+}
