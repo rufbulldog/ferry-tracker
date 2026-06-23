@@ -1,6 +1,14 @@
 {
   "specDir": "docs/spec",
   "ignoreDirs": ["android", "ios", "cdk.out"],
+  "codeSystems": {
+    "frontendArchitecture": {
+      "intro": "Cross-cutting view of how the app is wired: which contexts exist, which files consume them, and which custom hooks see widespread use.",
+      "contextsDir": "src/context",
+      "hooksDir": "src/hooks"
+    },
+    "ciCd": false
+  },
   "audit": {
     "l4Patterns": [
       "^README\\.md$",

@@ -1,12 +1,18 @@
 ---
 type: index
 spec_version: 1
-generated_at: 2026-06-23T02:13:37.725Z
+generated_at: 2026-06-23T02:35:21.930Z
 ---
 
 # Spec catalog
 
 Auto-generated entry point. Don't hand-edit — re-run the spec extractor (`spec extract`) instead.
+
+## L3 — Subsystems
+
+Cross-cutting views. Start here for "how does <thing> work" questions.
+
+- [frontend-architecture](_systems/frontend-architecture.md)
 
 ## L2 — Modules
 

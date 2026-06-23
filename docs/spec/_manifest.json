@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-23T02:13:37.725Z",
+  "generated_at": "2026-06-23T02:35:21.930Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "278ed1f81830c755f9f6bb048dcf89dc94623316a23aca3ba3288532f9c8b5ab",
@@ -474,5 +474,13 @@
       "last_audited": "2026-06-23T02:13:37.725Z"
     }
   },
-  "systems": {}
+  "systems": {
+    "frontend-architecture": {
+      "input_sha256": "1186b366a53c4cfdfaab95f8bfb48c94946c5c241c48dc72750f3799d97ed2e0",
+      "spec_path": "docs/spec/_systems/frontend-architecture.md",
+      "extractor_version": "1.0.1",
+      "renderer_version": "1.0.1",
+      "last_audited": "2026-06-23T02:35:21.929Z"
+    }
+  }
 }
