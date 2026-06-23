@@ -1,7 +1,7 @@
 ---
 type: index
 spec_version: 1
-generated_at: 2026-06-23T02:35:21.930Z
+generated_at: 2026-06-23T02:47:38.280Z
 ---
 
 # Spec catalog
@@ -12,7 +12,9 @@ Auto-generated entry point. Don't hand-edit — re-run the spec extractor (`spec
 
 Cross-cutting views. Start here for "how does <thing> work" questions.
 
+- [architecture](_systems/architecture.md)
 - [frontend-architecture](_systems/frontend-architecture.md)
+- [tech-stack](_systems/tech-stack.md)
 
 ## L2 — Modules
 

@@ -7,7 +7,11 @@
       "contextsDir": "src/context",
       "hooksDir": "src/hooks"
     },
-    "ciCd": false
+    "ciCd": false,
+    "architecture": true,
+    "techStack": {
+      "packages": ["package.json", "infra/package.json"]
+    }
   },
   "audit": {
     "l4Patterns": [
