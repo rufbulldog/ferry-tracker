@@ -39,6 +39,7 @@
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
+    "@rufbulldog/jest-preset": "file:../dev-utils/packages/jest-preset",
     "@types/jest": "^29.5.14",
     "@types/react": "~19.1.0",
     "jest": "^29.7.0",

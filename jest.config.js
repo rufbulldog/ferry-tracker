@@ -1,15 +1,14 @@
 /**
- * App-level Jest config (ts-jest).
- *
- * Scoped to `src/` so it never picks up the separate CDK suite under `infra/`
- * (which has its own jest config). Uses tsconfig.jest.json — a standalone
- * CommonJS tsconfig — rather than the Expo base (module: "preserve",
- * moduleResolution: "bundler"), which Node/Jest can't run directly.
+ * App-level Jest config. Extends the shared @rufbulldog/jest-preset base and
+ * overrides only what's ferry-specific: scoped to `src/` (so it never picks up
+ * the separate CDK suite under `infra/`), and a ts-jest transform pinned to
+ * tsconfig.jest.json (a standalone CommonJS tsconfig — the Expo base uses
+ * module: "preserve" / moduleResolution: "bundler", which Node/Jest can't run).
  *
  * @type {import('jest').Config}
  */
 module.exports = {
-  testEnvironment: 'node',
+  ...require('@rufbulldog/jest-preset/expo'),
   roots: ['<rootDir>/src'],
   testMatch: ['**/*.test.ts'],
   transform: {
