@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-23T02:47:38.280Z",
+  "generated_at": "2026-06-23T03:06:20.048Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "278ed1f81830c755f9f6bb048dcf89dc94623316a23aca3ba3288532f9c8b5ab",
@@ -476,25 +476,25 @@
   },
   "systems": {
     "architecture": {
-      "input_sha256": "065058d4f9c27f131012754059526a5506fe742fd29dfb32e7905ddf54950be7",
+      "input_sha256": "bcb09e1f11b0144e34833a2a5558e822a46655875fb60abcf46909789103bdbd",
       "spec_path": "docs/spec/_systems/architecture.md",
-      "extractor_version": "1.0.1",
-      "renderer_version": "1.0.1",
-      "last_audited": "2026-06-23T02:46:19.275Z"
+      "extractor_version": "1.0.2",
+      "renderer_version": "1.0.2",
+      "last_audited": "2026-06-23T03:06:20.048Z"
     },
     "frontend-architecture": {
-      "input_sha256": "1186b366a53c4cfdfaab95f8bfb48c94946c5c241c48dc72750f3799d97ed2e0",
+      "input_sha256": "e63a18e662d4b3836977474dfaeb7930fccf0dda3e8ad64bb0e143085a4950da",
       "spec_path": "docs/spec/_systems/frontend-architecture.md",
-      "extractor_version": "1.0.1",
-      "renderer_version": "1.0.1",
-      "last_audited": "2026-06-23T02:35:21.929Z"
+      "extractor_version": "1.0.2",
+      "renderer_version": "1.0.2",
+      "last_audited": "2026-06-23T03:06:20.047Z"
     },
     "tech-stack": {
-      "input_sha256": "63f31601a1d3a655f796b6e2b11a1b26c71924c30cce6c90a7cab541c4f4bfa5",
+      "input_sha256": "96c3de45fa642ca2000d82524f50dc121fda0b5305ba1dd75c0a656bf6782d03",
       "spec_path": "docs/spec/_systems/tech-stack.md",
-      "extractor_version": "1.0.1",
-      "renderer_version": "1.0.1",
-      "last_audited": "2026-06-23T02:47:38.280Z"
+      "extractor_version": "1.0.2",
+      "renderer_version": "1.0.2",
+      "last_audited": "2026-06-23T03:06:20.048Z"
     }
   }
 }

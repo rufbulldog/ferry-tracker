@@ -4,9 +4,9 @@ spec_version: 1
 name: tech-stack
 discovered_from: code-graph + repo config
 resource_count: 16
-extractor_version: 1.0.1
-renderer_version: 1.0.1
-last_audited: 2026-06-23T02:47:38.277Z
+extractor_version: 1.0.2
+renderer_version: 1.0.2
+last_audited: 2026-06-23T03:06:20.043Z
 ---
 
 # Technology stack — System Spec
