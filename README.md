@@ -2,6 +2,33 @@
 
 A React Native app for tracking Washington State Ferries in real-time. Shows upcoming departures, vessel locations, drive-up space availability, personalized departure recommendations, trend analytics, and personal transit timing.
 
+## System Architecture
+
+A serverless AWS backend (CDK) sits behind a single Expo codebase that ships to iOS, Android, and web. A scheduled collector continuously captures sailing data, while a proxy keeps the WSF API key server-side and solves CORS. Personalized "leave-by" times come from a trimmed-mean model over each user's own recorded crossings.
+
+```mermaid
+flowchart TD
+    subgraph Clients["Client — one Expo codebase"]
+        iOS["iOS"]
+        Android["Android"]
+        Web["Web"]
+    end
+
+    Clients -->|HTTPS| APIGW["API Gateway · REST"]
+
+    APIGW --> ApiFn["Lambda — API<br/>transit-record CRUD + trends<br/>+ leave-by prediction"]
+    APIGW --> ProxyFn["Lambda — WSF Proxy<br/>injects API key, adds CORS"]
+
+    ProxyFn -->|live vessels, terminals, capacity| WSF["WSDOT / WSF API"]
+    ApiFn --> DDB[("DynamoDB<br/>transit-records · ferry-departures")]
+
+    EB["EventBridge schedule<br/>every 2 min"] --> Collector["Lambda — Collector<br/>captures capacity + delays"]
+    Collector --> WSF
+    Collector --> DDB
+
+    ApiFn -. trimmed-mean over<br/>your crossings .-> Pred["Personalized leave-by time"]
+```
+
 ## Features
 
 ### Leave Tab
