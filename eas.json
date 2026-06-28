@@ -47,13 +47,7 @@
   },
   "submit": {
     "production": {
-      "ios": {
-        "ascAppId": "REDACTED_ASC_APP_ID",
-        "appleTeamId": "REDACTED_APPLE_TEAM_ID",
-        "ascApiKeyPath": "./keys/AuthKey_REDACTED_ASC_KEY_ID.p8",
-        "ascApiKeyId": "REDACTED_ASC_KEY_ID",
-        "ascApiKeyIssuerId": "REDACTED_ASC_KEY_ISSUER_ID"
-      }
+      "ios": {}
     }
   }
 }
