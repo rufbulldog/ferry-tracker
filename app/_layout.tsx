@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import { Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PaperProvider } from 'react-native-paper';
@@ -23,9 +24,16 @@ function LocationDefaultsSetter() {
   const { setLocationDefaults } = useRoute();
   const [personalLoaded, setPersonalLoaded] = useState(false);
 
-  // Load saved home/work locations once at startup (from on-device storage).
+  // Load saved personal settings once at startup (from on-device storage).
   useEffect(() => {
-    loadPersonalLocations().finally(() => setPersonalLoaded(true));
+    loadPersonalLocations().then((dataLost) => {
+      if (dataLost) {
+        Alert.alert(
+          'Settings reset',
+          'Your saved locations and check-in contact could not be read and have been cleared. Please re-enter them in Settings.',
+        );
+      }
+    }).finally(() => setPersonalLoaded(true));
   }, []);
 
   useEffect(() => {

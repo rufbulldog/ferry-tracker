@@ -46,15 +46,21 @@ export function getPersonalLocations(): KnownLocation[] {
   return out;
 }
 
-/** Load persisted coords into the in-memory cache. Call once at startup. */
-export async function loadPersonalLocations(): Promise<void> {
+/**
+ * Load persisted coords into the in-memory cache. Call once at startup.
+ * Returns true if stored data existed but could not be parsed (data loss).
+ */
+export async function loadPersonalLocations(): Promise<boolean> {
+  let dataLost = false;
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
     cache = raw ? (JSON.parse(raw) as PersonalCoords) : {};
   } catch {
+    dataLost = true;
     cache = {};
   }
   emit();
+  return dataLost;
 }
 
 /** Persist new coords and update the cache. */
