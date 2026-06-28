@@ -9,6 +9,7 @@ export interface Coord {
 export interface PersonalCoords {
   home?: Coord;
   work?: Coord;
+  contactNumber?: string;
 }
 
 const STORAGE_KEY = '@ferry_app_personal_locations';
@@ -23,9 +24,14 @@ function emit(): void {
   listeners.forEach((fn) => fn());
 }
 
-/** Current home/work coords (synchronous read of the cache). */
+/** Current home/work coords and contact number (synchronous read of the cache). */
 export function getPersonalCoords(): PersonalCoords {
   return cache;
+}
+
+/** Current check-in contact number (synchronous read of the cache). */
+export function getContactNumber(): string | undefined {
+  return cache.contactNumber;
 }
 
 /** Home/work as KnownLocation[] for distance / routing logic. */

@@ -1,24 +1,30 @@
+import { useState, useEffect } from 'react';
 import { Linking, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute } from '../context/RouteContext';
 import { useArrivalEta } from '../hooks/useArrivalEta';
-import { ETA_CONTACT_NUMBER } from '../utils/constants';
+import { getContactNumber, subscribePersonalLocations } from '../store/personalLocations';
 import { formatTime } from '../utils/time';
 
 export function CheckInFAB() {
+  const [contactNumber, setContactNumber] = useState(() => getContactNumber());
   const { route } = useRoute();
   const { arrival } = useArrivalEta(route);
 
-  // Only the home-bound direction sends an SMS
-  if (route !== 'seattle-bainbridge') {
+  useEffect(() => {
+    return subscribePersonalLocations(() => setContactNumber(getContactNumber()));
+  }, []);
+
+  // Only the home-bound direction sends an SMS, and only when a contact is set
+  if (route !== 'seattle-bainbridge' || !contactNumber) {
     return null;
   }
 
   const handlePress = () => {
     if (!arrival || !arrival.etaTime) return;
     const message = `⛴️ Boarded, ETA: ${formatTime(arrival.etaTime)}`;
-    const smsUrl = `sms:${ETA_CONTACT_NUMBER}&body=${encodeURIComponent(message)}`;
+    const smsUrl = `sms:${contactNumber}&body=${encodeURIComponent(message)}`;
     Linking.openURL(smsUrl);
   };
 

@@ -35,7 +35,6 @@ export const TERMINAL_CAMERAS: Record<number, { name: string; url: string }[]> =
 };
 
 // ETA / Check-in constants
-export const ETA_CONTACT_NUMBER = process.env.EXPO_PUBLIC_ETA_CONTACT ?? '';
 export const FERRY_CROSSING_MINUTES = 35;
 export const FERRY_TO_HOME_FALLBACK_MINUTES = 15;
 

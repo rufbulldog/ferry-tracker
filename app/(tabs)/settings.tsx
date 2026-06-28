@@ -100,11 +100,11 @@ function PersonalLocationsSection({ theme }: { theme: Theme }) {
   };
 
   const onSave = async () => {
-    const next: PersonalCoords = {};
+    const next: PersonalCoords = { ...getPersonalCoords() };
     const home = parsePair(homeLat, homeLon);
     const work = parsePair(workLat, workLon);
-    if (home) next.home = home;
-    if (work) next.work = work;
+    if (home) next.home = home; else delete next.home;
+    if (work) next.work = work; else delete next.work;
     setSaving(true);
     try {
       await setPersonalCoords(next);
@@ -192,6 +192,67 @@ function PersonalLocationsSection({ theme }: { theme: Theme }) {
   );
 }
 
+function CheckInContactSection({ theme }: { theme: Theme }) {
+  const [contactNumber, setContactNumber] = useState(
+    getPersonalCoords().contactNumber ?? ''
+  );
+  const [saving, setSaving] = useState(false);
+
+  const onSave = async () => {
+    const trimmed = contactNumber.trim();
+    const next: PersonalCoords = { ...getPersonalCoords() };
+    if (trimmed) {
+      next.contactNumber = trimmed;
+    } else {
+      delete next.contactNumber;
+    }
+    setSaving(true);
+    try {
+      await setPersonalCoords(next);
+      Alert.alert('Saved', 'Your check-in contact was updated.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <View style={[styles.section, { backgroundColor: theme.colors.cardBg }]}>
+      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+        Check-in contact
+      </Text>
+      <Text style={[styles.infoText, { color: theme.colors.textMuted, marginBottom: 16 }]}>
+        Optional. The "Send ETA" button texts this number when you board. Stored only on this
+        device — never uploaded or built into the app.
+      </Text>
+      <TextInput
+        value={contactNumber}
+        onChangeText={setContactNumber}
+        placeholder="+1 (555) 000-0000"
+        placeholderTextColor={theme.colors.textMuted}
+        keyboardType="phone-pad"
+        autoCapitalize="none"
+        style={[
+          styles.input,
+          {
+            color: theme.colors.text,
+            borderColor: theme.colors.border,
+            backgroundColor: theme.colors.pageBg,
+            flex: 0,
+          },
+        ]}
+      />
+      <TouchableOpacity
+        onPress={onSave}
+        disabled={saving}
+        activeOpacity={0.8}
+        style={[styles.saveBtn, { backgroundColor: theme.colors.primary, opacity: saving ? 0.6 : 1 }]}
+      >
+        <Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save contact'}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { themeName, theme, setTheme } = useTheme();
@@ -224,6 +285,8 @@ export default function SettingsScreen() {
       </View>
 
       <PersonalLocationsSection theme={theme} />
+
+      <CheckInContactSection theme={theme} />
 
       <View style={[styles.section, { backgroundColor: theme.colors.cardBg }]}>
         <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
