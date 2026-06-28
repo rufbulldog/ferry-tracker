@@ -1,26 +1,24 @@
 ---
 type: l1-file
 spec_version: 1
-source: infra/bin/infra.ts
-content_sha: 957d0baf4f00f00f114d75e71f0fe3a7dc7658adb61dc5d8bdd6e7984ca74439
+source: infra/bin/infra.js
+content_sha: d2ef8be0a04479cc549cb2b117e02ff01a97f29fa85072b644a8224f702fec20
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.629Z
+last_audited: 2026-06-28T18:29:47.276Z
 ---
 
-# infra.ts
+# infra.js
 
-**Path:** `infra/bin/infra.ts`
-**Lines:** 21
-**Language:** TypeScript
+**Path:** `infra/bin/infra.js`
+**Lines:** 52
+**Language:** JavaScript
 
-## Imports
+## Exports
 
-**Internal:**
-- `../lib/infra-stack` (`InfraStack`)
-
-**External:**
-- `aws-cdk-lib/core` (`* as cdk`)
+| Name | Kind | Signature |
+|---|---|---|
+| `__esModule` | other |  |
 
 ## Side effects
 

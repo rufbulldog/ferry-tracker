@@ -3,16 +3,16 @@ type: l2-module
 spec_version: 1
 path: src/components
 file_count: 8
-total_lines: 1909
+total_lines: 1915
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.724Z
+last_audited: 2026-06-28T18:29:47.370Z
 ---
 
 # src/components — Module Spec
 
 **Folder:** `src/components`
-**Files:** 8 · **Lines:** 1909
+**Files:** 8 · **Lines:** 1915
 
 ## File inventory
 
@@ -20,7 +20,7 @@ last_audited: 2026-06-23T02:13:37.724Z
 |---|---|---|
 | [`AlertBanner.tsx`](./AlertBanner.md) | 121 |  |
 | [`CapacityBar.tsx`](./CapacityBar.md) | 130 |  |
-| [`CheckInFAB.tsx`](./CheckInFAB.md) | 67 |  |
+| [`CheckInFAB.tsx`](./CheckInFAB.md) | 73 |  |
 | [`FerryCard.tsx`](./FerryCard.md) | 295 |  |
 | [`FerryProgressIndicator.tsx`](./FerryProgressIndicator.md) | 121 |  |
 | [`LastDepartureCard.tsx`](./LastDepartureCard.md) | 161 |  |

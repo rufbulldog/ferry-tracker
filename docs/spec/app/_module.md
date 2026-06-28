@@ -3,22 +3,22 @@ type: l2-module
 spec_version: 1
 path: app
 file_count: 1
-total_lines: 61
+total_lines: 69
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.722Z
+last_audited: 2026-06-28T18:29:47.369Z
 ---
 
 # app — Module Spec
 
 **Folder:** `app`
-**Files:** 1 · **Lines:** 61
+**Files:** 1 · **Lines:** 69
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`_layout.tsx`](./_layout.md) | 61 |  |
+| [`_layout.tsx`](./_layout.md) | 69 |  |
 
 ## Internal-only files
 

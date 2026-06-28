@@ -81,10 +81,12 @@ flowchart TD
 - **Theme selection** - 15 team color themes with logo swatches
 - **Persistent preference** - selected theme saved to AsyncStorage
 - **Team logos** - ESPN logos displayed in theme picker
+- **Personal locations** - optional home/work coordinates for GPS auto-routing; stored on-device only
+- **Check-in contact** - optional phone number for the "Send ETA" button; stored on-device only
 
 ### Send ETA (Floating Action Button)
-- **One-tap ETA message** - floating button visible on the Seattle → Bainbridge route only
-- **Pre-populated iMessage** - opens native SMS with `⛴️ Boarded, ETA: <time>` pre-filled to a configured contact
+- **One-tap ETA message** - floating button visible on the Seattle → Bainbridge route only; hidden entirely until a check-in contact number is saved in Settings
+- **Pre-populated iMessage** - opens native SMS with `⛴️ Boarded, ETA: <time>` pre-filled to the contact number set in Settings
 - **ETA matches the Leave tab** - sources its ETA from `useArrivalEta`: planned (scheduled) departure time + 35-min crossing + your recorded ferry-to-home bike transit (typical stat, or 15 min default); identical to the arrival card shown on the Leave tab. Selects the sailing you're about to board — if a ferry pulled away within the last 5 minutes, that's treated as the boat you just boarded; otherwise uses the next upcoming sailing
 - **Disabled when idle** - button is shown at 50% opacity and non-tappable when there is no upcoming departure
 - **No backend required** - uses native `Linking.openURL` with `sms:` scheme
@@ -398,6 +400,7 @@ Add to `.env`:
 ```
 EXPO_PUBLIC_WSF_API_KEY=your-key-here
 EXPO_PUBLIC_API_URL=https://your-api-id.execute-api.us-west-2.amazonaws.com/prod
+EXPO_APPLE_ID=your-apple-id@example.com   # required for eas submit
 ```
 
 ## License

@@ -3,10 +3,10 @@ type: l3-system
 spec_version: 1
 name: tech-stack
 discovered_from: code-graph + repo config
-resource_count: 16
+resource_count: 17
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-06-23T03:06:20.043Z
+last_audited: 2026-06-28T18:29:47.371Z
 ---
 
 # Technology stack — System Spec
@@ -47,6 +47,9 @@ flowchart TB
   subgraph n_cat_Language["Language"]
     n_TypeScript["TypeScript"]
   end
+  subgraph n_cat_Linting["Linting"]
+    n_ESLint["ESLint"]
+  end
   subgraph n_cat_Routing["Routing"]
     n_Expo_Router["Expo Router"]
   end
@@ -73,6 +76,7 @@ flowchart TB
 | AWS Amplify | Hosting / CI | `amplify.yml` |
 | AWS CDK | IaC | dep `aws-cdk-lib`, dep `aws-cdk`, dep `constructs` |
 | TypeScript | Language | dep `typescript` |
+| ESLint | Linting | dep `eslint` |
 | Expo Router | Routing | dep `expo-router` |
 | Jest | Testing | `jest.config.js`, dep `jest`, dep `ts-jest` |
 

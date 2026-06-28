@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-23T03:06:20.048Z",
+  "generated_at": "2026-06-28T18:29:47.376Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "278ed1f81830c755f9f6bb048dcf89dc94623316a23aca3ba3288532f9c8b5ab",
@@ -24,11 +24,11 @@
       "last_audited": "2026-06-23T02:13:37.623Z"
     },
     "app/(tabs)/settings.tsx": {
-      "content_sha256": "7de3e41079035ee4f72837a4455e010625187137ab72f41f4506e7b6f19f1990",
+      "content_sha256": "5666be7219b1c1480357579d9f5f1ad38328cbcfb8855443ccfc18a1b436b24a",
       "spec_path": "docs/spec/app/(tabs)/settings.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.624Z"
+      "last_audited": "2026-06-28T18:29:47.272Z"
     },
     "app/(tabs)/timer.tsx": {
       "content_sha256": "34c2cc30f83a2d9be9ac7630c2607ce51c6d46568d0eb312ee377d4e8717c271",
@@ -45,18 +45,18 @@
       "last_audited": "2026-06-23T02:13:37.627Z"
     },
     "app/_layout.tsx": {
-      "content_sha256": "7bdd179888097553f7295c902e54d70dc172f05a4a742250722ffd3167bacf04",
+      "content_sha256": "03ae9a4540346af16771c88999b9289687bb81ab008cdde08953df7cced0bb85",
       "spec_path": "docs/spec/app/_layout.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:33.888Z"
+      "last_audited": "2026-06-28T18:29:43.854Z"
     },
     "infra/bin/infra.js": {
-      "content_sha256": "c6bd2874db20c0d7e12f092afed506ddf435c81929e44a0d97cbd06de9ad6ab8",
+      "content_sha256": "d2ef8be0a04479cc549cb2b117e02ff01a97f29fa85072b644a8224f702fec20",
       "spec_path": "docs/spec/infra/bin/infra.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.628Z"
+      "last_audited": "2026-06-28T18:29:47.276Z"
     },
     "infra/bin/infra.ts": {
       "content_sha256": "957d0baf4f00f00f114d75e71f0fe3a7dc7658adb61dc5d8bdd6e7984ca74439",
@@ -108,11 +108,11 @@
       "last_audited": "2026-06-23T02:13:37.637Z"
     },
     "infra/lib/infra-stack.js": {
-      "content_sha256": "e6b90c10a0544cc0229a8bf0bec547799d90c5d900f4f45bca97ce3da0812fbe",
+      "content_sha256": "871b8e56f0f41e2590fe3fd9275e7cd50625bf75f83f60b8923e66b03bc57397",
       "spec_path": "docs/spec/infra/lib/infra-stack.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.638Z"
+      "last_audited": "2026-06-28T18:29:47.284Z"
     },
     "infra/lib/infra-stack.ts": {
       "content_sha256": "2b2974a0306c69fd565547304d09033b5edd37e33e4e559606662b57bdc47cdf",
@@ -178,11 +178,11 @@
       "last_audited": "2026-06-23T02:13:37.641Z"
     },
     "src/components/CheckInFAB.tsx": {
-      "content_sha256": "a3c2b5cf8dae743cb9183e4dce8234eaa3c3ddd427680de82df72b930387d211",
+      "content_sha256": "fff74f9330dce310492099850de8de9fc6d862d0569d4532218ceea999b2bc94",
       "spec_path": "docs/spec/src/components/CheckInFAB.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.642Z"
+      "last_audited": "2026-06-28T18:29:47.287Z"
     },
     "src/components/FerryCard.tsx": {
       "content_sha256": "d4ada51ba5f625987a15a51e97057cf16d99b03c006810c1581442ad5149a66f",
@@ -318,11 +318,11 @@
       "last_audited": "2026-06-23T02:13:37.718Z"
     },
     "src/store/personalLocations.ts": {
-      "content_sha256": "4812d11b2b45de28578017cc97436174f1047dd0c6745cfc942b5d4b4000f2c6",
+      "content_sha256": "aa5e53b22f469e16c7254a55272c5dc0fdc6db7f836e7d27beb9ea0f2089c0f8",
       "spec_path": "docs/spec/src/store/personalLocations.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.719Z"
+      "last_audited": "2026-06-28T18:29:47.365Z"
     },
     "src/types/storage.ts": {
       "content_sha256": "2a4974e8f099e92486afd033fa3feef467fb705c9f80354c5dee638b3a3e4586",
@@ -339,11 +339,11 @@
       "last_audited": "2026-06-23T02:13:37.720Z"
     },
     "src/utils/constants.ts": {
-      "content_sha256": "6c8f35315f22c6c2abe36af185d07acc0ad235ef23a4cce3deaf1b7c0c8d9201",
+      "content_sha256": "3155245d4f0fc1c0a0c724e49c7d70ede0a37b09c61e071b690e0cdba21119db",
       "spec_path": "docs/spec/src/utils/constants.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.720Z"
+      "last_audited": "2026-06-28T18:29:47.367Z"
     },
     "src/utils/locations.ts": {
       "content_sha256": "6df5827c5239e6a9947929c9eaae0a49afec03725a21ab975e0d71ce184d68d0",
@@ -376,25 +376,25 @@
   },
   "modules": {
     "app": {
-      "input_hashes_sha256": "cd9e2d5197411588de0ce38829c406b1d1a8e19f50e0d2b9bdd803b81c2f9dce",
+      "input_hashes_sha256": "15eaa053caaf840ddf18ed1189f48d9b8c71a8b27beac142d02dc938a111322f",
       "spec_path": "docs/spec/app/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.722Z"
+      "last_audited": "2026-06-28T18:29:47.369Z"
     },
     "app/(tabs)": {
-      "input_hashes_sha256": "26c8bb99f15defb968e3769d9e0509cdfa066e06bd8721b38e12ec6aee672591",
+      "input_hashes_sha256": "1a7726238c4b7458a39305e1bc4327b4ec516d73ac48c4263e770a543b5a09bb",
       "spec_path": "docs/spec/app/(tabs)/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.722Z"
+      "last_audited": "2026-06-28T18:29:47.370Z"
     },
     "infra/bin": {
-      "input_hashes_sha256": "80db745028249664456090ce818b0e33095fa4b63857381db316a1d1eba830a2",
+      "input_hashes_sha256": "fa6c095a39ab286789eb49ffbdcbba61808b83465709d5b46dcad6d6045f5e6e",
       "spec_path": "docs/spec/infra/bin/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.723Z"
+      "last_audited": "2026-06-28T18:29:47.370Z"
     },
     "infra/lambda/api": {
       "input_hashes_sha256": "7ae51a4f625cb0a19d6ae4f83a7613660a1e198a713116027280b3dc27b69e05",
@@ -418,11 +418,11 @@
       "last_audited": "2026-06-23T02:13:37.723Z"
     },
     "infra/lib": {
-      "input_hashes_sha256": "f1c131ee1ca2315e7debde976c0490de9ab210c26d712403168ed432c33f1a19",
+      "input_hashes_sha256": "294d0406c7530022fd114c42a3745d07cc5b3f4be785f70b8a2b76eb282adeef",
       "spec_path": "docs/spec/infra/lib/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.723Z"
+      "last_audited": "2026-06-28T18:29:47.370Z"
     },
     "src/api": {
       "input_hashes_sha256": "2a7a1f286e895ba1baef2aa8236863187356aac1d2e0daf3958bf1449048aa4c",
@@ -432,11 +432,11 @@
       "last_audited": "2026-06-23T02:13:37.723Z"
     },
     "src/components": {
-      "input_hashes_sha256": "22e3fdb409a916c130df94da6bc6bfdbac449b2e1398c92a2dd7eb97e29681a9",
+      "input_hashes_sha256": "f464511bf18fa3a07b1fdfa77b7b099b239636d68ee22ecded165091685c5857",
       "spec_path": "docs/spec/src/components/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.724Z"
+      "last_audited": "2026-06-28T18:29:47.370Z"
     },
     "src/context": {
       "input_hashes_sha256": "35c5563bdd7aa2fab37e012dfb7741499219aed76a23fabbd664a1ed99efee8a",
@@ -453,11 +453,11 @@
       "last_audited": "2026-06-23T02:13:37.724Z"
     },
     "src/store": {
-      "input_hashes_sha256": "ced230a401e992eb8a7a1f71afaee08f0313401a3e0919d28bda5fff70725d4e",
+      "input_hashes_sha256": "524dbdf9cab3439e6226d6e98646a92513d77cb7624b5794aa0d49007c0d1837",
       "spec_path": "docs/spec/src/store/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.725Z"
+      "last_audited": "2026-06-28T18:29:47.371Z"
     },
     "src/types": {
       "input_hashes_sha256": "7db63b9e5e9cd6ae57b14acd79f10b59ef067d3f3132a52c4fc4af7030fb8ea1",
@@ -467,20 +467,20 @@
       "last_audited": "2026-06-23T02:13:37.725Z"
     },
     "src/utils": {
-      "input_hashes_sha256": "399098372ca15836eefd94fddf1ae9f95f8f7a5228ef8d02579ac68043f5716f",
+      "input_hashes_sha256": "82f246ea10872c904088c494fdc974752df928931307309d646257fbeb626152",
       "spec_path": "docs/spec/src/utils/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.725Z"
+      "last_audited": "2026-06-28T18:29:47.371Z"
     }
   },
   "systems": {
     "architecture": {
-      "input_sha256": "bcb09e1f11b0144e34833a2a5558e822a46655875fb60abcf46909789103bdbd",
+      "input_sha256": "753e5f1b779d96a1109ea14cea3b7d587d93dbe4079ca560c1b3837617e2ac9a",
       "spec_path": "docs/spec/_systems/architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-06-23T03:06:20.048Z"
+      "last_audited": "2026-06-28T18:29:47.375Z"
     },
     "frontend-architecture": {
       "input_sha256": "e63a18e662d4b3836977474dfaeb7930fccf0dda3e8ad64bb0e143085a4950da",
@@ -490,11 +490,11 @@
       "last_audited": "2026-06-23T03:06:20.047Z"
     },
     "tech-stack": {
-      "input_sha256": "96c3de45fa642ca2000d82524f50dc121fda0b5305ba1dd75c0a656bf6782d03",
+      "input_sha256": "bce6f1ea890db91effb906a0173bc357fac85d1527914d8f62d064850094fb13",
       "spec_path": "docs/spec/_systems/tech-stack.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-06-23T03:06:20.048Z"
+      "last_audited": "2026-06-28T18:29:47.375Z"
     }
   }
 }

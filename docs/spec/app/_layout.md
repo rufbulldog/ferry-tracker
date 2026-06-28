@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/_layout.tsx
-content_sha: 7bdd179888097553f7295c902e54d70dc172f05a4a742250722ffd3167bacf04
+content_sha: 03ae9a4540346af16771c88999b9289687bb81ab008cdde08953df7cced0bb85
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:33.888Z
+last_audited: 2026-06-28T18:29:43.854Z
 ---
 
 # _layout.tsx
 
 **Path:** `app/_layout.tsx`
-**Lines:** 61
+**Lines:** 69
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -33,5 +33,6 @@ last_audited: 2026-06-23T02:13:33.888Z
 - `@tanstack/react-query` (`QueryClient`, `QueryClientProvider`)
 - `expo-router` (`Stack`)
 - `react` (`useEffect`, `useState`)
+- `react-native` (`Alert`)
 - `react-native-paper` (`PaperProvider`)
 - `react-native-safe-area-context` (`SafeAreaProvider`)

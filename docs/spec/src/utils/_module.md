@@ -3,23 +3,23 @@ type: l2-module
 spec_version: 1
 path: src/utils
 file_count: 6
-total_lines: 755
+total_lines: 754
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.725Z
+last_audited: 2026-06-28T18:29:47.371Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 6 · **Lines:** 755
+**Files:** 6 · **Lines:** 754
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 92 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
-| [`constants.ts`](./constants.md) | 50 |  |
+| [`constants.ts`](./constants.md) | 49 |  |
 | [`locations.ts`](./locations.md) | 94 |  |
 | [`themes.ts`](./themes.md) | 426 |  |
 | [`time.ts`](./time.md) | 56 |  |
@@ -31,9 +31,8 @@ Files in this folder imported from elsewhere:
 
 - `arrivalEtaLogic.ts` — used by 1 file
   - `src/hooks/useArrivalEta.ts`
-- `constants.ts` — used by 12 files
+- `constants.ts` — used by 11 files
   - `app/(tabs)/index.tsx`
-  - `src/components/CheckInFAB.tsx`
   - `src/components/MainDepartureCard.tsx`
   - `src/context/RouteContext.tsx`
   - `src/hooks/useArrivalEta.ts`
