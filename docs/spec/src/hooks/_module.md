@@ -2,33 +2,32 @@
 type: l2-module
 spec_version: 1
 path: src/hooks
-file_count: 12
-total_lines: 1457
+file_count: 11
+total_lines: 1445
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.724Z
+last_audited: 2026-07-31T23:25:27.526Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 12 · **Lines:** 1457
+**Files:** 11 · **Lines:** 1445
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`useArrivalEta.ts`](./useArrivalEta.md) | 112 |  |
+| [`useArrivalEta.ts`](./useArrivalEta.md) | 111 |  |
 | [`useDailyTrends.ts`](./useDailyTrends.md) | 124 |  |
 | [`useLatestDeparture.ts`](./useLatestDeparture.md) | 61 |  |
-| [`useNextDepartures.ts`](./useNextDepartures.md) | 334 |  |
+| [`useNextDepartures.ts`](./useNextDepartures.md) | 337 |  |
 | [`useRecommendation.ts`](./useRecommendation.md) | 206 |  |
-| [`useRouteVessels.ts`](./useRouteVessels.md) | 21 |  |
-| [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 159 |  |
+| [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 164 |  |
 | [`useTerminalConditions.ts`](./useTerminalConditions.md) | 29 |  |
 | [`useTimer.ts`](./useTimer.md) | 198 |  |
 | [`useTransitRecords.ts`](./useTransitRecords.md) | 131 |  |
-| [`useUserLocation.ts`](./useUserLocation.md) | 70 |  |
+| [`useUserLocation.ts`](./useUserLocation.md) | 72 |  |
 | [`useVesselLocations.ts`](./useVesselLocations.md) | 12 |  |
 
 ## Public surface
@@ -65,7 +64,6 @@ Files in this folder imported from elsewhere:
 
 Files in this folder not imported by any file outside it (candidates for cleanup or relocation):
 
-- `useRouteVessels.ts`
 - `useTerminalConditions.ts`
 - `useVesselLocations.ts`
 

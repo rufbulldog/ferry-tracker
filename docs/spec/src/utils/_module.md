@@ -3,16 +3,16 @@ type: l2-module
 spec_version: 1
 path: src/utils
 file_count: 6
-total_lines: 754
+total_lines: 750
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-28T18:29:47.371Z
+last_audited: 2026-07-31T23:25:27.527Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 6 · **Lines:** 754
+**Files:** 6 · **Lines:** 750
 
 ## File inventory
 
@@ -20,7 +20,7 @@ last_audited: 2026-06-28T18:29:47.371Z
 |---|---|---|
 | [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 92 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
 | [`constants.ts`](./constants.md) | 49 |  |
-| [`locations.ts`](./locations.md) | 94 |  |
+| [`locations.ts`](./locations.md) | 90 |  |
 | [`themes.ts`](./themes.md) | 426 |  |
 | [`time.ts`](./time.md) | 56 |  |
 | [`transitStats.ts`](./transitStats.md) | 37 |  |
@@ -31,7 +31,7 @@ Files in this folder imported from elsewhere:
 
 - `arrivalEtaLogic.ts` — used by 1 file
   - `src/hooks/useArrivalEta.ts`
-- `constants.ts` — used by 11 files
+- `constants.ts` — used by 10 files
   - `app/(tabs)/index.tsx`
   - `src/components/MainDepartureCard.tsx`
   - `src/context/RouteContext.tsx`
@@ -40,13 +40,11 @@ Files in this folder imported from elsewhere:
   - `src/hooks/useLatestDeparture.ts`
   - `src/hooks/useNextDepartures.ts`
   - `src/hooks/useRecommendation.ts`
-  - `src/hooks/useRouteVessels.ts`
   - `src/hooks/useTerminalBulletins.ts`
   - `src/hooks/useTerminalConditions.ts`
-- `locations.ts` — used by 3 files
+- `locations.ts` — used by 2 files
   - `app/(tabs)/timer.tsx`
   - `app/_layout.tsx`
-  - `src/store/personalLocations.ts`
 - `themes.ts` — used by 2 files
   - `app/(tabs)/settings.tsx`
   - `src/context/ThemeContext.tsx`

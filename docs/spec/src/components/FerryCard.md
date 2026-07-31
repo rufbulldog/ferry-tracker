@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/FerryCard.tsx
-content_sha: d4ada51ba5f625987a15a51e97057cf16d99b03c006810c1581442ad5149a66f
+content_sha: de1fe3e71bd377e62f7a5cb2951696b24dff302188317644dd992d3dc90928a2
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.642Z
+last_audited: 2026-07-31T23:25:27.474Z
 ---
 
 # FerryCard.tsx
 
 **Path:** `src/components/FerryCard.tsx`
-**Lines:** 295
+**Lines:** 297
 **Language:** TypeScript (TSX)
 
 ## Exports

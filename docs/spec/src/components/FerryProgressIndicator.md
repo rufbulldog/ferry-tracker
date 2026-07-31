@@ -2,10 +2,10 @@
 type: l1-file
 spec_version: 1
 source: src/components/FerryProgressIndicator.tsx
-content_sha: 279eaa7460f7aa23bdebe3d58b6dcd04c7a6067b428f644d8dbb6b315eedb65b
+content_sha: 312701fc08d5321ce56efe39816ed4119e0d60ba791cb63207f9d042f48f8c8c
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.643Z
+last_audited: 2026-07-31T23:25:27.475Z
 ---
 
 # FerryProgressIndicator.tsx
@@ -24,6 +24,6 @@ last_audited: 2026-06-23T02:13:37.643Z
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
-- `react` (`default as React`, `useEffect`, `useRef`)
+- `react` (`default as React`, `useEffect`, `useState`)
 - `react-native` (`View`, `StyleSheet`, `Animated`)
 - `react-native-paper` (`Text`)

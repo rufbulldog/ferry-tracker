@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/utils/locations.ts
-content_sha: 6df5827c5239e6a9947929c9eaae0a49afec03725a21ab975e0d71ce184d68d0
+content_sha: 87de8c33cc41b4fc927d279e94a31a3de5e88dec23a4eaa30494794800197c06
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.720Z
+last_audited: 2026-07-31T23:25:27.524Z
 ---
 
 # locations.ts
 
 **Path:** `src/utils/locations.ts`
-**Lines:** 94
+**Lines:** 90
 **Language:** TypeScript
 
 ## Exports
@@ -29,3 +29,4 @@ last_audited: 2026-06-23T02:13:37.720Z
 
 **Internal:**
 - `../store/personalLocations` (`getPersonalLocations`)
+- `../types/location` (`KnownLocation`)

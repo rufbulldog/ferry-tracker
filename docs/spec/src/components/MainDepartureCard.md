@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/MainDepartureCard.tsx
-content_sha: 4fe333522280aad69e24a6d53c130fc6b870b4a8fbdfe3339323cb7df93b2654
+content_sha: cb73642f52e95697724b6bc07f91d5afc75ee2038d7c974ab35fa96f5b182dad
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.643Z
+last_audited: 2026-07-31T23:25:27.475Z
 ---
 
 # MainDepartureCard.tsx
 
 **Path:** `src/components/MainDepartureCard.tsx`
-**Lines:** 822
+**Lines:** 818
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -30,6 +30,6 @@ last_audited: 2026-06-23T02:13:37.643Z
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
-- `react` (`default as React`, `useEffect`, `useRef`, `useState`, `useCallback`)
+- `react` (`default as React`, `useEffect`, `useMemo`, `useState`, `useCallback`)
 - `react-native` (`View`, `StyleSheet`, `Animated`, `Dimensions`, `TouchableOpacity`, `Image`, `ActivityIndicator`, `PanResponder`)
 - `react-native-paper` (`Text`)

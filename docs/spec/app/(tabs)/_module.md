@@ -3,27 +3,27 @@ type: l2-module
 spec_version: 1
 path: app/(tabs)
 file_count: 6
-total_lines: 2414
+total_lines: 2425
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-28T18:29:47.370Z
+last_audited: 2026-07-31T23:25:27.526Z
 ---
 
 # app/(tabs) — Module Spec
 
 **Folder:** `app/(tabs)`
-**Files:** 6 · **Lines:** 2414
+**Files:** 6 · **Lines:** 2425
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`_layout.tsx`](./_layout.md) | 90 |  |
-| [`index.tsx`](./index.md) | 371 |  |
+| [`index.tsx`](./index.md) | 381 |  |
 | [`recommend.tsx`](./recommend.md) | 448 |  |
 | [`settings.tsx`](./settings.md) | 403 |  |
-| [`timer.tsx`](./timer.md) | 541 |  |
-| [`trends.tsx`](./trends.md) | 561 |  |
+| [`timer.tsx`](./timer.md) | 545 |  |
+| [`trends.tsx`](./trends.md) | 558 |  |
 
 ## Internal-only files
 

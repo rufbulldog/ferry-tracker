@@ -2,10 +2,10 @@
 type: l1-file
 spec_version: 1
 source: src/components/LastDepartureCard.tsx
-content_sha: 10be0428bc0de4f19e684b67db767c69498230e13e333a50c4102671fb10c763
+content_sha: b44ca399dad697ff16d5ee00a7076a3f637fb9f479c27efe455734e8f65ae69f
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.643Z
+last_audited: 2026-07-31T23:25:27.475Z
 ---
 
 # LastDepartureCard.tsx
@@ -29,6 +29,6 @@ last_audited: 2026-06-23T02:13:37.643Z
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
-- `react` (`default as React`, `useEffect`, `useRef`)
+- `react` (`default as React`, `useEffect`, `useState`)
 - `react-native` (`View`, `StyleSheet`, `Animated`)
 - `react-native-paper` (`Text`)

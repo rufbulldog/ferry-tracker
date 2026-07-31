@@ -251,7 +251,6 @@ ferry-app/
 │   │   ├── useLatestDeparture.ts  # Backend departure data for capacity
 │   │   ├── useNextDepartures.ts   # Combined departure data
 │   │   ├── useRecommendation.ts   # Leave-by time calculations
-│   │   ├── useRouteVessels.ts     # Filter vessels by route
 │   │   ├── useTerminalBulletins.ts # Service delay alerts
 │   │   ├── useTerminalConditions.ts # Terminal data polling (10s)
 │   │   ├── useTimer.ts            # Timer state management
@@ -260,6 +259,7 @@ ferry-app/
 │   │   └── useVesselLocations.ts  # Real-time vessel polling (5s)
 │   │
 │   ├── types/
+│   │   ├── location.ts           # KnownLocation type (shared by utils/locations and store/personalLocations)
 │   │   └── storage.ts            # Storage data types
 │   │
 │   └── utils/

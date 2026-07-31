@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useArrivalEta.ts
-content_sha: 8fefe2d819948523e433279522c2f5eac2bea4dc4170235ea97bb4c2b9e86080
+content_sha: 893e3129ff169df30111e59da090b9765668fd4559ab497002126de93320ac33
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.656Z
+last_audited: 2026-07-31T23:25:27.486Z
 ---
 
 # useArrivalEta.ts
 
 **Path:** `src/hooks/useArrivalEta.ts`
-**Lines:** 112
+**Lines:** 111
 **Language:** TypeScript
 
 ## Exports
@@ -27,7 +27,7 @@ last_audited: 2026-06-23T02:13:37.656Z
 
 **Internal:**
 - `../types/storage` (`TransitRoute`, `Vehicle`)
-- `../utils/arrivalEtaLogic` (`selectActiveDeparture`, `projectedDockTime`, `etaDepartureBasis`)
+- `../utils/arrivalEtaLogic` (`selectActiveDeparture`, `etaDepartureBasis`)
 - `../utils/constants` (`Route`, `FERRY_CROSSING_MINUTES`, `FERRY_TO_HOME_FALLBACK_MINUTES`)
 - `../utils/time` (`addMinutes`)
 - `../utils/transitStats` (`computeTypicalTransitSeconds`, `TypicalMethod`)

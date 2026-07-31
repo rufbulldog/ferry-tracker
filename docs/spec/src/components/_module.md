@@ -3,28 +3,28 @@ type: l2-module
 spec_version: 1
 path: src/components
 file_count: 8
-total_lines: 1915
+total_lines: 1914
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-28T18:29:47.370Z
+last_audited: 2026-07-31T23:25:27.526Z
 ---
 
 # src/components — Module Spec
 
 **Folder:** `src/components`
-**Files:** 8 · **Lines:** 1915
+**Files:** 8 · **Lines:** 1914
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`AlertBanner.tsx`](./AlertBanner.md) | 121 |  |
+| [`AlertBanner.tsx`](./AlertBanner.md) | 122 |  |
 | [`CapacityBar.tsx`](./CapacityBar.md) | 130 |  |
 | [`CheckInFAB.tsx`](./CheckInFAB.md) | 73 |  |
-| [`FerryCard.tsx`](./FerryCard.md) | 295 |  |
+| [`FerryCard.tsx`](./FerryCard.md) | 297 |  |
 | [`FerryProgressIndicator.tsx`](./FerryProgressIndicator.md) | 121 |  |
 | [`LastDepartureCard.tsx`](./LastDepartureCard.md) | 161 |  |
-| [`MainDepartureCard.tsx`](./MainDepartureCard.md) | 822 |  |
+| [`MainDepartureCard.tsx`](./MainDepartureCard.md) | 818 |  |
 | [`RouteSelector.tsx`](./RouteSelector.md) | 192 |  |
 
 ## Public surface

@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/trends.tsx
-content_sha: 5b80a75ac0a20b59d3385f62220687f8d3f531929c0a29c83bdff98be59b5e22
+content_sha: 1f403765939cfd3e198e114945d11b5dad59bce2b8c3e66305eff3d4d1dc325c
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.627Z
+last_audited: 2026-07-31T23:25:27.462Z
 ---
 
 # trends.tsx
 
 **Path:** `app/(tabs)/trends.tsx`
-**Lines:** 561
+**Lines:** 558
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -26,12 +26,12 @@ last_audited: 2026-06-23T02:13:37.627Z
 - `../../src/context/RouteContext` (`useRoute`)
 - `../../src/context/ThemeContext` (`useTheme`)
 - `../../src/hooks/useDailyTrends` (`useTodayTrends`, `useRecentTrends`, `getHourlyDelays`, `getDailyDelays`, `getHourlyCapacities`, `calculateAverageDelay`, `calculateAverageCapacity`)
-- `../../src/hooks/useTransitRecords` (`useAllTransitAverages`, `TransitAverage`)
+- `../../src/hooks/useTransitRecords` (`useAllTransitAverages`)
 - `../../src/types/storage` (`TransitRoute`, `Vehicle`)
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
-- `react` (`useMemo`, `useRef`, `useEffect`)
-- `react-native` (`View`, `StyleSheet`, `ScrollView`, `useWindowDimensions`, `Dimensions`, `Animated`)
+- `react` (`useMemo`, `useState`, `useEffect`)
+- `react-native` (`View`, `StyleSheet`, `ScrollView`, `useWindowDimensions`, `Animated`)
 - `react-native-gifted-charts` (`LineChart`, `BarChart`)
 - `react-native-paper` (`Text`)

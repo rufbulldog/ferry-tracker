@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useNextDepartures.ts
-content_sha: c28d540d04d479673fc30ac4c44fcdb15c70c9b9a91965e74728108d8f2ba34d
+content_sha: 49ee18b85430f8fdea9d0bc863e4c081376d3222e016da4cf1722beb4ad16721
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.666Z
+last_audited: 2026-07-31T23:25:27.496Z
 ---
 
 # useNextDepartures.ts
 
 **Path:** `src/hooks/useNextDepartures.ts`
-**Lines:** 334
+**Lines:** 337
 **Language:** TypeScript
 
 ## Exports

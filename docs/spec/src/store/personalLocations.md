@@ -2,10 +2,10 @@
 type: l1-file
 spec_version: 1
 source: src/store/personalLocations.ts
-content_sha: aa5e53b22f469e16c7254a55272c5dc0fdc6db7f836e7d27beb9ea0f2089c0f8
+content_sha: 829dcee7951de1b60effe87aa18f1155e6bf87c13469270464408cf841a158e9
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-28T18:29:47.365Z
+last_audited: 2026-07-31T23:25:27.521Z
 ---
 
 # personalLocations.ts
@@ -39,7 +39,7 @@ last_audited: 2026-06-28T18:29:47.365Z
 ## Imports
 
 **Internal:**
-- `../utils/locations` (`KnownLocation`)
+- `../types/location` (`KnownLocation`)
 
 **External:**
 - `@react-native-async-storage/async-storage` (`default as AsyncStorage`)

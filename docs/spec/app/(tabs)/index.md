@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/index.tsx
-content_sha: 9bc1a1972bc8d2cb06b95bac6bfe18692831c6d44c55a17bf8ebbc18cd74e2c8
+content_sha: ae4eb65a1be0cb5af76b7f1da59fc0407c4a52675cd7f9507c3bd01e0c71fd59
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.621Z
+last_audited: 2026-07-31T23:25:27.454Z
 ---
 
 # index.tsx
 
 **Path:** `app/(tabs)/index.tsx`
-**Lines:** 371
+**Lines:** 381
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -36,6 +36,6 @@ last_audited: 2026-06-23T02:13:37.621Z
 
 **External:**
 - `@tanstack/react-query` (`useQueryClient`)
-- `react` (`useState`, `useCallback`, `useRef`, `useEffect`)
+- `react` (`useState`, `useCallback`, `useMemo`, `useRef`, `useEffect`)
 - `react-native` (`View`, `StyleSheet`, `ScrollView`, `RefreshControl`, `Animated`, `Dimensions`)
 - `react-native-paper` (`Text`, `Card`, `ActivityIndicator`)

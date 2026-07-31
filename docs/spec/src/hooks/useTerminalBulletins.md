@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useTerminalBulletins.ts
-content_sha: b9d90d4c2878cb88a2159265ad0a96703bd6995eed7063a5bfb8ddabd920b8b9
+content_sha: 32a109ddb6ef53b9263f0b3904a71c4ff8ce305c94d0e397568d894129c0a057
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.696Z
+last_audited: 2026-07-31T23:25:27.501Z
 ---
 
 # useTerminalBulletins.ts
 
 **Path:** `src/hooks/useTerminalBulletins.ts`
-**Lines:** 159
+**Lines:** 164
 **Language:** TypeScript
 
 ## Exports

@@ -2,28 +2,32 @@
 type: l2-module
 spec_version: 1
 path: src/types
-file_count: 1
-total_lines: 43
+file_count: 2
+total_lines: 54
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.725Z
+last_audited: 2026-07-31T23:25:27.527Z
 ---
 
 # src/types — Module Spec
 
 **Folder:** `src/types`
-**Files:** 1 · **Lines:** 43
+**Files:** 2 · **Lines:** 54
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
+| [`location.ts`](./location.md) | 11 |  |
 | [`storage.ts`](./storage.md) | 43 |  |
 
 ## Public surface
 
 Files in this folder imported from elsewhere:
 
+- `location.ts` — used by 2 files
+  - `src/store/personalLocations.ts`
+  - `src/utils/locations.ts`
 - `storage.ts` — used by 10 files
   - `app/(tabs)/recommend.tsx`
   - `app/(tabs)/timer.tsx`
