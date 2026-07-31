@@ -1,11 +1,7 @@
 import { getPersonalLocations } from '../store/personalLocations';
+import type { KnownLocation } from '../types/location';
 
-export interface KnownLocation {
-  id: string;
-  label: string;
-  lat: number;
-  lon: number;
-}
+export type { KnownLocation };
 
 // Ferry terminals are public information (published by WSDOT) and safe to commit.
 const PUBLIC_TERMINALS: KnownLocation[] = [

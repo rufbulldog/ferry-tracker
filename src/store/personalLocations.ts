@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { KnownLocation } from '../utils/locations';
+import type { KnownLocation } from '../types/location';
 
 export interface Coord {
   lat: number;
