@@ -1,6 +1,6 @@
-import { View, StyleSheet, ScrollView, useWindowDimensions, Dimensions, Animated } from 'react-native';
+import { View, StyleSheet, ScrollView, useWindowDimensions, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { LineChart, BarChart } from 'react-native-gifted-charts';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -14,13 +14,10 @@ import {
 } from '../../src/hooks/useDailyTrends';
 import {
   useAllTransitAverages,
-  TransitAverage,
 } from '../../src/hooks/useTransitRecords';
 import { useRoute } from '../../src/context/RouteContext';
 import { useTheme } from '../../src/context/ThemeContext';
 import { TransitRoute, Vehicle } from '../../src/types/storage';
-
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Valid transit route/vehicle combinations per route group + direction
 type ValidCombination = { route: TransitRoute; vehicle: Vehicle; label: string };
@@ -64,8 +61,8 @@ export default function TrendsScreen() {
   const { theme } = useTheme();
 
   // Slide animation for direction changes - subtle horizontal slide
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const opacityAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useState(() => new Animated.Value(0))[0];
+  const opacityAnim = useState(() => new Animated.Value(1))[0];
 
   useEffect(() => {
     if (animationDirection) {
@@ -92,7 +89,7 @@ export default function TrendsScreen() {
 
   // Get trends for different time periods
   const { data: todaySnapshots = [] } = useTodayTrends(route);
-  const { data: weekSnapshots = [], isLoading } = useRecentTrends(route, 7);
+  const { data: weekSnapshots = [] } = useRecentTrends(route, 7);
   const { data: monthSnapshots = [] } = useRecentTrends(route, 30);
 
   // Get transit time averages

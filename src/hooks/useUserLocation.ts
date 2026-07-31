@@ -47,8 +47,10 @@ export function useUserLocation(): UseUserLocationResult {
     }
   }, []);
 
-  // Fetch on mount
+  // Fetch on mount. fetchLocation sets `loading` (already true initially) before
+  // awaiting the GPS/permission APIs — a legitimate external-system sync.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLocation();
   }, [fetchLocation]);
 

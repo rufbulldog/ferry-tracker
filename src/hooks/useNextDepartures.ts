@@ -50,6 +50,12 @@ export function useNextDepartures(route: Route) {
     const departingTerminalId = routeConfig.from;
     const arrivingTerminalId = routeConfig.to;
 
+    // Single wall-clock instant for the whole computation — used to derive
+    // vessel journey progress below. Intentionally read here (recomputed each
+    // time the memo re-runs on data refetch), so the purity rule is opted out.
+    // eslint-disable-next-line react-hooks/purity
+    const now = Date.now();
+
     // Get departing terminal data
     const departingTerminal = terminals.find(t => t.TerminalID === departingTerminalId);
     if (!departingTerminal) return [];
@@ -126,7 +132,6 @@ export function useNextDepartures(route: Route) {
             const leftDock = parseDate(vesselInfo.LeftDock);
             const eta = parseDate(vesselInfo.Eta);
             if (leftDock && eta) {
-              const now = Date.now();
               const total = eta.getTime() - leftDock.getTime();
               const elapsed = now - leftDock.getTime();
               vesselProgressPercent = Math.min(100, Math.max(0, (elapsed / total) * 100));
@@ -156,7 +161,6 @@ export function useNextDepartures(route: Route) {
             const leftDock = parseDate(vesselInfo.LeftDock);
             const eta = parseDate(vesselInfo.Eta);
             if (leftDock && eta) {
-              const now = Date.now();
               const total = eta.getTime() - leftDock.getTime();
               const elapsed = now - leftDock.getTime();
               vesselProgressPercent = Math.min(100, Math.max(0, (elapsed / total) * 100));
@@ -265,7 +269,6 @@ export function useNextDepartures(route: Route) {
         // Calculate progress
         let vesselProgressPercent = 50;
         if (leftDock && eta) {
-          const now = Date.now();
           const total = eta.getTime() - leftDock.getTime();
           const elapsed = now - leftDock.getTime();
           vesselProgressPercent = Math.min(100, Math.max(0, (elapsed / total) * 100));

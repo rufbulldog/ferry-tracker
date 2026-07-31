@@ -91,15 +91,19 @@ export default function TimerScreen() {
     if (nearest && nearest.distanceMeters < 5000) {
       const defaultRoute = getTimerRouteDefault(nearest.location.id);
       if (defaultRoute && TIMER_ROUTES.some(r => r.id === defaultRoute)) {
+        // One-time sync from an external system (GPS) once location resolves.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedRouteId(defaultRoute as TimerRoute);
         gpsApplied.current = true;
       }
     }
   }, [location]);
 
-  // Force valid vehicle when route changes
+  // Force valid vehicle when route changes — corrects an invalid route/vehicle
+  // combination (e.g. bike selected on a car-only route).
   useEffect(() => {
     if (!selectedRoute.bikeAllowed && vehicle === 'bike') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVehicle('car');
     } else if (!selectedRoute.carAllowed && vehicle === 'car') {
       setVehicle('bike');

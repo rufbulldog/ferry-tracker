@@ -22,6 +22,8 @@ export function AlertBanner({ alert }: AlertBannerProps) {
   };
 
   const timeSinceUpdate = () => {
+    // "x ago" label needs the current wall-clock time; recomputed on each render.
+    // eslint-disable-next-line react-hooks/purity
     const minutes = Math.floor((Date.now() - alert.lastUpdated.getTime()) / 60000);
     if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
@@ -30,7 +32,6 @@ export function AlertBanner({ alert }: AlertBannerProps) {
 
   // Determine if this is an urgent alert (route-specific) or general info
   const isUrgent = alert.isAlert && alert.isRouteSpecific;
-  const isInfo = alert.isGeneral || !alert.isRouteSpecific;
 
   const containerStyle = isUrgent ? styles.containerUrgent : styles.containerInfo;
   const iconName = isUrgent ? 'warning' : 'information-circle';

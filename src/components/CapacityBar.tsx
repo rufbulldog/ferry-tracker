@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
 
@@ -18,7 +18,7 @@ export function CapacityBar({
     ? ((maxSpaces - currentSpaces) / maxSpaces) * 100
     : 0;
 
-  const animatedFill = useRef(new Animated.Value(0)).current;
+  const animatedFill = useState(() => new Animated.Value(0))[0];
 
   useEffect(() => {
     Animated.timing(animatedFill, {

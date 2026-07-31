@@ -44,6 +44,8 @@ export function FerryCard({
       const leftDock = parseDate(vessel.LeftDock);
       const eta = parseDate(vessel.Eta);
       if (leftDock && eta) {
+        // Wall-clock read for live journey progress; recomputed on each poll-driven re-render.
+        // eslint-disable-next-line react-hooks/purity
         const now = Date.now();
         const total = eta.getTime() - leftDock.getTime();
         const elapsed = now - leftDock.getTime();

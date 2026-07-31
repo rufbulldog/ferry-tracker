@@ -1,6 +1,6 @@
 import { View, StyleSheet, ScrollView, RefreshControl, Animated, Dimensions } from 'react-native';
 import { Text, Card, ActivityIndicator } from 'react-native-paper';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNextDepartures, DepartureInfo } from '../../src/hooks/useNextDepartures';
 import { useTerminalBulletins } from '../../src/hooks/useTerminalBulletins';
@@ -34,8 +34,8 @@ export default function DepartScreen() {
   const { theme } = useTheme();
 
   // Simple slide + fade animation for direction changes
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const opacityAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useState(() => new Animated.Value(0))[0];
+  const opacityAnim = useState(() => new Animated.Value(1))[0];
 
   useEffect(() => {
     if (animationDirection) {
@@ -72,14 +72,14 @@ export default function DepartScreen() {
   const prevNextDepartureRef = useRef<DepartureInfo | null>(null);
 
   // Animation values for departing card
-  const mainCardScale = useRef(new Animated.Value(1)).current;
-  const mainCardTranslateY = useRef(new Animated.Value(0)).current;
-  const mainCardOpacity = useRef(new Animated.Value(1)).current;
+  const mainCardScale = useState(() => new Animated.Value(1))[0];
+  const mainCardTranslateY = useState(() => new Animated.Value(0))[0];
+  const mainCardOpacity = useState(() => new Animated.Value(1))[0];
 
   // Animation values for incoming card
-  const incomingCardScale = useRef(new Animated.Value(0.5)).current;
-  const incomingCardTranslateY = useRef(new Animated.Value(200)).current;
-  const incomingCardOpacity = useRef(new Animated.Value(0)).current;
+  const incomingCardScale = useState(() => new Animated.Value(0.5))[0];
+  const incomingCardTranslateY = useState(() => new Animated.Value(200))[0];
+  const incomingCardOpacity = useState(() => new Animated.Value(0))[0];
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -89,9 +89,17 @@ export default function DepartScreen() {
     setRefreshing(false);
   }, [queryClient]);
 
-  // Separate departed ferries from upcoming ones
-  const departedFerries = departures?.filter(d => d.status === 'departed') || [];
-  const upcomingFerries = departures?.filter(d => d.status !== 'departed') || [];
+  // Separate departed ferries from upcoming ones. Memoized so the arrays keep a
+  // stable identity across renders (they feed the departure-transition effect's
+  // dependency array below).
+  const departedFerries = useMemo(
+    () => departures?.filter(d => d.status === 'departed') || [],
+    [departures]
+  );
+  const upcomingFerries = useMemo(
+    () => departures?.filter(d => d.status !== 'departed') || [],
+    [departures]
+  );
 
   // Get the most recent departed ferry (for the last departure card)
   const lastDeparture = departedFerries.length > 0 ? departedFerries[departedFerries.length - 1] : null;
@@ -147,9 +155,11 @@ export default function DepartScreen() {
     });
   }, [mainCardScale, mainCardTranslateY, mainCardOpacity, incomingCardScale, incomingCardTranslateY, incomingCardOpacity]);
 
-  // Reset animation state when route changes
+  // Reset animation state when route changes. Intentional sync of transition
+  // state to the route prop — clears any in-flight card transition on switch.
   useEffect(() => {
     prevNextDepartureRef.current = null;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTransitionPhase('idle');
     setDepartingCard(null);
   }, [route]);

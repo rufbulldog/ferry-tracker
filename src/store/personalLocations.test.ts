@@ -9,13 +9,6 @@
  * - subscribePersonalLocations() / unsubscribe
  */
 
-// Mock AsyncStorage before importing the module under test so that ts-jest
-// picks up the mock at module-evaluation time.
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-}));
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   loadPersonalLocations,
@@ -25,6 +18,15 @@ import {
   setPersonalCoords,
   subscribePersonalLocations,
 } from './personalLocations';
+
+// Mock AsyncStorage before importing the module under test so that ts-jest
+// picks up the mock at module-evaluation time. ts-jest's hoist-jest transform
+// lifts this jest.mock() call above the imports above, so the mock is registered
+// before ./personalLocations evaluates.
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+}));
 
 const mockGetItem = AsyncStorage.getItem as jest.Mock;
 const mockSetItem = AsyncStorage.setItem as jest.Mock;

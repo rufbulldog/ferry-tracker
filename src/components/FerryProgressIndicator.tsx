@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +18,7 @@ export function FerryProgressIndicator({
   isArriving,
   minutesToArrival,
 }: FerryProgressIndicatorProps) {
-  const animatedProgress = useRef(new Animated.Value(progress)).current;
+  const animatedProgress = useState(() => new Animated.Value(progress))[0];
 
   useEffect(() => {
     Animated.timing(animatedProgress, {

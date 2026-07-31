@@ -7,7 +7,6 @@ import { addMinutes } from '../utils/time';
 import { computeTypicalTransitSeconds, TypicalMethod } from '../utils/transitStats';
 import {
   selectActiveDeparture,
-  projectedDockTime,
   etaDepartureBasis,
 } from '../utils/arrivalEtaLogic';
 

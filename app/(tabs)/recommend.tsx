@@ -1,6 +1,6 @@
 import { View, StyleSheet, ScrollView, RefreshControl, Dimensions, TouchableOpacity, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { useRecommendation } from '../../src/hooks/useRecommendation';
@@ -10,7 +10,7 @@ import { Vehicle } from '../../src/types/storage';
 import { useRoute } from '../../src/context/RouteContext';
 import { useTheme } from '../../src/context/ThemeContext';
 
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function RecommendScreen() {
   const [vehicle, setVehicle] = useState<Vehicle>('bike');
@@ -21,8 +21,8 @@ export default function RecommendScreen() {
   const { theme } = useTheme();
 
   // Slide animation for direction changes - subtle horizontal slide
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const opacityAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useState(() => new Animated.Value(0))[0];
+  const opacityAnim = useState(() => new Animated.Value(1))[0];
 
   useEffect(() => {
     if (animationDirection) {

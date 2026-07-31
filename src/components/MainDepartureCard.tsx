@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -49,11 +49,13 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
 
   // Flip card state
   const [isFlipped, setIsFlipped] = useState(false);
-  const flipAnim = useRef(new Animated.Value(0)).current;
+  const flipAnim = useState(() => new Animated.Value(0))[0];
   const [selectedCamera, setSelectedCamera] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(Date.now());
+  // Cache-buster appended to the camera image URL. Seeded from the clock so each
+  // mount fetches a fresh frame, then bumped by 1 on every manual/swipe refresh.
+  const [refreshKey, setRefreshKey] = useState(() => Date.now());
 
   const cameras = TERMINAL_CAMERAS[terminalId] || [];
 
@@ -68,62 +70,56 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
     setIsFlipped(!isFlipped);
     if (!isFlipped) {
       // When flipping to camera, refresh the image
-      setRefreshKey(Date.now());
+      setRefreshKey((k) => k + 1);
       setImageLoading(true);
       setImageError(false);
     }
   }, [isFlipped, flipAnim]);
 
   const handleRefreshImage = useCallback(() => {
-    setRefreshKey(Date.now());
+    setRefreshKey((k) => k + 1);
     setImageLoading(true);
     setImageError(false);
   }, []);
 
-  // Refs for pan responder to avoid stale closures
-  const camerasLengthRef = useRef(cameras.length);
-  camerasLengthRef.current = cameras.length;
-  const selectedCameraRef = useRef(selectedCamera);
-  selectedCameraRef.current = selectedCamera;
-
-  // Pan responder for swipe gestures on camera view
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Only respond to horizontal swipes
-        return Math.abs(gestureState.dx) > 20 && Math.abs(gestureState.dy) < 50;
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        const len = camerasLengthRef.current;
-        if (len <= 1) return;
-        const current = selectedCameraRef.current;
-        if (gestureState.dx > 50) {
-          // Swipe right = prev
-          const prev = (current - 1 + len) % len;
-          setSelectedCamera(prev);
+  // Pan responder for swipe gestures on camera view. Recreated only when the
+  // camera count changes; the active index is read via the functional setState
+  // updater, so no ref mirroring (and no ref access during render) is needed.
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => false,
+        onMoveShouldSetPanResponder: (_, gestureState) => {
+          // Only respond to horizontal swipes
+          return Math.abs(gestureState.dx) > 20 && Math.abs(gestureState.dy) < 50;
+        },
+        onPanResponderRelease: (_, gestureState) => {
+          const len = cameras.length;
+          if (len <= 1) return;
+          if (gestureState.dx > 50) {
+            // Swipe right = prev
+            setSelectedCamera((current) => (current - 1 + len) % len);
+          } else if (gestureState.dx < -50) {
+            // Swipe left = next
+            setSelectedCamera((current) => (current + 1) % len);
+          } else {
+            return;
+          }
           setImageLoading(true);
           setImageError(false);
-          setRefreshKey(Date.now());
-        } else if (gestureState.dx < -50) {
-          // Swipe left = next
-          const next = (current + 1) % len;
-          setSelectedCamera(next);
-          setImageLoading(true);
-          setImageError(false);
-          setRefreshKey(Date.now());
-        }
-      },
-    })
-  ).current;
+          setRefreshKey((k) => k + 1);
+        },
+      }),
+    [cameras.length]
+  );
 
   // Calculate fill percentage (inverted - more cars = higher fill)
   const fillPercent = driveUpSpaces !== null && maxSpaces > 0
     ? ((maxSpaces - driveUpSpaces) / maxSpaces) * 100
     : 0;
 
-  const animatedFill = useRef(new Animated.Value(0)).current;
-  const animatedFerryProgress = useRef(new Animated.Value(vesselProgressPercent)).current;
+  const animatedFill = useState(() => new Animated.Value(0))[0];
+  const animatedFerryProgress = useState(() => new Animated.Value(vesselProgressPercent))[0];
 
   useEffect(() => {
     Animated.timing(animatedFill, {
@@ -474,7 +470,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                         setSelectedCamera(idx);
                         setImageLoading(true);
                         setImageError(false);
-                        setRefreshKey(Date.now());
+                        setRefreshKey((k) => k + 1);
                       }}
                     >
                       <View

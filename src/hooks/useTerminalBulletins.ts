@@ -89,11 +89,16 @@ export function useTerminalBulletins(route: Route) {
     refetchInterval: 60 * 1000, // Refetch every minute
   });
 
+  // Recency cutoff for "new" bulletins. Read from the wall clock once per render
+  // (the query refetches every minute, re-running this), so the purity rule is
+  // opted out here rather than in the per-bulletin map below.
+  // eslint-disable-next-line react-hooks/purity
+  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+
   // Filter and process bulletins relevant to this route
   const bulletins: ProcessedBulletin[] = (data?.Bulletins || [])
     .map((b: TerminalBulletin) => {
       const lastUpdated = parseWsfDate(b.BulletinLastUpdated);
-      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
       const plainText = stripHtml(b.BulletinText);
 
       // Check if it's an alert (contains concerning keywords)

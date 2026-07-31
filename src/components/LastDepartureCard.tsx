@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
@@ -41,7 +41,7 @@ export function LastDepartureCard({ departure, backendCapacityPercent }: LastDep
   const departureTime = actualDeparture || scheduledDeparture;
 
   // Animated ferry progress
-  const animatedProgress = useRef(new Animated.Value(vesselProgressPercent)).current;
+  const animatedProgress = useState(() => new Animated.Value(vesselProgressPercent))[0];
 
   useEffect(() => {
     Animated.timing(animatedProgress, {
