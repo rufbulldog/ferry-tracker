@@ -7,18 +7,22 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "lint": "eslint .",
     "test": "jest",
     "cdk": "cdk",
     "deploy": "cdk deploy --require-approval never"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@types/jest": "^30",
     "@types/node": "^24.10.1",
     "aws-cdk": "2.1104.0",
+    "eslint": "^9.39.5",
     "jest": "^30",
     "ts-jest": "^29",
     "ts-node": "^10.9.2",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.65.0"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.980.0",
