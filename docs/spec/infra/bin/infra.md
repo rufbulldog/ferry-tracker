@@ -2,10 +2,10 @@
 type: l1-file
 spec_version: 1
 source: infra/bin/infra.js
-content_sha: d2ef8be0a04479cc549cb2b117e02ff01a97f29fa85072b644a8224f702fec20
+content_sha: c6bd2874db20c0d7e12f092afed506ddf435c81929e44a0d97cbd06de9ad6ab8
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-28T18:29:47.276Z
+last_audited: 2026-08-01T19:39:26.566Z
 ---
 
 # infra.js

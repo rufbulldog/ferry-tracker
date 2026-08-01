@@ -6,7 +6,7 @@ file_count: 2
 total_lines: 73
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-28T18:29:47.370Z
+last_audited: 2026-08-01T19:39:26.656Z
 ---
 
 # infra/bin — Module Spec

@@ -3,16 +3,16 @@ type: l2-module
 spec_version: 1
 path: src/api
 file_count: 6
-total_lines: 251
+total_lines: 275
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.723Z
+last_audited: 2026-08-01T19:39:26.658Z
 ---
 
 # src/api — Module Spec
 
 **Folder:** `src/api`
-**Files:** 6 · **Lines:** 251
+**Files:** 6 · **Lines:** 275
 
 ## File inventory
 
@@ -21,8 +21,8 @@ last_audited: 2026-06-23T02:13:37.723Z
 | [`backend.ts`](./backend.md) | 88 |  |
 | [`client.ts`](./client.md) | 12 |  |
 | [`schedule.ts`](./schedule.md) | 13 |  |
-| [`terminals.ts`](./terminals.md) | 13 |  |
-| [`types.ts`](./types.md) | 117 |  |
+| [`terminals.ts`](./terminals.md) | 18 |  |
+| [`types.ts`](./types.md) | 136 |  |
 | [`vessels.ts`](./vessels.md) | 8 |  |
 
 ## Public surface
@@ -33,12 +33,14 @@ Files in this folder imported from elsewhere:
   - `src/hooks/useDailyTrends.ts`
   - `src/hooks/useLatestDeparture.ts`
   - `src/hooks/useTransitRecords.ts`
-- `terminals.ts` — used by 2 files
+- `terminals.ts` — used by 3 files
   - `src/hooks/useTerminalBulletins.ts`
   - `src/hooks/useTerminalConditions.ts`
-- `types.ts` — used by 2 files
+  - `src/hooks/useTerminalWaitTimes.ts`
+- `types.ts` — used by 3 files
   - `src/hooks/useNextDepartures.ts`
   - `src/hooks/useTerminalBulletins.ts`
+  - `src/hooks/useTerminalWaitTimes.ts`
 - `vessels.ts` — used by 1 file
   - `src/hooks/useVesselLocations.ts`
 

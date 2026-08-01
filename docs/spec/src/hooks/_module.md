@@ -2,29 +2,31 @@
 type: l2-module
 spec_version: 1
 path: src/hooks
-file_count: 11
-total_lines: 1445
+file_count: 13
+total_lines: 1617
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-07-31T23:25:27.526Z
+last_audited: 2026-08-01T19:39:26.661Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 11 · **Lines:** 1445
+**Files:** 13 · **Lines:** 1617
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`useArrivalEta.ts`](./useArrivalEta.md) | 111 |  |
+| [`useArrivalEta.ts`](./useArrivalEta.md) | 137 |  |
+| [`useCarWait.ts`](./useCarWait.md) | 76 | Combine live capacity, WSF wait-time notes, WSF alerts, and recorded history |
 | [`useDailyTrends.ts`](./useDailyTrends.md) | 124 |  |
 | [`useLatestDeparture.ts`](./useLatestDeparture.md) | 61 |  |
 | [`useNextDepartures.ts`](./useNextDepartures.md) | 337 |  |
-| [`useRecommendation.ts`](./useRecommendation.md) | 206 |  |
+| [`useRecommendation.ts`](./useRecommendation.md) | 247 |  |
 | [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 164 |  |
 | [`useTerminalConditions.ts`](./useTerminalConditions.md) | 29 |  |
+| [`useTerminalWaitTimes.ts`](./useTerminalWaitTimes.md) | 29 | WSF vehicle wait-time notes for a terminal. The `/wsf/waittimes/{id}` proxy |
 | [`useTimer.ts`](./useTimer.md) | 198 |  |
 | [`useTransitRecords.ts`](./useTransitRecords.md) | 131 |  |
 | [`useUserLocation.ts`](./useUserLocation.md) | 72 |  |
@@ -37,12 +39,15 @@ Files in this folder imported from elsewhere:
 - `useArrivalEta.ts` — used by 2 files
   - `app/(tabs)/recommend.tsx`
   - `src/components/CheckInFAB.tsx`
+- `useCarWait.ts` — used by 1 file
+  - `src/components/CarWaitChip.tsx`
 - `useDailyTrends.ts` — used by 1 file
   - `app/(tabs)/trends.tsx`
 - `useLatestDeparture.ts` — used by 1 file
   - `app/(tabs)/index.tsx`
-- `useNextDepartures.ts` — used by 4 files
+- `useNextDepartures.ts` — used by 5 files
   - `app/(tabs)/index.tsx`
+  - `src/components/ArrivingCard.tsx`
   - `src/components/FerryCard.tsx`
   - `src/components/LastDepartureCard.tsx`
   - `src/components/MainDepartureCard.tsx`
@@ -65,6 +70,7 @@ Files in this folder imported from elsewhere:
 Files in this folder not imported by any file outside it (candidates for cleanup or relocation):
 
 - `useTerminalConditions.ts`
+- `useTerminalWaitTimes.ts`
 - `useVesselLocations.ts`
 
 ## Cross-refs

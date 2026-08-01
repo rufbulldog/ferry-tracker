@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/LastDepartureCard.tsx
-content_sha: b44ca399dad697ff16d5ee00a7076a3f637fb9f479c27efe455734e8f65ae69f
+content_sha: a6b2f74ff2811fa47c1f83055bba793cfa8916bbdf6b72f842b53342135dae9b
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-07-31T23:25:27.475Z
+last_audited: 2026-08-01T19:39:26.586Z
 ---
 
 # LastDepartureCard.tsx
 
 **Path:** `src/components/LastDepartureCard.tsx`
-**Lines:** 161
+**Lines:** 163
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -25,6 +25,7 @@ last_audited: 2026-07-31T23:25:27.475Z
 **Internal:**
 - `../context/ThemeContext` (`useTheme`)
 - `../hooks/useNextDepartures` (`DepartureInfo`)
+- `../utils/ferryDeparture` (`effectiveFerryDeparture`)
 - `../utils/time` (`formatTime`)
 
 **External:**

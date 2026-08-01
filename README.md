@@ -38,7 +38,8 @@ flowchart TD
 - **Vehicle toggle** - switch between bike and car for different travel times
 - **Buffer time** - adds appropriate buffer based on vehicle type; drops to 1 min floor once you have 5+ recorded trips for that route and vehicle
 - **Delay awareness** - adds +5 min buffer when an active service delay alert is detected
-- **Capacity awareness** - shows ferry fill percentage at bottom of card
+- **Bike/walk vs. car departure timing** - walk-ons and bikes board the ferry's own departure; as a car, the card instead calls out the sailing you're actually likely to board (and the extra wait) when the boat you'd otherwise catch is expected to fill, using live drive-up capacity and historical typical-capacity data as the primary signals
+- **Capacity awareness** - shows ferry fill percentage at bottom of card (suppressed when the car-wait note already states it)
 - **Arrival ETA card** - compact secondary card showing estimated home/office arrival time; ETA is built from the planned (scheduled) departure time + 35-min crossing + your recorded transit time (Seattle→Bainbridge shows home ETA; Bainbridge→Seattle shows office ETA; Kingston/Edmonds routes not supported). Deviates from the schedule only when a delay is known: uses actual departure if the boat has already left, or projects departure as dock-time + 5-min turnaround if the vessel won't arrive until after its scheduled time
 - **Pull-to-refresh** - pull down to refresh all data and GPS location
 
@@ -48,9 +49,12 @@ flowchart TD
 - **Live vessel tracking** - animated ferry icon shows incoming vessel position between terminals
 - **Drive-up space availability** - large number display shows spots remaining
 - **Camera viewer** - flip card to see terminal webcam feeds (WSDOT cameras)
-- **Estimated departure times** - predictions based on vessel arrival + turnaround time
+- **Estimated departure times** - predictions based on vessel arrival + turnaround time; a unified departure model feeds the same effective time + delay to both the Next Sailing card and the "N min behind" text, so they can't disagree
+- **Kingston vehicle boarding-pass notice** - a pill shown only when departing Kingston, during the published hours WSF requires a vehicle boarding pass at that terminal (there's no WSF API field for this, so it's modeled from the published seasonal schedule and renders nothing outside known seasons)
+- **Car-wait chip** - surfaces when drivers are likely to be bumped to a later sailing than walk-ons/bikes, using the same signal priority as the Leave tab's car-wait note
 - **Departure transition animation** - smooth animation when a ferry departs and next one takes its place
-- **Recently departed section** - shows ferries that just left with capacity data
+- **Combined Departed/Arriving block** - a single collapsible section (persisted via AsyncStorage) holding the last-departed card and the inbound-vessel card under one "DEPARTED · ARRIVING" header, with a "Now boarding" placeholder in the Arriving slot once the vessel docks
+- **Dynamically sized Next Sailing card** - sized from measured viewport/notices/top-block heights so the Upcoming section always peeks at the bottom, accounting for whatever notices (boarding-pass pill, car-wait chip, alerts) are currently showing
 - **Auto-refresh** - vessel data updates every 5 seconds, terminal data every 10 seconds
 - **Pull-to-refresh** - manual refresh for all data
 
@@ -85,9 +89,10 @@ flowchart TD
 - **Check-in contact** - optional phone number for the "Send ETA" button; stored on-device only
 
 ### Send ETA (Floating Action Button)
-- **One-tap ETA message** - floating button visible on the Seattle → Bainbridge route only; hidden entirely until a check-in contact number is saved in Settings
+- **One-tap ETA message** - floating button visible on the Seattle → Bainbridge route only. When no check-in contact is saved in Settings, the button shows a "Set a contact to send ETA" reminder instead of hiding, and tapping it routes to Settings
 - **Pre-populated iMessage** - opens native SMS with `⛴️ Boarded, ETA: <time>` pre-filled to the contact number set in Settings
 - **ETA matches the Leave tab** - sources its ETA from `useArrivalEta`: planned (scheduled) departure time + 35-min crossing + your recorded ferry-to-home bike transit (typical stat, or 15 min default); identical to the arrival card shown on the Leave tab. Selects the sailing you're about to board — if a ferry pulled away within the last 5 minutes, that's treated as the boat you just boarded; otherwise uses the next upcoming sailing
+- **Pins the boarded vessel on send** - pressing Send ETA also records a check-in (route, vessel, scheduled departure) so the displayed ETA stays locked to that sailing through the loading→departed transition, instead of jumping when the boat later shows as departed
 - **Disabled when idle** - button is shown at 50% opacity and non-tappable when there is no upcoming departure
 - **No backend required** - uses native `Linking.openURL` with `sms:` scheme
 
@@ -233,10 +238,13 @@ ferry-app/
 │   │
 │   ├── components/
 │   │   ├── AlertBanner.tsx       # Service delay alert banner
+│   │   ├── ArrivingCard.tsx      # Inbound-vessel card (part of the Departed/Arriving block)
 │   │   ├── CapacityBar.tsx       # Animated capacity fill bar
+│   │   ├── CarWaitChip.tsx       # Notice when drivers face a later sailing than walk-ons/bikes
 │   │   ├── CheckInFAB.tsx        # Send ETA floating action button
 │   │   ├── FerryCard.tsx         # Compact departure card
 │   │   ├── FerryProgressIndicator.tsx  # Vessel position between terminals
+│   │   ├── KingstonBoardingPassPill.tsx  # Vehicle boarding-pass notice for Kingston departures
 │   │   ├── LastDepartureCard.tsx  # Recently departed ferry card
 │   │   ├── MainDepartureCard.tsx  # Large flippable main departure card
 │   │   └── RouteSelector.tsx     # Route/direction picker header
@@ -248,11 +256,13 @@ ferry-app/
 │   ├── hooks/
 │   │   ├── useDailyTrends.ts     # Trend data management
 │   │   ├── useArrivalEta.ts      # Arrival ETA from next departure + typical transit time
+│   │   ├── useCarWait.ts          # Car-vs-walk/bike departure timing estimate
 │   │   ├── useLatestDeparture.ts  # Backend departure data for capacity
 │   │   ├── useNextDepartures.ts   # Combined departure data
 │   │   ├── useRecommendation.ts   # Leave-by time calculations
 │   │   ├── useTerminalBulletins.ts # Service delay alerts
 │   │   ├── useTerminalConditions.ts # Terminal data polling (10s)
+│   │   ├── useTerminalWaitTimes.ts # WSF terminalwaittimes polling (car-wait signal)
 │   │   ├── useTimer.ts            # Timer state management
 │   │   ├── useTransitRecords.ts   # Transit time CRUD
 │   │   ├── useUserLocation.ts     # GPS location with foreground refresh
@@ -264,10 +274,14 @@ ferry-app/
 │   │
 │   └── utils/
 │       ├── arrivalEtaLogic.ts    # Pure ETA functions (selectActiveDeparture, etaDepartureBasis, projectedDockTime)
+│       ├── carWait.ts            # Car-vs-walk/bike wait estimator (waittimes notes → alerts → live capacity → history)
 │       ├── constants.ts          # Terminal IDs, route config, ETA constants
+│       ├── ferryDeparture.ts     # Unified effective departure time + delay model (feeds Time + Leave cards)
+│       ├── kingstonBoardingPass.ts  # Kingston vehicle boarding-pass seasonal schedule logic
 │       ├── themes.ts             # Theme definitions (15 themes)
 │       ├── time.ts               # Date parsing and formatting
-│       └── transitStats.ts       # Robust "typical" transit time (raw/median/trimmed-mean)
+│       ├── transitStats.ts       # Robust "typical" transit time (raw/median/trimmed-mean)
+│       └── typicalConditions.ts  # Historical typical delay/capacity for a route+day/hour slot (trimmed mean, outlier-resistant)
 │
 ├── infra/                        # AWS CDK infrastructure
 │   ├── lib/infra-stack.ts        # CDK stack definition
@@ -302,6 +316,13 @@ GET /ferries/api/terminals/rest/terminalsailingspace
 - Service delay alerts, cancellations, and general notices
 - Polled every 60 seconds
 - Keywords trigger alert classification: cancel, delay, behind schedule, out of service, emergency
+
+### Terminal Wait Times API
+```
+GET /ferries/api/terminals/rest/terminalwaittimes/{terminalId}
+```
+- One of the signals feeding the car-wait estimate (Leave tab note + Time tab `CarWaitChip`)
+- WSF's wait-time notes are static "advance arrival recommended" advisories rather than live wait figures, so this signal is usually dormant in practice — car-wait relies mainly on live drive-up capacity and historical typical-capacity data, in that priority order
 
 ### Terminal IDs
 ```typescript

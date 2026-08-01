@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/api/terminals.ts
-content_sha: b2b926e0de0ae38c0b76befabe20a789cfb8329686e1aa42914b0a4bb3f0cecd
+content_sha: 0a510d226e9daf1a5d67a6e0b8d2beaf0ff2f6e16068a1d00e93224dc2e1ced9
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.640Z
+last_audited: 2026-08-01T19:39:26.578Z
 ---
 
 # terminals.ts
 
 **Path:** `src/api/terminals.ts`
-**Lines:** 13
+**Lines:** 18
 **Language:** TypeScript
 
 ## Exports
@@ -20,9 +20,10 @@ last_audited: 2026-06-23T02:13:37.640Z
 |---|---|---|
 | `fetchTerminalSailingSpace` | function | `(): Promise<TerminalSailingSpace[]>` |
 | `fetchTerminalBulletins` | function | `(terminalId: number): Promise<TerminalBulletins>` |
+| `fetchTerminalWaitTimes` | function | `(terminalId: number): Promise<TerminalWaitTimes>` |
 
 ## Imports
 
 **Internal:**
 - `./client` (`terminalsApi`)
-- `./types` (`TerminalSailingSpace`, `TerminalBulletins`)
+- `./types` (`TerminalSailingSpace`, `TerminalBulletins`, `TerminalWaitTimes`)

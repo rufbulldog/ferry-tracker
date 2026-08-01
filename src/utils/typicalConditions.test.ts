@@ -59,4 +59,25 @@ describe('computeTypicalForSlot', () => {
     expect(r.capacityPercent).toBe(90); // only the non-zero
     expect(r.sampleSize).toBe(2);
   });
+
+  test('trims outliers once the sample is large enough (>=10 matches)', () => {
+    // 10 matching Mondays, hour 16: nine cluster around 5 min / 80% capacity,
+    // one wildly delayed/full outlier. floor(10 * 0.1) = 1 trims exactly the
+    // one worst value off each end, so the outlier can't skew the result.
+    const dates = [
+      '2026-07-27', '2026-07-20', '2026-07-13', '2026-07-06', '2026-06-29',
+      '2026-06-22', '2026-06-15', '2026-06-08', '2026-06-01', '2026-05-25',
+    ];
+    const data = dates.map((d, i) =>
+      i === 0
+        ? snap(`${d}T16:30:00`, 90, 100) // the outlier: huge delay, jammed full
+        : snap(`${d}T16:30:00`, 5, 80),
+    );
+    const r = computeTypicalForSlot(data, ref);
+    expect(r.sampleSize).toBe(10);
+    // Plain mean would be pulled well above 5/80; trimmed mean stays near the
+    // untrimmed cluster's value.
+    expect(r.delayMinutes).toBeLessThan(15);
+    expect(r.capacityPercent).toBeLessThan(85);
+  });
 });

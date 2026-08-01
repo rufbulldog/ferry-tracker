@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/index.tsx
-content_sha: ae4eb65a1be0cb5af76b7f1da59fc0407c4a52675cd7f9507c3bd01e0c71fd59
+content_sha: 8a39ac6499864d365a82369fb4d748fdaa803210a1630c34d13747c4f4079c99
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-07-31T23:25:27.454Z
+last_audited: 2026-08-01T19:39:26.556Z
 ---
 
 # index.tsx
 
 **Path:** `app/(tabs)/index.tsx`
-**Lines:** 381
+**Lines:** 491
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -24,7 +24,10 @@ last_audited: 2026-07-31T23:25:27.454Z
 
 **Internal:**
 - `../../src/components/AlertBanner` (`AlertBanner`)
+- `../../src/components/ArrivingCard` (`ArrivingCard`)
+- `../../src/components/CarWaitChip` (`CarWaitChip`)
 - `../../src/components/FerryCard` (`FerryCard`)
+- `../../src/components/KingstonBoardingPassPill` (`KingstonBoardingPassPill`)
 - `../../src/components/LastDepartureCard` (`LastDepartureCard`)
 - `../../src/components/MainDepartureCard` (`MainDepartureCard`)
 - `../../src/context/RouteContext` (`useRoute`)
@@ -35,7 +38,9 @@ last_audited: 2026-07-31T23:25:27.454Z
 - `../../src/utils/constants` (`ROUTES`, `TERMINALS`)
 
 **External:**
+- `@expo/vector-icons` (`Ionicons`)
+- `@react-native-async-storage/async-storage` (`default as AsyncStorage`)
 - `@tanstack/react-query` (`useQueryClient`)
 - `react` (`useState`, `useCallback`, `useMemo`, `useRef`, `useEffect`)
-- `react-native` (`View`, `StyleSheet`, `ScrollView`, `RefreshControl`, `Animated`, `Dimensions`)
+- `react-native` (`View`, `StyleSheet`, `ScrollView`, `RefreshControl`, `Animated`, `TouchableOpacity`, `LayoutChangeEvent`)
 - `react-native-paper` (`Text`, `Card`, `ActivityIndicator`)

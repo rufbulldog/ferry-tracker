@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useArrivalEta.ts
-content_sha: 893e3129ff169df30111e59da090b9765668fd4559ab497002126de93320ac33
+content_sha: 81afb7b8f50d503ad3faf2a5fad287b44caaba991cf38ea578e3316e93fbcc5f
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-07-31T23:25:27.486Z
+last_audited: 2026-08-01T19:39:26.598Z
 ---
 
 # useArrivalEta.ts
 
 **Path:** `src/hooks/useArrivalEta.ts`
-**Lines:** 111
+**Lines:** 137
 **Language:** TypeScript
 
 ## Exports
@@ -26,6 +26,7 @@ last_audited: 2026-07-31T23:25:27.486Z
 ## Imports
 
 **Internal:**
+- `../store/checkIn` (`getCheckIn`, `subscribeCheckIn`)
 - `../types/storage` (`TransitRoute`, `Vehicle`)
 - `../utils/arrivalEtaLogic` (`selectActiveDeparture`, `etaDepartureBasis`)
 - `../utils/constants` (`Route`, `FERRY_CROSSING_MINUTES`, `FERRY_TO_HOME_FALLBACK_MINUTES`)
@@ -35,4 +36,4 @@ last_audited: 2026-07-31T23:25:27.486Z
 - `./useTransitRecords` (`useTransitRecords`)
 
 **External:**
-- `react` (`useMemo`)
+- `react` (`useMemo`, `useSyncExternalStore`)
