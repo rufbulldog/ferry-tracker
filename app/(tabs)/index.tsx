@@ -1,6 +1,7 @@
-import { View, StyleSheet, ScrollView, RefreshControl, Animated, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, Animated, TouchableOpacity, LayoutChangeEvent } from 'react-native';
 import { Text, Card, ActivityIndicator } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNextDepartures, DepartureInfo } from '../../src/hooks/useNextDepartures';
@@ -17,23 +18,22 @@ import { useRoute } from '../../src/context/RouteContext';
 import { useTheme } from '../../src/context/ThemeContext';
 import { ROUTES, TERMINALS } from '../../src/utils/constants';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-// The Next Sailing card is sized dynamically: a compact base (used when both top
-// sections — Departed / Arriving — are present and expanded, so the Upcoming
-// section peeks at the bottom) plus the exact space reclaimed as each top
-// section collapses or is absent. Reclaiming the card's own height on collapse
-// keeps the Upcoming peek constant; an absent section also reclaims its header.
-const MAIN_CARD_MIN_HEIGHT = SCREEN_HEIGHT * 0.34;
-const SECTION_CARD_HEIGHT = 82; // the Departed/Arriving card body (freed on collapse)
-const SECTION_HEADER_HEIGHT = 26; // the section label row (also freed when absent)
 const LAST_DEPARTURE_HEIGHT = 70;
 
-// Vertical space a top section frees relative to being present-and-expanded.
-function reclaimedHeight(present: boolean, collapsed: boolean): number {
-  if (!present) return SECTION_CARD_HEIGHT + SECTION_HEADER_HEIGHT;
-  if (collapsed) return SECTION_CARD_HEIGHT;
-  return 0;
-}
+// The Next Sailing card fills whatever vertical space is left in the viewport
+// after the notices (boarding-pass pill, alerts, car-wait chip), the collapsible
+// Departed/Arriving block, and the NEXT SAILING label — minus a fixed peek so
+// the Upcoming section always shows at the bottom. Those variable-height pieces
+// are measured (onLayout) rather than estimated, so anything we add above the
+// card is accounted for automatically.
+const UPCOMING_PEEK = 46; // px of the Upcoming section left visible above the fold
+const NEXT_SAILING_LABEL_H = 42; // NEXT SAILING label + its margins
+const CARD_BOTTOM_MARGIN = 16;
+const SCROLL_TOP_PADDING = 16;
+const MAIN_CARD_MIN = 220; // floor so the card never collapses to nothing
+
+// Persist the Departed/Arriving block's collapsed state across launches.
+const TOP_BLOCK_COLLAPSED_KEY = '@ferry/topblock-collapsed';
 
 // Terminal ID to display name mapping
 const TERMINAL_NAMES: Record<number, string> = {
@@ -45,8 +45,11 @@ const TERMINAL_NAMES: Record<number, string> = {
 
 export default function DepartScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const [departedCollapsed, setDepartedCollapsed] = useState(false);
-  const [arrivingCollapsed, setArrivingCollapsed] = useState(false);
+  const [topBlockCollapsed, setTopBlockCollapsed] = useState(false);
+  // Measured heights that feed the Next Sailing card sizing (see mainCardHeight).
+  const [viewportH, setViewportH] = useState(0);
+  const [noticesH, setNoticesH] = useState(0);
+  const [topBlockH, setTopBlockH] = useState(0);
   const queryClient = useQueryClient();
   const { route, animationDirection, clearAnimation } = useRoute();
   const { theme } = useTheme();
@@ -77,6 +80,31 @@ export default function DepartScreen() {
       ]).start(() => clearAnimation());
     }
   }, [animationDirection, clearAnimation, slideAnim, opacityAnim]);
+
+  // Restore the persisted collapsed state once on mount.
+  useEffect(() => {
+    AsyncStorage.getItem(TOP_BLOCK_COLLAPSED_KEY)
+      .then((v) => { if (v === 'true') setTopBlockCollapsed(true); })
+      .catch(() => {});
+  }, []);
+
+  const toggleTopBlock = useCallback(() => {
+    setTopBlockCollapsed((prev) => {
+      const next = !prev;
+      AsyncStorage.setItem(TOP_BLOCK_COLLAPSED_KEY, String(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  // onLayout helper: update a measured height only when it meaningfully changes,
+  // so we don't churn renders on sub-pixel differences.
+  const measure = useCallback(
+    (setter: (updater: (prev: number) => number) => void) => (e: LayoutChangeEvent) => {
+      const h = e.nativeEvent.layout.height;
+      setter((prev) => (Math.abs(prev - h) > 0.5 ? h : prev));
+    },
+    [],
+  );
 
   const { data: departures, isLoading, error } = useNextDepartures(route);
   const { activeAlert } = useTerminalBulletins(route);
@@ -125,16 +153,27 @@ export default function DepartScreen() {
   const nextDeparture = upcomingFerries[0];
   const upcomingDepartures = upcomingFerries.slice(1, 6);
 
-  // Whether the incoming-vessel (Arriving) section applies to this sailing.
-  const hasArriving = !!nextDeparture &&
-    (nextDeparture.status === 'arriving' || nextDeparture.status === 'returning');
+  // The Arriving slot applies while the assigned vessel is inbound (arriving /
+  // returning) and also once it has docked and is boarding (a placeholder), so
+  // the slot doesn't blink out the moment the boat arrives.
+  const arrivingStatus = nextDeparture?.status;
+  const hasArrivingSlot =
+    arrivingStatus === 'arriving' || arrivingStatus === 'returning' || arrivingStatus === 'loading';
+  const hasDeparted = !!lastDeparture;
+  const showTopBlock = hasDeparted || hasArrivingSlot;
 
-  // Dynamically size the Next Sailing card: base height (both top sections
-  // present + expanded) plus the exact space each section frees when it
-  // collapses or is absent, so the Upcoming peek at the bottom stays constant.
-  const mainCardHeight = MAIN_CARD_MIN_HEIGHT +
-    reclaimedHeight(!!lastDeparture, departedCollapsed) +
-    reclaimedHeight(hasArriving, arrivingCollapsed);
+  // Combined header names for whatever the block currently holds.
+  const topHeaderLabel = [hasDeparted && 'DEPARTED', hasArrivingSlot && 'ARRIVING']
+    .filter(Boolean)
+    .join('  ·  ');
+
+  // Size the Next Sailing card to fill the remaining viewport (minus a fixed
+  // Upcoming peek). topBlockH only counts while the block is actually shown.
+  const effectiveTopBlockH = transitionPhase === 'idle' && showTopBlock ? topBlockH : 0;
+  const availableH =
+    viewportH - SCROLL_TOP_PADDING - noticesH - effectiveTopBlockH -
+    NEXT_SAILING_LABEL_H - CARD_BOTTOM_MARGIN - UPCOMING_PEEK;
+  const mainCardHeight = Math.max(MAIN_CARD_MIN, availableH);
   const scaleRatio = LAST_DEPARTURE_HEIGHT / mainCardHeight;
   const translateUp = -(mainCardHeight / 2) + (LAST_DEPARTURE_HEIGHT / 2);
 
@@ -224,6 +263,7 @@ export default function DepartScreen() {
     <ScrollView
       style={[styles.container, { backgroundColor: theme.colors.pageBg }]}
       contentContainerStyle={styles.scrollContent}
+      onLayout={measure(setViewportH)}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />
       }
@@ -262,16 +302,20 @@ export default function DepartScreen() {
         </Card>
       )}
 
-      {/* Kingston vehicle boarding-pass notice — only when departing Kingston */}
-      {ROUTES[route].from === TERMINALS.KINGSTON && <KingstonBoardingPassPill />}
+      {/* Notices — measured so the Next Sailing card can account for their height
+          and keep the Upcoming section peeking at the bottom. */}
+      <View onLayout={measure(setNoticesH)}>
+        {/* Kingston vehicle boarding-pass notice — only when departing Kingston */}
+        {ROUTES[route].from === TERMINALS.KINGSTON && <KingstonBoardingPassPill />}
 
-      {/* Car-overflow notice — only when a real wait signal is present */}
-      <CarWaitChip route={route} />
+        {/* Car-overflow notice — only when a real wait signal is present */}
+        <CarWaitChip route={route} />
 
-      {/* Active alert banner */}
-      {activeAlert && (
-        <AlertBanner alert={activeAlert} />
-      )}
+        {/* Active alert banner */}
+        {activeAlert && (
+          <AlertBanner alert={activeAlert} />
+        )}
+      </View>
 
       {/* Cards container with slide animation */}
       <Animated.View
@@ -280,28 +324,38 @@ export default function DepartScreen() {
           { minHeight: mainCardHeight + 16, transform: [{ translateX: slideAnim }], opacity: opacityAnim },
         ]}
       >
-        {/* Last departure card - collapsible, hidden during animation */}
-        {lastDeparture && transitionPhase === 'idle' && (
-          <>
+        {/* Departed + Arriving — one collapsible block, hidden during animation */}
+        {showTopBlock && transitionPhase === 'idle' && (
+          <View onLayout={measure(setTopBlockH)}>
             <TouchableOpacity
               style={styles.collapsibleHeader}
-              onPress={() => setDepartedCollapsed(c => !c)}
+              onPress={toggleTopBlock}
               activeOpacity={0.7}
             >
-              <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>DEPARTED</Text>
+              <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>{topHeaderLabel}</Text>
               <Ionicons
-                name={departedCollapsed ? 'chevron-down' : 'chevron-up'}
+                name={topBlockCollapsed ? 'chevron-down' : 'chevron-up'}
                 size={16}
                 color={theme.colors.textMuted}
               />
             </TouchableOpacity>
-            {!departedCollapsed && (
-              <LastDepartureCard
-                departure={lastDeparture}
-                backendCapacityPercent={latestDeparture?.capacityPercent}
-              />
+            {!topBlockCollapsed && (
+              <>
+                {hasDeparted && (
+                  <LastDepartureCard
+                    departure={lastDeparture}
+                    backendCapacityPercent={latestDeparture?.capacityPercent}
+                  />
+                )}
+                {hasArrivingSlot && nextDeparture && (
+                  <ArrivingCard
+                    departure={nextDeparture}
+                    backendIncomingCapacity={latestIncoming?.capacityPercent}
+                  />
+                )}
+              </>
             )}
-          </>
+          </View>
         )}
 
         {/* Departing card (animating out to LastDeparture position) */}
@@ -350,30 +404,6 @@ export default function DepartScreen() {
               height={mainCardHeight}
             />
           </Animated.View>
-        )}
-
-        {/* Arriving card — the incoming vessel, pulled out of Next Sailing */}
-        {transitionPhase === 'idle' && hasArriving && (
-          <>
-            <TouchableOpacity
-              style={styles.collapsibleHeader}
-              onPress={() => setArrivingCollapsed(c => !c)}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>ARRIVING</Text>
-              <Ionicons
-                name={arrivingCollapsed ? 'chevron-down' : 'chevron-up'}
-                size={16}
-                color={theme.colors.textMuted}
-              />
-            </TouchableOpacity>
-            {!arrivingCollapsed && (
-              <ArrivingCard
-                departure={nextDeparture}
-                backendIncomingCapacity={latestIncoming?.capacityPercent}
-              />
-            )}
-          </>
         )}
 
         {/* Normal main card when not animating */}

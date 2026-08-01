@@ -60,6 +60,21 @@ export function ArrivingCard({ departure, backendIncomingCapacity }: ArrivingCar
       ? `Arrives ${formatTime(vesselArrivalEta)}`
       : 'Arriving';
 
+  // Placeholder once the vessel has docked and is boarding — keeps the Arriving
+  // slot present (with a green accent) instead of blinking out on arrival.
+  if (departure.status === 'loading') {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.colors.cardBg, borderLeftColor: '#43A047' }]}>
+        <View style={styles.boardingRow}>
+          <Ionicons name="boat" size={18} color="#43A047" />
+          <Text style={[styles.vesselName, { color: theme.colors.text }]}>{vesselName}</Text>
+          <Text style={[styles.status, { color: theme.colors.textMuted }]}>At dock</Text>
+          <Text style={[styles.boardingLabel, { color: '#43A047' }]}>Now boarding</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.cardBg, borderLeftColor: '#7B1FA2' }]}>
       {/* Ferry tracker with capacity fill inside */}
@@ -140,6 +155,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  boardingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 3,
+  },
+  boardingLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginLeft: 'auto',
   },
   vesselName: {
     fontSize: 14,
