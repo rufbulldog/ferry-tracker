@@ -9,6 +9,7 @@ import { FerryCard } from '../../src/components/FerryCard';
 import { MainDepartureCard } from '../../src/components/MainDepartureCard';
 import { LastDepartureCard } from '../../src/components/LastDepartureCard';
 import { AlertBanner } from '../../src/components/AlertBanner';
+import { KingstonBoardingPassPill } from '../../src/components/KingstonBoardingPassPill';
 import { useRoute } from '../../src/context/RouteContext';
 import { useTheme } from '../../src/context/ThemeContext';
 import { ROUTES, TERMINALS } from '../../src/utils/constants';
@@ -230,6 +231,9 @@ export default function DepartScreen() {
           </Card.Content>
         </Card>
       )}
+
+      {/* Kingston vehicle boarding-pass notice — only when departing Kingston */}
+      {ROUTES[route].from === TERMINALS.KINGSTON && <KingstonBoardingPassPill />}
 
       {/* Active alert banner */}
       {activeAlert && (
