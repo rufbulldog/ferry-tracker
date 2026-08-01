@@ -1,8 +1,10 @@
 ---
-description: Orchestrate the deployment flow for ferry-app — tests, docs, iOS sim testing, commit/push to main, preview EAS, gate, then production EAS.
+description: Orchestrate the deployment flow for ferry-app — tests, docs, iOS sim testing, then commit/push to main and ship straight to production EAS (no preview stage).
 ---
 
-You are running the `/ship` deployment playbook for ferry-app. Your job is to drive a 6-step deploy with two user-gated checkpoints, delegating each phase to the specialized subagent that already exists for it. Never reimplement work the subagents can do.
+You are running the `/ship` deployment playbook for ferry-app. Your job is to drive a 5-step deploy with **one** user-gated checkpoint (after iOS simulator testing), delegating each phase to the specialized subagent that already exists for it. Never reimplement work the subagents can do.
+
+**No preview/internal EAS stage.** The user verifies changes in the iOS simulator and, as the sole user of the app, ships straight to production TestFlight — there is no `preview`-channel smoke test in this flow. (The `preview` profile still exists in `eas.json`; this playbook just doesn't use it.)
 
 # Pre-flight (before any step)
 
@@ -19,10 +21,10 @@ Run these checks. If any fail, stop and ask the user how to proceed.
    - **JS/TS-only**: anything under `app/`, `src/`, plus root-level JS/TS that doesn't fall into the native list.
    - **Backend**: anything under `infra/` (CDK stack, lambdas).
 5. **Backend safety check**: if any Backend file is in the diff, the mobile changes likely depend on infra changes that aren't deployed yet. Ferry-app uses CDK (`infra/cdk.json`), not SAM — there's no `sam-deployer` agent that fits, so ask the user how the backend deploy should run (typically `cd infra && npx cdk deploy`). Stop and wait for confirmation that backend is deployed before proceeding with mobile deploy. Never silently proceed if backend is undeployed.
-6. Decide the EAS path for steps 5 and 6:
+6. Decide the EAS path for the production deploy (step 5):
    - **Only** JS/TS-only files changed → OTA path (delegate to `eas-update`).
    - Any Native files changed → full rebuild path (delegate to `eas-release`).
-   - Surface the choice and reasoning before kicking off step 5.
+   - Surface the choice and reasoning in the pre-flight summary.
 7. **Bump the app version.** The version shown in the app's Settings screen is sourced from `app.json` `expo.version` (single source of truth — `app/(tabs)/settings.tsx` reads `Constants.expoConfig.version`). Increment it on **every** ship so each shipped change is identifiable:
    - Pick the level from the diff scope categorized in step 4:
      - **Patch** (`x.y.Z+1`) — the default: fixes, refactors, chores, and any JS/TS-only change with no new user-facing feature.
@@ -30,7 +32,7 @@ Run these checks. If any fail, stop and ask the user how to proceed.
      - **Major** (`X+1.0.0`) — only when the user explicitly calls for it.
    - Edit `app.json` `expo.version` to the new number. This edit is part of the working tree committed in step 4. (It does not trigger the rebuild path — see the step 4 Native exception.)
    - **`runtimeVersion` is pinned** to a fixed string in `app.json` (e.g. `"1.0.0"`), intentionally decoupled from `version` so OTA ships can bump `version` freely without orphaning updates. **On the OTA path, leave `runtimeVersion` untouched.**
-   - **On the full-rebuild path only** (native changes → `eas-release`), also bump `runtimeVersion` to the new `version` string, because a new native binary is going out and the OTA-compatibility boundary should move with it. Do this in the same `app.json` edit, before the step 5 rebuild handoff.
+   - **On the full-rebuild path only** (native changes → `eas-release`), also bump `runtimeVersion` to the new `version` string, because a new native binary is going out and the OTA-compatibility boundary should move with it. Do this in the same `app.json` edit, before the step 5 production rebuild handoff.
    - Surface the chosen bump in the pre-flight summary (e.g. "bumping 1.0.1 → 1.0.2, patch; runtimeVersion unchanged") so the user can override the level before you proceed.
 
 Report a short pre-flight summary before starting step 1 — include the version bump line. Wait for the user to acknowledge.
@@ -73,60 +75,42 @@ npx expo start --ios
 
 Tell the user the simulator should launch automatically and Metro is now serving. Give them a short verification checklist tied to the change. **Do not proceed** until they confirm.
 
-# Step 4: Confirm testing → commit + push
+# Step 4: Confirm sim testing → commit + push + production deploy (the one gate)
 
-Ask the user explicitly:
+This is the single user-gated checkpoint. Ask the user explicitly:
 
-> iOS sim testing done? Should I commit the working tree and push to `main`?
+> iOS sim testing done? Ready to commit the working tree, push to `main`, and ship straight to production TestFlight?
 
-If yes, delegate to the `git-pusher` agent. It will:
+If the user says no, stop the playbook. Nothing has been committed or deployed; they can re-run `/ship` when ready.
+
+If yes, first delegate to the `git-pusher` agent. It will:
 - Verify branch and remote state.
-- Stage modified files (including any docs from step 2).
+- Stage modified files (including any docs/specs from step 2).
 - Write a commit message reflecting the change.
 - Push to `origin/main`.
 
-Surface the commit SHA when done.
+Surface the commit SHA when done, then proceed directly to step 5 — no second gate, since the user authorized the production ship in this same step.
 
-If the user says no, stop the playbook. They can re-run `/ship` when ready.
+# Step 5: Production EAS deploy
 
-# Step 5: Preview EAS deploy
-
-Use the EAS path you decided in pre-flight, targeting the `preview` channel/profile:
+Use the EAS path you decided in pre-flight, targeting the `production` channel/profile.
 
 **OTA path (JS/TS-only changes):**
 Delegate to the `eas-update` agent. Tell it:
-- Target channel: `preview` (one channel — there's no same-tier sibling for preview alone in ferry-app).
+- Target channel: `production`.
 - Message: derive from the commit message in step 4.
-- The agent will read `eas.json` and prefix the full env block from the `preview` profile (`EXPO_PUBLIC_APP_ENV=prod`, `EXPO_PUBLIC_API_URL=...`).
+- The agent reads `eas.json` and prefixes the full env block from the `production` profile (`EXPO_PUBLIC_APP_ENV=prod`, `EXPO_PUBLIC_API_URL=...`). It uses `--clear-cache` (not `--clear`) on the first publish.
 
 **Full rebuild path (native changes):**
 First confirm the step 7 version bump also moved `runtimeVersion` to the new `version` string (rebuild path only). Then delegate to the `eas-release` agent. Tell it:
-- Profile: `preview`.
-- Platform: `ios` (Android only if user explicitly asks — `preview` distributes as `.apk` for Android internal install, but iOS is the default goal).
-- Build only — no submit (preview is `distribution: "internal"`, not store-bound).
-- After the build, EAS provides an install link for the iOS internal build that the user can open on their device.
-
-This takes ~25 min. Tell the user upfront so they can step away.
-
-# Step 6: Confirm preview verified → production EAS deploy
-
-After step 5 finishes, ask the user explicitly:
-
-> Preview build looks good on your device? Ready to ship to production TestFlight?
-
-If yes:
-
-**OTA path:**
-Delegate to `eas-update`. Channel: `production`. The `production` profile shares an env signature with `preview` in ferry-app (both `EXPO_PUBLIC_APP_ENV=prod`, same API URL), so this is functionally the same bundle as step 5 going to a different audience.
-
-**Full rebuild path:**
-Delegate to `eas-release`. Profile: `production`. Build, then submit to TestFlight (`com.ferrytracker.app`).
+- Profile: `production`.
+- Platform: `ios` (Android only if the user explicitly asks).
+- Build, then submit to TestFlight (`com.ferrytracker.app`).
+- This takes ~25 min plus TestFlight processing. Tell the user upfront so they can step away.
 
 After completion, remind the user:
 - OTA path: TestFlight users force-quit and relaunch *twice* to pick up the bundle.
-- Full rebuild path: TestFlight processing takes 5-30 min after submit; testers added as Internal Testers will get an email when it's available.
-
-If the user says no in step 6, stop. The preview build remains live for further verification; they can re-run `/ship` later to ship prod.
+- Full rebuild path: TestFlight processing takes 5-30 min after submit; testers added as Internal Testers get an email when it's available.
 
 # Reporting
 
@@ -138,7 +122,6 @@ Version: <old> → <new> (<patch|minor|major>); runtimeVersion: <unchanged | old
 Commits shipped: <short SHA list>
 Tests: <count> passed
 Docs updated: <files>
-Preview EAS: <ota | rebuild> → <result>
 Production EAS: <ota | rebuild> → <result>
 Backend deploy: <skipped | deployed | n/a>
 Time elapsed: <approx>
@@ -147,8 +130,7 @@ Time elapsed: <approx>
 # Things to never do
 
 - Never skip the pre-flight backend check. A mobile OTA hitting a CDK stack with an undeployed Lambda dependency will silently 500.
-- Never proceed past steps 4 or 6 without an explicit user yes. These gates are designed-in.
-- Never push to `production` channel (or rebuild for `production` profile) before a successful `preview` deploy. The preview is the smoke test for prod; skipping it defeats the whole point of having two channels.
+- Never proceed past step 4 (the single gate) to commit/push or the production deploy without an explicit user yes. This gate is designed-in.
 - Never re-run `eas-release` rebuilds when an OTA would do. EAS build minutes are billable and rebuild takes 25 min vs 2.
 - Never bump `runtimeVersion` on an OTA-only ship. It's pinned on purpose; changing it to a new value orphans every installed build's OTA channel until a matching native rebuild lands. Only move it on the full-rebuild path, alongside a new binary.
 - Never skip the step 7 version bump. Every ship increments `app.json` `expo.version` so the Settings screen reflects what's deployed.
