@@ -1,5 +1,6 @@
-import { View, StyleSheet, ScrollView, RefreshControl, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { Text, Card, ActivityIndicator } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNextDepartures, DepartureInfo } from '../../src/hooks/useNextDepartures';
@@ -8,6 +9,7 @@ import { useLatestDeparturePair } from '../../src/hooks/useLatestDeparture';
 import { FerryCard } from '../../src/components/FerryCard';
 import { MainDepartureCard } from '../../src/components/MainDepartureCard';
 import { LastDepartureCard } from '../../src/components/LastDepartureCard';
+import { ArrivingCard } from '../../src/components/ArrivingCard';
 import { AlertBanner } from '../../src/components/AlertBanner';
 import { KingstonBoardingPassPill } from '../../src/components/KingstonBoardingPassPill';
 import { CarWaitChip } from '../../src/components/CarWaitChip';
@@ -31,6 +33,7 @@ const TERMINAL_NAMES: Record<number, string> = {
 
 export default function DepartScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [departedCollapsed, setDepartedCollapsed] = useState(false);
   const queryClient = useQueryClient();
   const { route, animationDirection, clearAnimation } = useRoute();
   const { theme } = useTheme();
@@ -251,14 +254,27 @@ export default function DepartScreen() {
           { transform: [{ translateX: slideAnim }], opacity: opacityAnim },
         ]}
       >
-        {/* Last departure card - hidden during animation */}
+        {/* Last departure card - collapsible, hidden during animation */}
         {lastDeparture && transitionPhase === 'idle' && (
           <>
-            <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>DEPARTED</Text>
-            <LastDepartureCard
-              departure={lastDeparture}
-              backendCapacityPercent={latestDeparture?.capacityPercent}
-            />
+            <TouchableOpacity
+              style={styles.collapsibleHeader}
+              onPress={() => setDepartedCollapsed(c => !c)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>DEPARTED</Text>
+              <Ionicons
+                name={departedCollapsed ? 'chevron-down' : 'chevron-up'}
+                size={16}
+                color={theme.colors.textMuted}
+              />
+            </TouchableOpacity>
+            {!departedCollapsed && (
+              <LastDepartureCard
+                departure={lastDeparture}
+                backendCapacityPercent={latestDeparture?.capacityPercent}
+              />
+            )}
           </>
         )}
 
@@ -304,9 +320,20 @@ export default function DepartScreen() {
               departure={nextDeparture}
               terminalId={ROUTES[route].from}
               terminalName={TERMINAL_NAMES[ROUTES[route].from] || 'Terminal'}
-              backendIncomingCapacity={latestIncoming?.capacityPercent}
             />
           </Animated.View>
+        )}
+
+        {/* Arriving card — the incoming vessel, pulled out of Next Sailing */}
+        {transitionPhase === 'idle' && nextDeparture &&
+          (nextDeparture.status === 'arriving' || nextDeparture.status === 'returning') && (
+          <>
+            <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>ARRIVING</Text>
+            <ArrivingCard
+              departure={nextDeparture}
+              backendIncomingCapacity={latestIncoming?.capacityPercent}
+            />
+          </>
         )}
 
         {/* Normal main card when not animating */}
@@ -317,7 +344,6 @@ export default function DepartScreen() {
               departure={nextDeparture}
               terminalId={ROUTES[route].from}
               terminalName={TERMINAL_NAMES[ROUTES[route].from] || 'Terminal'}
-              backendIncomingCapacity={latestIncoming?.capacityPercent}
             />
           </>
         )}
@@ -381,6 +407,11 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: 6,
     marginTop: 12,
+  },
+  collapsibleHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   errorCard: {
     marginBottom: 16,

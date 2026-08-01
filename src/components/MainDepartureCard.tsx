@@ -24,10 +24,9 @@ interface MainDepartureCardProps {
   terminalId: number;
   terminalName: string;
   isAnimatingOut?: boolean;
-  backendIncomingCapacity?: number | null; // Fallback from backend when WSF data unavailable
 }
 
-export function MainDepartureCard({ departure, terminalId, terminalName, isAnimatingOut = false, backendIncomingCapacity }: MainDepartureCardProps) {
+export function MainDepartureCard({ departure, terminalId, terminalName, isAnimatingOut = false }: MainDepartureCardProps) {
   const { theme } = useTheme();
   const {
     vesselName,
@@ -38,14 +37,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
     driveUpSpaces,
     maxSpaces,
     isCancelled,
-    vesselArrivalEta,
-    vesselProgressPercent,
-    vesselAtOppositeTerminal,
-    incomingVesselCapacity: wsfIncomingCapacity,
   } = departure;
-
-  // Use WSF data if available, fallback to backend data
-  const incomingVesselCapacity = wsfIncomingCapacity ?? backendIncomingCapacity ?? null;
 
   // Flip card state
   const [isFlipped, setIsFlipped] = useState(false);
@@ -119,7 +111,6 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
     : 0;
 
   const animatedFill = useState(() => new Animated.Value(0))[0];
-  const animatedFerryProgress = useState(() => new Animated.Value(vesselProgressPercent))[0];
 
   useEffect(() => {
     Animated.timing(animatedFill, {
@@ -128,14 +119,6 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
       useNativeDriver: false,
     }).start();
   }, [fillPercent, animatedFill]);
-
-  useEffect(() => {
-    Animated.timing(animatedFerryProgress, {
-      toValue: vesselProgressPercent,
-      duration: 1000,
-      useNativeDriver: false,
-    }).start();
-  }, [vesselProgressPercent, animatedFerryProgress]);
 
   // Flip interpolations
   const frontRotate = flipAnim.interpolate({
@@ -160,14 +143,6 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
     if (fillPercent > 90) return '#C62828';
     if (fillPercent > 70) return '#F57C00';
     if (fillPercent > 50) return '#FBC02D';
-    return '#43A047';
-  };
-
-  // Color for incoming vessel capacity
-  const getIncomingCapacityColor = (percent: number) => {
-    if (percent > 90) return '#C62828';
-    if (percent > 70) return '#F57C00';
-    if (percent > 50) return '#FBC02D';
     return '#43A047';
   };
 
@@ -198,22 +173,6 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
     outputRange: ['0%', '100%'],
   });
 
-  // For arriving vessels: ferry comes from right (90%) to left (5%) - toward our dock
-  const ferryPosition = animatedFerryProgress.interpolate({
-    inputRange: [0, 100],
-    outputRange: ['90%', '5%'],
-  });
-
-  const getMinutesToArrival = (): number | null => {
-    if (vesselArrivalEta) {
-      return getMinutesUntil(vesselArrivalEta);
-    }
-    return null;
-  };
-
-  const minutesToArrival = getMinutesToArrival();
-  // Only show ferry tracker when vessel is arriving - hide when docked (loading/scheduled)
-  const showFerryTracker = status === 'arriving' || status === 'returning';
   // Unified effective departure — same source the Leave card uses, so the
   // crossed-out time and any "behind schedule" copy always agree.
   const ferryEffective = effectiveFerryDeparture(departure);
@@ -274,99 +233,31 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
               )}
             </View>
 
-            {/* Departure time - show above ferry tracker when docked */}
-            {!showFerryTracker && (
-              <View style={[styles.timeContainer, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}15` }]}>
-                <Ionicons
-                  name="time-outline"
-                  size={18}
-                  color={fillPercent < 40 ? theme.colors.primary : 'rgba(255,255,255,0.9)'}
-                />
-                {hasDelay && (
-                  <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
-                    {formatTime(scheduledDeparture)}
-                  </Text>
-                )}
-                <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
-                  {formatTime(displayDeparture)}
+            {/* Departure time — the incoming-ferry tracker now lives in a
+                separate ArrivingCard, so this card just shows the time cleanly. */}
+            <View style={[styles.timeContainer, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}15` }]}>
+              <Ionicons
+                name="time-outline"
+                size={18}
+                color={fillPercent < 40 ? theme.colors.primary : 'rgba(255,255,255,0.9)'}
+              />
+              {hasDelay && (
+                <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                  {formatTime(scheduledDeparture)}
                 </Text>
-                {status !== 'departed' && !isCancelled && (
-                  <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
-                    · {hasDelay
-                      ? (minutesUntilEstimated > 0 ? `in ${minutesUntilEstimated}m` : 'now')
-                      : (minutesUntilDeparture > 0 ? `in ${minutesUntilDeparture}m` : 'now')
-                    }
-                  </Text>
-                )}
-              </View>
-            )}
-
-            {/* Ferry tracker - only when vessel is arriving */}
-            {showFerryTracker && (
-              <View style={styles.ferryTracker}>
-                <View style={[styles.trackLine, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}30` }]}>
-                  {incomingVesselCapacity !== null && (
-                    <View
-                      style={[
-                        styles.trackCapacityFill,
-                        {
-                          width: `${incomingVesselCapacity}%`,
-                          backgroundColor: getIncomingCapacityColor(incomingVesselCapacity),
-                        },
-                      ]}
-                    />
-                  )}
-                  <View style={[styles.dock, styles.leftDock, fillPercent < 40 && { backgroundColor: theme.colors.primary }]} />
-                  <View style={[styles.dock, styles.rightDock, fillPercent < 40 && { backgroundColor: theme.colors.primary }]} />
-                  <Animated.View
-                    style={[
-                      styles.ferryIcon,
-                      {
-                        left: ferryPosition,
-                        transform: [{ scaleX: -1 }],
-                      },
-                    ]}
-                  >
-                    <Ionicons name="boat" size={24} color={fillPercent < 40 ? theme.colors.primary : '#fff'} />
-                  </Animated.View>
-                </View>
-                <Text style={[styles.ferryStatus, fillPercent < 40 && { color: theme.colors.text, textShadowColor: 'transparent' }]}>
-                  {status === 'arriving' && minutesToArrival !== null && vesselArrivalEta &&
-                    `Arrives in ${minutesToArrival} min (${formatTime(vesselArrivalEta)})`}
-                  {status === 'returning' && vesselAtOppositeTerminal && 'Waiting at opposite terminal'}
-                  {status === 'returning' && !vesselAtOppositeTerminal && minutesToArrival !== null && vesselArrivalEta &&
-                    `Arrives in ${minutesToArrival} min (${formatTime(vesselArrivalEta)})`}
+              )}
+              <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
+                {formatTime(displayDeparture)}
+              </Text>
+              {status !== 'departed' && !isCancelled && (
+                <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
+                  · {hasDelay
+                    ? (minutesUntilEstimated > 0 ? `in ${minutesUntilEstimated}m` : 'now')
+                    : (minutesUntilDeparture > 0 ? `in ${minutesUntilDeparture}m` : 'now')
+                  }
                 </Text>
-              </View>
-            )}
-
-            {/* Departure time - show below ferry tracker when in transit */}
-            {showFerryTracker && (
-              <View style={[styles.timeContainer, fillPercent < 40 && { backgroundColor: `${theme.colors.primary}15` }]}>
-                <Ionicons
-                  name="time-outline"
-                  size={18}
-                  color={fillPercent < 40 ? theme.colors.primary : 'rgba(255,255,255,0.9)'}
-                />
-                {hasDelay && (
-                  <Text style={[styles.originalTime, fillPercent < 40 && { color: theme.colors.textMuted }]}>
-                    {formatTime(scheduledDeparture)}
-                  </Text>
-                )}
-                <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
-                  {formatTime(displayDeparture)}
-                </Text>
-                {/* status is narrowed to 'arriving' | 'returning' here, so no need to exclude 'departed' */}
-                {!isCancelled && (
-                  <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
-                    · {hasDelay
-                      ? (minutesUntilEstimated > 0 ? `in ${minutesUntilEstimated}m` : 'now')
-                      : (minutesUntilDeparture > 0 ? `in ${minutesUntilDeparture}m` : 'now')
-                    }
-                  </Text>
-                )}
-              </View>
-            )}
+              )}
+            </View>
           </View>
 
           {/* Center section: Capacity (primary) */}
@@ -395,7 +286,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
 
           {/* Bottom section: Status indicator */}
           <View style={styles.bottomSection}>
-            {(status === 'loading' || status === 'scheduled') && !showFerryTracker && !isCancelled && (
+            {(status === 'loading' || status === 'scheduled') && !isCancelled && (
               <View style={[styles.statusIndicator, { backgroundColor: getStatusColor() }]}>
                 <Text style={styles.statusIndicatorText}>{getStatusText()}</Text>
               </View>
@@ -575,63 +466,6 @@ const styles = StyleSheet.create({
   },
   cameraButtonLight: {
     backgroundColor: 'rgba(21, 101, 192, 0.1)',
-  },
-  // Ferry tracker
-  ferryTracker: {
-    marginTop: 4,
-  },
-  trackLine: {
-    height: 36,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    borderRadius: 18,
-    position: 'relative',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  trackLineDark: {
-    backgroundColor: 'rgba(21, 101, 192, 0.2)',
-  },
-  trackCapacityFill: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    borderRadius: 18,
-    opacity: 0.6,
-  },
-  dock: {
-    position: 'absolute',
-    width: 8,
-    height: 24,
-    backgroundColor: '#fff',
-    borderRadius: 4,
-  },
-  dockDark: {
-    backgroundColor: '#1565C0',
-  },
-  leftDock: {
-    left: 6,
-  },
-  rightDock: {
-    right: 6,
-  },
-  ferryIcon: {
-    position: 'absolute',
-    top: 6,
-  },
-  ferryStatus: {
-    color: '#fff',
-    fontSize: 13,
-    textAlign: 'center',
-    marginTop: 6,
-    fontWeight: '500',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  ferryStatusDark: {
-    color: '#444',
-    textShadowColor: 'transparent',
   },
   // Center section - capacity (primary)
   centerSection: {
