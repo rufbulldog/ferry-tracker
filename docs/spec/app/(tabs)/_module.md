@@ -3,16 +3,16 @@ type: l2-module
 spec_version: 1
 path: app/(tabs)
 file_count: 6
-total_lines: 2425
+total_lines: 2426
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-07-31T23:25:27.526Z
+last_audited: 2026-08-01T01:09:56.235Z
 ---
 
 # app/(tabs) — Module Spec
 
 **Folder:** `app/(tabs)`
-**Files:** 6 · **Lines:** 2425
+**Files:** 6 · **Lines:** 2426
 
 ## File inventory
 
@@ -21,7 +21,7 @@ last_audited: 2026-07-31T23:25:27.526Z
 | [`_layout.tsx`](./_layout.md) | 90 |  |
 | [`index.tsx`](./index.md) | 381 |  |
 | [`recommend.tsx`](./recommend.md) | 448 |  |
-| [`settings.tsx`](./settings.md) | 403 |  |
+| [`settings.tsx`](./settings.md) | 404 |  |
 | [`timer.tsx`](./timer.md) | 545 |  |
 | [`trends.tsx`](./trends.md) | 558 |  |
 

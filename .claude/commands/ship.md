@@ -15,6 +15,7 @@ Run these checks. If any fail, stop and ask the user how to proceed.
    - `git fetch origin && git log HEAD..origin/main --oneline` — make sure local isn't behind remote. If behind, ask before proceeding (rebase or merge first).
 4. Inspect the diff scope. `git diff --name-only origin/main...HEAD` plus uncommitted modifications. Categorize:
    - **Native**: `app.json`, `app.config.js` (if it exists), `eas.json`, `package.json` if native deps changed, anything under `ios/` or `android/`, asset changes that affect the bundle (icons, splash, fonts).
+     - **Exception — the version bump does not count as native.** A change to `app.json`'s `expo.version` *only* (the per-ship bump from step 7) ships fine over OTA — the version string is read at runtime from the update's embedded config via `Constants.expoConfig.version`, so it does not require a rebuild. Do **not** let a version-only `app.json` diff flip the ship to the rebuild path. A change to any *other* `app.json` field — including `runtimeVersion`, `ios.buildNumber`, permissions, plugins, icons — **does** count as native.
    - **JS/TS-only**: anything under `app/`, `src/`, plus root-level JS/TS that doesn't fall into the native list.
    - **Backend**: anything under `infra/` (CDK stack, lambdas).
 5. **Backend safety check**: if any Backend file is in the diff, the mobile changes likely depend on infra changes that aren't deployed yet. Ferry-app uses CDK (`infra/cdk.json`), not SAM — there's no `sam-deployer` agent that fits, so ask the user how the backend deploy should run (typically `cd infra && npx cdk deploy`). Stop and wait for confirmation that backend is deployed before proceeding with mobile deploy. Never silently proceed if backend is undeployed.
@@ -22,8 +23,17 @@ Run these checks. If any fail, stop and ask the user how to proceed.
    - **Only** JS/TS-only files changed → OTA path (delegate to `eas-update`).
    - Any Native files changed → full rebuild path (delegate to `eas-release`).
    - Surface the choice and reasoning before kicking off step 5.
+7. **Bump the app version.** The version shown in the app's Settings screen is sourced from `app.json` `expo.version` (single source of truth — `app/(tabs)/settings.tsx` reads `Constants.expoConfig.version`). Increment it on **every** ship so each shipped change is identifiable:
+   - Pick the level from the diff scope categorized in step 4:
+     - **Patch** (`x.y.Z+1`) — the default: fixes, refactors, chores, and any JS/TS-only change with no new user-facing feature.
+     - **Minor** (`x.Y+1.0`) — a new user-facing feature.
+     - **Major** (`X+1.0.0`) — only when the user explicitly calls for it.
+   - Edit `app.json` `expo.version` to the new number. This edit is part of the working tree committed in step 4. (It does not trigger the rebuild path — see the step 4 Native exception.)
+   - **`runtimeVersion` is pinned** to a fixed string in `app.json` (e.g. `"1.0.0"`), intentionally decoupled from `version` so OTA ships can bump `version` freely without orphaning updates. **On the OTA path, leave `runtimeVersion` untouched.**
+   - **On the full-rebuild path only** (native changes → `eas-release`), also bump `runtimeVersion` to the new `version` string, because a new native binary is going out and the OTA-compatibility boundary should move with it. Do this in the same `app.json` edit, before the step 5 rebuild handoff.
+   - Surface the chosen bump in the pre-flight summary (e.g. "bumping 1.0.1 → 1.0.2, patch; runtimeVersion unchanged") so the user can override the level before you proceed.
 
-Report a short pre-flight summary before starting step 1. Wait for the user to acknowledge.
+Report a short pre-flight summary before starting step 1 — include the version bump line. Wait for the user to acknowledge.
 
 # Step 1: Tests
 
@@ -90,7 +100,7 @@ Delegate to the `eas-update` agent. Tell it:
 - The agent will read `eas.json` and prefix the full env block from the `preview` profile (`EXPO_PUBLIC_APP_ENV=prod`, `EXPO_PUBLIC_API_URL=...`).
 
 **Full rebuild path (native changes):**
-Delegate to the `eas-release` agent. Tell it:
+First confirm the step 7 version bump also moved `runtimeVersion` to the new `version` string (rebuild path only). Then delegate to the `eas-release` agent. Tell it:
 - Profile: `preview`.
 - Platform: `ios` (Android only if user explicitly asks — `preview` distributes as `.apk` for Android internal install, but iOS is the default goal).
 - Build only — no submit (preview is `distribution: "internal"`, not store-bound).
@@ -124,6 +134,7 @@ At the end of the playbook, output a single summary:
 
 ```
 Branch: main @ <short SHA>
+Version: <old> → <new> (<patch|minor|major>); runtimeVersion: <unchanged | old → new>
 Commits shipped: <short SHA list>
 Tests: <count> passed
 Docs updated: <files>
@@ -139,6 +150,8 @@ Time elapsed: <approx>
 - Never proceed past steps 4 or 6 without an explicit user yes. These gates are designed-in.
 - Never push to `production` channel (or rebuild for `production` profile) before a successful `preview` deploy. The preview is the smoke test for prod; skipping it defeats the whole point of having two channels.
 - Never re-run `eas-release` rebuilds when an OTA would do. EAS build minutes are billable and rebuild takes 25 min vs 2.
+- Never bump `runtimeVersion` on an OTA-only ship. It's pinned on purpose; changing it to a new value orphans every installed build's OTA channel until a matching native rebuild lands. Only move it on the full-rebuild path, alongside a new binary.
+- Never skip the step 7 version bump. Every ship increments `app.json` `expo.version` so the Settings screen reflects what's deployed.
 - Never run `git push --force` or `git reset --hard` as part of any step.
 - Never mark the playbook complete if any step errored. Surface the failure clearly and stop.
 - Never test in a web browser as part of this flow. ferry-app is mobile-only by design even though Expo's web bundler is configured in `app.json`.

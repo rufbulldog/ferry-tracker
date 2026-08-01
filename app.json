@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ferry Tracker",
     "slug": "ferry-tracker",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -53,9 +53,7 @@
       }
     },
     "owner": "rufbulldog",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/db0629f9-b086-40d2-8c1c-619c3c0e8e3e"
     }

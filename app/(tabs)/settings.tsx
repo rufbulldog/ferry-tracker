@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../src/context/ThemeContext';
@@ -293,7 +294,7 @@ export default function SettingsScreen() {
           About
         </Text>
         <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
-          Ferry Tracker v1.0.0
+          Ferry Tracker v{Constants.expoConfig?.version ?? '?'}
         </Text>
       </View>
     </ScrollView>

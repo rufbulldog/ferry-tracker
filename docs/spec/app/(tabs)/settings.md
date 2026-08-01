@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/settings.tsx
-content_sha: 5666be7219b1c1480357579d9f5f1ad38328cbcfb8855443ccfc18a1b436b24a
+content_sha: 23acb5a4be89963f5d03dfb10e6d0f0ce4cfa2de5dfdf1a2f00919b3c460ac09
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-28T18:29:47.272Z
+last_audited: 2026-08-01T01:09:56.160Z
 ---
 
 # settings.tsx
 
 **Path:** `app/(tabs)/settings.tsx`
-**Lines:** 403
+**Lines:** 404
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -29,6 +29,7 @@ last_audited: 2026-06-28T18:29:47.272Z
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
+- `expo-constants` (`default as Constants`)
 - `expo-location` (`* as Location`)
 - `react` (`useState`)
 - `react-native` (`View`, `StyleSheet`, `ScrollView`, `TouchableOpacity`, `Image`, `TextInput`, `Alert`)

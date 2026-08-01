@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-07-31T23:25:27.530Z",
+  "generated_at": "2026-08-01T01:09:56.243Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "278ed1f81830c755f9f6bb048dcf89dc94623316a23aca3ba3288532f9c8b5ab",
@@ -24,11 +24,11 @@
       "last_audited": "2026-07-31T23:25:27.457Z"
     },
     "app/(tabs)/settings.tsx": {
-      "content_sha256": "5666be7219b1c1480357579d9f5f1ad38328cbcfb8855443ccfc18a1b436b24a",
+      "content_sha256": "23acb5a4be89963f5d03dfb10e6d0f0ce4cfa2de5dfdf1a2f00919b3c460ac09",
       "spec_path": "docs/spec/app/(tabs)/settings.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-28T18:29:47.272Z"
+      "last_audited": "2026-08-01T01:09:56.160Z"
     },
     "app/(tabs)/timer.tsx": {
       "content_sha256": "9dcf043fa3ee607c8099030dce719ed800c1accb1af0edbfe11f0ed7f721d217",
@@ -383,11 +383,11 @@
       "last_audited": "2026-06-28T18:29:47.369Z"
     },
     "app/(tabs)": {
-      "input_hashes_sha256": "8ed159f151010ec720ed2b7a9cd2c4589a72a18d17b6305a38c7ff19da8647d9",
+      "input_hashes_sha256": "66cfe8879f3ad287b8e1f82200dfb9663d3bd5e034a900a6cc06b179d30d488e",
       "spec_path": "docs/spec/app/(tabs)/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-07-31T23:25:27.526Z"
+      "last_audited": "2026-08-01T01:09:56.235Z"
     },
     "infra/bin": {
       "input_hashes_sha256": "fa6c095a39ab286789eb49ffbdcbba61808b83465709d5b46dcad6d6045f5e6e",
@@ -476,11 +476,11 @@
   },
   "systems": {
     "architecture": {
-      "input_sha256": "2800965a1bb642af4332c2ec679bd176e9a9dbe8ccf12dae8631c30499da5e45",
+      "input_sha256": "817d00800fd74e99a5fec8b19a4b528c9330e3a6005323eb5e5dbe587cf4461f",
       "spec_path": "docs/spec/_systems/architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-07-31T23:25:27.530Z"
+      "last_audited": "2026-08-01T01:09:56.241Z"
     },
     "frontend-architecture": {
       "input_sha256": "3588b566efb1c588dba6d07993fe7077c8a0259655d974e2622615f10714b915",
