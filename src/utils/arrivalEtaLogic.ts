@@ -55,6 +55,14 @@ export function selectActiveDeparture<T extends DepartureLike>(
     .sort((a, b) => b.actualDeparture!.getTime() - a.actualDeparture!.getTime());
   if (justLeft.length > 0) return justLeft[0];
 
+  // A boat physically loading at our dock is almost certainly the one you're
+  // boarding — prefer it over a first-listed sailing whose assigned vessel is
+  // still `arriving`/`returning` (whose projected time overshoots reality).
+  const loading = departures.filter(d => d.status === 'loading' && !d.isCancelled);
+  if (loading.length > 0) {
+    return loading.sort((a, b) => a.scheduledDeparture.getTime() - b.scheduledDeparture.getTime())[0];
+  }
+
   return departures.find(d => d.status !== 'departed' && !d.isCancelled) ?? null;
 }
 
@@ -73,19 +81,25 @@ export function projectedDockTime<T extends DepartureLike>(d: T): Date | null {
 }
 
 /**
- * The departure time the ETA is built from. Defaults to the planned
- * (scheduled) departure. It adjusts only for a *known* delay:
+ * The departure time the ETA is built from, kept deliberately *conservative*
+ * so it doesn't jump around during the loading→departed transition:
  *   • once the boat has left, use the actual leave-dock time;
- *   • if the vessel won't even dock until after its scheduled departure,
- *     it's genuinely late — leave MIN_TURNAROUND_MINUTES after it docks.
- * A boat that docks before its scheduled time keeps the planned departure.
+ *   • a boat still loading past its scheduled time is genuinely late and about
+ *     to leave — use `now`;
+ *   • otherwise use the planned (scheduled) departure.
+ *
+ * Notably it does NOT fold in the `arriving`/`returning` vessel projection.
+ * That projection (opposite-terminal schedule + crossing + turnaround) routinely
+ * overshoots the boat you're actually boarding and produced ETAs an hour late
+ * until the boat physically left. The pin/check-in flow keeps this locked to the
+ * boat you're on. `projectedDockTime` remains exported for display-only use.
  */
-export function etaDepartureBasis<T extends DepartureLike>(d: T): Date {
+export function etaDepartureBasis<T extends DepartureLike>(d: T, nowMs: number = Date.now()): Date {
   if (d.actualDeparture) return d.actualDeparture;
 
-  const dockTime = projectedDockTime(d);
-  if (dockTime && dockTime.getTime() > d.scheduledDeparture.getTime()) {
-    return addMinutes(dockTime, MIN_TURNAROUND_MINUTES);
+  if (d.status === 'loading' && nowMs > d.scheduledDeparture.getTime()) {
+    return new Date(nowMs);
   }
+
   return d.scheduledDeparture;
 }

@@ -37,6 +37,12 @@ export function wsfPathFor(
         ? `terminals/rest/terminalbulletins/${encodeURIComponent(id)}`
         : null;
     }
+    case '/wsf/waittimes/{terminalId}': {
+      const id = params?.terminalId;
+      return id
+        ? `terminals/rest/terminalwaittimes/${encodeURIComponent(id)}`
+        : null;
+    }
     case '/wsf/schedule/{routeId}/{onlyRemaining}': {
       const routeId = params?.routeId;
       const onlyRemaining = params?.onlyRemaining;

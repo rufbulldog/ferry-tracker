@@ -4,6 +4,7 @@ import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { DepartureInfo } from '../hooks/useNextDepartures';
 import { formatTime } from '../utils/time';
+import { effectiveFerryDeparture } from '../utils/ferryDeparture';
 import { useTheme } from '../context/ThemeContext';
 
 interface LastDepartureCardProps {
@@ -15,13 +16,14 @@ export function LastDepartureCard({ departure, backendCapacityPercent }: LastDep
   const { theme } = useTheme();
   const {
     vesselName,
-    scheduledDeparture,
-    actualDeparture,
-    delayMinutes,
     driveUpSpaces,
     maxSpaces,
     vesselProgressPercent,
   } = departure;
+
+  // Unified departure/delay derivation (shared with the Time & Leave cards).
+  const ferryEffective = effectiveFerryDeparture(departure);
+  const delayMinutes = ferryEffective.delayMinutes;
 
   // Calculate capacity percentage - how full was this ferry when it departed
   // Use WSF data if available, fallback to backend data
@@ -38,7 +40,7 @@ export function LastDepartureCard({ departure, backendCapacityPercent }: LastDep
     return '#43A047';
   };
 
-  const departureTime = actualDeparture || scheduledDeparture;
+  const departureTime = ferryEffective.time;
 
   // Animated ferry progress
   const animatedProgress = useState(() => new Animated.Value(vesselProgressPercent))[0];

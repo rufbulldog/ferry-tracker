@@ -5,7 +5,10 @@ import { Vehicle, TransitRoute } from '../types/storage';
 import { addMinutes, formatTime } from '../utils/time';
 import { useTransitRecords } from './useTransitRecords';
 import { useTerminalBulletins } from './useTerminalBulletins';
+import { useCarWait } from './useCarWait';
 import { computeTypicalTransitSeconds } from '../utils/transitStats';
+import { effectiveFerryDeparture } from '../utils/ferryDeparture';
+import { CarWaitEstimate } from '../utils/carWait';
 
 interface RecommendationResult {
   leaveByTime: Date | null;
@@ -14,6 +17,12 @@ interface RecommendationResult {
   bufferMinutes: number;
   capacityPercent: number | null;
   reasoning: string[];
+  // Ferry's own effective departure (what bikes/walk-ons board).
+  ferryDepartureTime: Date | null;
+  ferryDelayMinutes: number;
+  // Car-overflow: extra wait + the sailing a driver can actually board.
+  carWait: CarWaitEstimate | null;
+  boardableDepartureTime: Date | null;
   // ETA feature (seattle-bainbridge only)
   etaTime: Date | null;
   etaMessage: string | null;
@@ -76,6 +85,7 @@ export function useRecommendation(
   const { data: departures } = useNextDepartures(ferryRoute);
   const { data: transitRecords } = useTransitRecords();
   const { activeAlert } = useTerminalBulletins(ferryRoute);
+  const carWaitResult = useCarWait(ferryRoute);
 
   return useMemo(() => {
     const reasoning: string[] = [];
@@ -93,6 +103,10 @@ export function useRecommendation(
         bufferMinutes: 0,
         capacityPercent: null,
         reasoning: ['No upcoming departures found'],
+        ferryDepartureTime: null,
+        ferryDelayMinutes: 0,
+        carWait: null,
+        boardableDepartureTime: null,
         etaTime: null,
         etaMessage: null,
       };
@@ -107,6 +121,8 @@ export function useRecommendation(
     const routeConfig = TRAVEL_TIMES[ferryRoute];
     const config = routeConfig[vehicle];
 
+    const ferryEffective = effectiveFerryDeparture(nextDeparture);
+
     // If this vehicle mode isn't used for this route
     if (!config) {
       const modeLabel = vehicle === 'bike' ? 'Bike' : 'Car';
@@ -118,6 +134,10 @@ export function useRecommendation(
         bufferMinutes: 0,
         capacityPercent,
         reasoning,
+        ferryDepartureTime: ferryEffective.time,
+        ferryDelayMinutes: ferryEffective.delayMinutes,
+        carWait: null,
+        boardableDepartureTime: null,
         etaTime: null,
         etaMessage: null,
       };
@@ -163,8 +183,25 @@ export function useRecommendation(
       reasoning.push(`Service delay alert: +${DELAY_ALERT_BUFFER_MINUTES} min buffer`);
     }
 
-    // Use estimated departure if available, otherwise scheduled
-    const departureTime = nextDeparture.estimatedDeparture || nextDeparture.scheduledDeparture;
+    if (ferryEffective.isDelayed) {
+      reasoning.push(`Ferry running ~${ferryEffective.delayMinutes} min behind schedule`);
+    }
+
+    // Cars can be bumped to a later sailing when a boat fills up. Walk-ons/bikes
+    // board the ferry's own departure; drivers must target the boardable one.
+    const carWait = carWaitResult.estimate;
+    const isCar = vehicle === 'car';
+    let departureTime = ferryEffective.time;
+
+    if (isCar && carWait.note) {
+      reasoning.push(`Car wait: ${carWait.note}`);
+    }
+    if (isCar && carWait.extraSailings > 0 && carWaitResult.boardableDepartureTime) {
+      departureTime = carWaitResult.boardableDepartureTime;
+      reasoning.push(
+        `Plan for the ${formatTime(carWaitResult.boardableDepartureTime)} sailing — this one is likely full for cars`,
+      );
+    }
 
     // Calculate leave-by time
     const totalLeadTime = transitMinutes + bufferMinutes;
@@ -198,8 +235,12 @@ export function useRecommendation(
       bufferMinutes,
       capacityPercent,
       reasoning,
+      ferryDepartureTime: ferryEffective.time,
+      ferryDelayMinutes: ferryEffective.delayMinutes,
+      carWait,
+      boardableDepartureTime: carWaitResult.boardableDepartureTime,
       etaTime,
       etaMessage,
     };
-  }, [departures, ferryRoute, vehicle, transitRecords, activeAlert]);
+  }, [departures, ferryRoute, vehicle, transitRecords, activeAlert, carWaitResult]);
 }

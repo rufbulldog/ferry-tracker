@@ -187,19 +187,39 @@ export default function RecommendScreen() {
               <Ionicons name="boat-outline" size={16} color={isLightBackground ? '#666' : 'rgba(255,255,255,0.7)'} />
               <Text style={[styles.departureText, isLightBackground && styles.departureTextDark]}>
                 {recommendation.nextDeparture.vesselName} departs {formatTime(
-                  recommendation.nextDeparture.estimatedDeparture || recommendation.nextDeparture.scheduledDeparture
+                  recommendation.ferryDepartureTime || recommendation.nextDeparture.scheduledDeparture
                 )}
+                {vehicle === 'car' ? '' : ' (walk/bike)'}
               </Text>
             </View>
-            {recommendation.nextDeparture.delayMinutes > 0 && (
+            {recommendation.ferryDelayMinutes > 0 && (
               <View style={styles.delayRow}>
                 <Ionicons name="warning" size={13} color="#ffcdd2" />
                 <Text style={styles.delayText}>
-                  ~{recommendation.nextDeparture.delayMinutes} min behind schedule
+                  ~{recommendation.ferryDelayMinutes} min behind schedule
                 </Text>
               </View>
             )}
-            {recommendation.capacityPercent !== null && (
+            {/* Car overflow: expect a later sailing, or a busy-boat warning */}
+            {vehicle === 'car' && recommendation.carWait && recommendation.carWait.extraSailings > 0 && recommendation.boardableDepartureTime && (
+              <View style={styles.delayRow}>
+                <Ionicons name="car" size={13} color="#ffcdd2" />
+                <Text style={styles.delayText}>
+                  As a car, expect the {formatTime(recommendation.boardableDepartureTime)} sailing (+{recommendation.carWait.extraMinutes} min)
+                </Text>
+              </View>
+            )}
+            {vehicle === 'car' && recommendation.carWait && recommendation.carWait.extraSailings === 0 && recommendation.carWait.atRisk && recommendation.carWait.note && (
+              <View style={styles.delayRow}>
+                <Ionicons name="car" size={13} color="#ffe0b2" />
+                <Text style={[styles.delayText, { color: '#ffe0b2' }]}>
+                  {recommendation.carWait.note}
+                </Text>
+              </View>
+            )}
+            {/* Hide the standalone % when the car note already states it */}
+            {recommendation.capacityPercent !== null &&
+              !(vehicle === 'car' && recommendation.carWait?.atRisk && recommendation.carWait.extraSailings === 0) && (
               <Text style={[
                 styles.capacityText,
                 isLightBackground && styles.capacityTextDark,

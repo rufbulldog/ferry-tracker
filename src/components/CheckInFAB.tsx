@@ -5,12 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRoute } from '../context/RouteContext';
 import { useArrivalEta } from '../hooks/useArrivalEta';
 import { getContactNumber, subscribePersonalLocations } from '../store/personalLocations';
+import { setCheckIn } from '../store/checkIn';
 import { formatTime } from '../utils/time';
 
 export function CheckInFAB() {
   const [contactNumber, setContactNumber] = useState(() => getContactNumber());
   const { route } = useRoute();
-  const { arrival } = useArrivalEta(route);
+  const { arrival, nextDeparture } = useArrivalEta(route);
 
   useEffect(() => {
     return subscribePersonalLocations(() => setContactNumber(getContactNumber()));
@@ -23,6 +24,16 @@ export function CheckInFAB() {
 
   const handlePress = () => {
     if (!arrival || !arrival.etaTime) return;
+    // Pressing Send ETA doubles as a check-in: pin the boat we're aboard so the
+    // ETA stays locked to it through the loading→departed transition.
+    if (nextDeparture) {
+      setCheckIn({
+        route,
+        vesselId: nextDeparture.vesselId,
+        scheduledDeparture: nextDeparture.scheduledDeparture.getTime(),
+        checkedInAt: Date.now(),
+      });
+    }
     const message = `⛴️ Boarded, ETA: ${formatTime(arrival.etaTime)}`;
     const smsUrl = `sms:${contactNumber}&body=${encodeURIComponent(message)}`;
     Linking.openURL(smsUrl);

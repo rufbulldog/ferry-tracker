@@ -97,6 +97,25 @@ export interface EnrichedDeparture {
   eta: Date | null;
 }
 
+export interface WaitTime {
+  RouteID: number | null;
+  RouteName: string | null;
+  // Free-text vehicle wait note (often empty). "/Date(...)/" for last updated.
+  WaitTimeNotes: string | null;
+  WaitTimeLastUpdated: string | null;
+  WaitTimeIVRNotes: string | null;
+}
+
+export interface TerminalWaitTimes {
+  TerminalID: number;
+  TerminalSubjectID: number;
+  RegionID: number;
+  TerminalName: string;
+  TerminalAbbrev: string;
+  SortSeq: number;
+  WaitTimes: WaitTime[];
+}
+
 export interface TerminalBulletin {
   BulletinTitle: string;
   BulletinText: string;

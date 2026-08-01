@@ -140,6 +140,12 @@ export class InfraStack extends cdk.Stack {
       .addResource('{terminalId}');
     wsfBulletins.addMethod('GET', proxyIntegration);
 
+    // /wsf/waittimes/{terminalId}
+    const wsfWaitTimes = wsf
+      .addResource('waittimes')
+      .addResource('{terminalId}');
+    wsfWaitTimes.addMethod('GET', proxyIntegration);
+
     // /wsf/schedule/{routeId}/{onlyRemaining}
     const wsfSchedule = wsf
       .addResource('schedule')

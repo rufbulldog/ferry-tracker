@@ -10,6 +10,7 @@ import { MainDepartureCard } from '../../src/components/MainDepartureCard';
 import { LastDepartureCard } from '../../src/components/LastDepartureCard';
 import { AlertBanner } from '../../src/components/AlertBanner';
 import { KingstonBoardingPassPill } from '../../src/components/KingstonBoardingPassPill';
+import { CarWaitChip } from '../../src/components/CarWaitChip';
 import { useRoute } from '../../src/context/RouteContext';
 import { useTheme } from '../../src/context/ThemeContext';
 import { ROUTES, TERMINALS } from '../../src/utils/constants';
@@ -234,6 +235,9 @@ export default function DepartScreen() {
 
       {/* Kingston vehicle boarding-pass notice — only when departing Kingston */}
       {ROUTES[route].from === TERMINALS.KINGSTON && <KingstonBoardingPassPill />}
+
+      {/* Car-overflow notice — only when a real wait signal is present */}
+      <CarWaitChip route={route} />
 
       {/* Active alert banner */}
       {activeAlert && (

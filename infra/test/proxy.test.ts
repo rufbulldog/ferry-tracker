@@ -15,6 +15,16 @@ describe('wsfPathFor', () => {
     );
   });
 
+  it('maps waittimes with a terminal id', () => {
+    expect(wsfPathFor('/wsf/waittimes/{terminalId}', { terminalId: '12' })).toBe(
+      'terminals/rest/terminalwaittimes/12'
+    );
+  });
+
+  it('returns null for waittimes without a terminal id', () => {
+    expect(wsfPathFor('/wsf/waittimes/{terminalId}', null)).toBeNull();
+  });
+
   it('maps schedule with route + onlyRemaining', () => {
     expect(
       wsfPathFor('/wsf/schedule/{routeId}/{onlyRemaining}', {

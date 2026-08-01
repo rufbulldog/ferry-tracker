@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { DepartureInfo } from '../hooks/useNextDepartures';
 import { TERMINAL_CAMERAS } from '../utils/constants';
 import { formatTime, getMinutesUntil } from '../utils/time';
+import { effectiveFerryDeparture } from '../utils/ferryDeparture';
 import { useTheme } from '../context/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -31,7 +32,6 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
   const {
     vesselName,
     scheduledDeparture,
-    estimatedDeparture,
     minutesUntilDeparture,
     delayMinutes,
     status,
@@ -214,8 +214,12 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
   const minutesToArrival = getMinutesToArrival();
   // Only show ferry tracker when vessel is arriving - hide when docked (loading/scheduled)
   const showFerryTracker = status === 'arriving' || status === 'returning';
-  const hasDelay = estimatedDeparture && estimatedDeparture.getTime() !== scheduledDeparture.getTime();
-  const minutesUntilEstimated = estimatedDeparture ? getMinutesUntil(estimatedDeparture) : minutesUntilDeparture;
+  // Unified effective departure — same source the Leave card uses, so the
+  // crossed-out time and any "behind schedule" copy always agree.
+  const ferryEffective = effectiveFerryDeparture(departure);
+  const hasDelay = ferryEffective.isDelayed;
+  const displayDeparture = ferryEffective.time;
+  const minutesUntilEstimated = getMinutesUntil(displayDeparture);
 
   const currentCamera = cameras[selectedCamera];
   const imageUrl = currentCamera ? `${currentCamera.url}?t=${refreshKey}` : null;
@@ -284,7 +288,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                   </Text>
                 )}
                 <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
-                  {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
+                  {formatTime(displayDeparture)}
                 </Text>
                 {status !== 'departed' && !isCancelled && (
                   <Text style={[styles.timeCountdown, fillPercent < 40 && { color: theme.colors.textMuted }]}>
@@ -350,7 +354,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                   </Text>
                 )}
                 <Text style={[styles.timeText, fillPercent < 40 && { color: theme.colors.text }, isCancelled && styles.cancelledText]}>
-                  {formatTime(hasDelay ? estimatedDeparture! : scheduledDeparture)}
+                  {formatTime(displayDeparture)}
                 </Text>
                 {/* status is narrowed to 'arriving' | 'returning' here, so no need to exclude 'departed' */}
                 {!isCancelled && (

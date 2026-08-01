@@ -2,7 +2,6 @@ import {
   selectActiveDeparture,
   projectedDockTime,
   etaDepartureBasis,
-  MIN_TURNAROUND_MINUTES,
   DepartureLike,
 } from './arrivalEtaLogic';
 import { FERRY_CROSSING_MINUTES } from './constants';
@@ -57,6 +56,18 @@ describe('selectActiveDeparture', () => {
       scheduledDeparture: minsAhead(15),
     });
     expect(selectActiveDeparture([midCrossing, nextSailing])).toBe(nextSailing);
+  });
+
+  test('prefers a loading boat over a first-listed returning/arriving sailing', () => {
+    // The assigned vessel for the earlier sailing is still returning (far off),
+    // but a boat is physically loading at our dock — that's the one you board.
+    const returningFirst = dep({
+      status: 'returning',
+      vesselArrivalEta: minsAhead(40),
+      scheduledDeparture: minsAhead(5),
+    });
+    const loadingNow = dep({ status: 'loading', scheduledDeparture: minsAhead(2) });
+    expect(selectActiveDeparture([returningFirst, loadingNow])).toBe(loadingNow);
   });
 
   test('ignores a cancelled just-departed boat', () => {
@@ -162,12 +173,25 @@ describe('etaDepartureBasis', () => {
     expect(result).toBe(scheduled);
   });
 
-  test('projects dock-time + turnaround when the vessel docks after the scheduled departure', () => {
-    const dockAfter = minsAhead(25);
+  test('does NOT overshoot for an arriving-late boat — uses scheduled, not the projection', () => {
+    // Regression: the vessel projection (docks late + turnaround) used to push
+    // the ETA ~an hour out until the boat physically left. It must not anymore.
+    const scheduled = minsAhead(20);
     const result = etaDepartureBasis(
-      dep({ status: 'arriving', vesselArrivalEta: dockAfter, scheduledDeparture: minsAhead(20) }),
+      dep({ status: 'arriving', vesselArrivalEta: minsAhead(25), scheduledDeparture: scheduled }),
     );
-    expect(result.getTime()).toBe(dockAfter.getTime() + MIN_TURNAROUND_MINUTES * 60_000);
+    expect(result).toBe(scheduled);
+  });
+
+  test('loading past the scheduled time uses now (about to leave)', () => {
+    const result = etaDepartureBasis(dep({ status: 'loading', scheduledDeparture: minsAgo(6) }));
+    expect(result.getTime()).toBe(NOW);
+  });
+
+  test('loading before the scheduled time keeps scheduled (boat loaded early)', () => {
+    const scheduled = minsAhead(8);
+    const result = etaDepartureBasis(dep({ status: 'loading', scheduledDeparture: scheduled }));
+    expect(result).toBe(scheduled);
   });
 
   test('falls back to the scheduled departure when there is no dock-time signal', () => {

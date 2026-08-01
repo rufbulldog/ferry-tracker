@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 import { useNextDepartures, DepartureInfo } from './useNextDepartures';
 import { useTransitRecords } from './useTransitRecords';
 import { Route, FERRY_CROSSING_MINUTES, FERRY_TO_HOME_FALLBACK_MINUTES } from '../utils/constants';
@@ -9,6 +9,11 @@ import {
   selectActiveDeparture,
   etaDepartureBasis,
 } from '../utils/arrivalEtaLogic';
+import { getCheckIn, subscribeCheckIn } from '../store/checkIn';
+
+// How long after a pinned sailing's ferry arrival we keep honoring the pin
+// before treating it as stale (covers a slow walk off the boat).
+const CHECKIN_GRACE_MINUTES = 20;
 
 export type ArrivalKind = 'home' | 'office';
 
@@ -57,10 +62,31 @@ const ARRIVAL_CONFIG: Partial<Record<Route, {
 export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
   const { data: departures } = useNextDepartures(ferryRoute);
   const { data: transitRecords } = useTransitRecords();
+  const checkIn = useSyncExternalStore(subscribeCheckIn, getCheckIn);
 
   return useMemo(() => {
     const config = ARRIVAL_CONFIG[ferryRoute];
-    const activeDeparture = selectActiveDeparture(departures);
+
+    // If checked in on this route, lock onto the pinned sailing (stays put
+    // through the loading→departed transition) as long as it's still findable
+    // and not long past arrival. Otherwise pick the active departure normally.
+    let activeDeparture: DepartureInfo | null = null;
+    if (checkIn && checkIn.route === ferryRoute && departures) {
+      const pinned = departures.find(
+        d => d.vesselId === checkIn.vesselId &&
+          Math.abs(d.scheduledDeparture.getTime() - checkIn.scheduledDeparture) < 5 * 60_000,
+      );
+      const arrivalCutoff = checkIn.scheduledDeparture + (FERRY_CROSSING_MINUTES + CHECKIN_GRACE_MINUTES) * 60_000;
+      // Wall-clock read to expire a stale pin; recomputed each time the memo
+      // re-runs on data refetch (same pattern as useNextDepartures).
+      // eslint-disable-next-line react-hooks/purity
+      if (pinned && Date.now() < arrivalCutoff) {
+        activeDeparture = pinned;
+      }
+    }
+    if (!activeDeparture) {
+      activeDeparture = selectActiveDeparture(departures);
+    }
 
     if (!config) {
       return { arrival: null, nextDeparture: activeDeparture, supported: false };
@@ -106,5 +132,5 @@ export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
       nextDeparture: activeDeparture,
       supported: true,
     };
-  }, [departures, ferryRoute, transitRecords]);
+  }, [departures, ferryRoute, transitRecords, checkIn]);
 }
