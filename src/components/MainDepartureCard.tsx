@@ -24,9 +24,12 @@ interface MainDepartureCardProps {
   terminalId: number;
   terminalName: string;
   isAnimatingOut?: boolean;
+  /** Card height in px. Sized dynamically by the Time screen; falls back to a
+   *  sensible default when rendered standalone. */
+  height?: number;
 }
 
-export function MainDepartureCard({ departure, terminalId, terminalName, isAnimatingOut = false }: MainDepartureCardProps) {
+export function MainDepartureCard({ departure, terminalId, terminalName, isAnimatingOut = false, height = SCREEN_HEIGHT * 0.5 }: MainDepartureCardProps) {
   const { theme } = useTheme();
   const {
     vesselName,
@@ -184,7 +187,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
   const imageUrl = currentCamera ? `${currentCamera.url}?t=${refreshKey}` : null;
 
   return (
-    <View style={styles.cardContainer}>
+    <View style={[styles.cardContainer, { height }]}>
       {/* Front side - Departure info */}
       <Animated.View
         style={[
@@ -391,7 +394,6 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
 
 const styles = StyleSheet.create({
   cardContainer: {
-    height: SCREEN_HEIGHT * 0.55,
     marginBottom: 16,
   },
   card: {

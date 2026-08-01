@@ -18,10 +18,22 @@ import { useTheme } from '../../src/context/ThemeContext';
 import { ROUTES, TERMINALS } from '../../src/utils/constants';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const MAIN_CARD_HEIGHT = SCREEN_HEIGHT * 0.55;
+// The Next Sailing card is sized dynamically: a compact base (used when both top
+// sections — Departed / Arriving — are present and expanded, so the Upcoming
+// section peeks at the bottom) plus the exact space reclaimed as each top
+// section collapses or is absent. Reclaiming the card's own height on collapse
+// keeps the Upcoming peek constant; an absent section also reclaims its header.
+const MAIN_CARD_MIN_HEIGHT = SCREEN_HEIGHT * 0.34;
+const SECTION_CARD_HEIGHT = 82; // the Departed/Arriving card body (freed on collapse)
+const SECTION_HEADER_HEIGHT = 26; // the section label row (also freed when absent)
 const LAST_DEPARTURE_HEIGHT = 70;
-const SCALE_RATIO = LAST_DEPARTURE_HEIGHT / MAIN_CARD_HEIGHT;
-const TRANSLATE_UP = -(MAIN_CARD_HEIGHT / 2) + (LAST_DEPARTURE_HEIGHT / 2);
+
+// Vertical space a top section frees relative to being present-and-expanded.
+function reclaimedHeight(present: boolean, collapsed: boolean): number {
+  if (!present) return SECTION_CARD_HEIGHT + SECTION_HEADER_HEIGHT;
+  if (collapsed) return SECTION_CARD_HEIGHT;
+  return 0;
+}
 
 // Terminal ID to display name mapping
 const TERMINAL_NAMES: Record<number, string> = {
@@ -34,6 +46,7 @@ const TERMINAL_NAMES: Record<number, string> = {
 export default function DepartScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [departedCollapsed, setDepartedCollapsed] = useState(false);
+  const [arrivingCollapsed, setArrivingCollapsed] = useState(false);
   const queryClient = useQueryClient();
   const { route, animationDirection, clearAnimation } = useRoute();
   const { theme } = useTheme();
@@ -112,17 +125,30 @@ export default function DepartScreen() {
   const nextDeparture = upcomingFerries[0];
   const upcomingDepartures = upcomingFerries.slice(1, 6);
 
+  // Whether the incoming-vessel (Arriving) section applies to this sailing.
+  const hasArriving = !!nextDeparture &&
+    (nextDeparture.status === 'arriving' || nextDeparture.status === 'returning');
+
+  // Dynamically size the Next Sailing card: base height (both top sections
+  // present + expanded) plus the exact space each section frees when it
+  // collapses or is absent, so the Upcoming peek at the bottom stays constant.
+  const mainCardHeight = MAIN_CARD_MIN_HEIGHT +
+    reclaimedHeight(!!lastDeparture, departedCollapsed) +
+    reclaimedHeight(hasArriving, arrivingCollapsed);
+  const scaleRatio = LAST_DEPARTURE_HEIGHT / mainCardHeight;
+  const translateUp = -(mainCardHeight / 2) + (LAST_DEPARTURE_HEIGHT / 2);
+
   // Animation sequence for ferry departure
   const runDepartureTransition = useCallback(() => {
     Animated.parallel([
       // Departing card shrinks and moves up
       Animated.timing(mainCardScale, {
-        toValue: SCALE_RATIO,
+        toValue: scaleRatio,
         duration: 600,
         useNativeDriver: true,
       }),
       Animated.timing(mainCardTranslateY, {
-        toValue: TRANSLATE_UP,
+        toValue: translateUp,
         duration: 600,
         useNativeDriver: true,
       }),
@@ -158,7 +184,7 @@ export default function DepartScreen() {
       setTransitionPhase('idle');
       setDepartingCard(null);
     });
-  }, [mainCardScale, mainCardTranslateY, mainCardOpacity, incomingCardScale, incomingCardTranslateY, incomingCardOpacity]);
+  }, [mainCardScale, mainCardTranslateY, mainCardOpacity, incomingCardScale, incomingCardTranslateY, incomingCardOpacity, scaleRatio, translateUp]);
 
   // Reset animation state when route changes. Intentional sync of transition
   // state to the route prop — clears any in-flight card transition on switch.
@@ -251,7 +277,7 @@ export default function DepartScreen() {
       <Animated.View
         style={[
           styles.cardsContainer,
-          { transform: [{ translateX: slideAnim }], opacity: opacityAnim },
+          { minHeight: mainCardHeight + 16, transform: [{ translateX: slideAnim }], opacity: opacityAnim },
         ]}
       >
         {/* Last departure card - collapsible, hidden during animation */}
@@ -297,6 +323,7 @@ export default function DepartScreen() {
               departure={departingCard}
               terminalId={ROUTES[route].from}
               terminalName={TERMINAL_NAMES[ROUTES[route].from] || 'Terminal'}
+              height={mainCardHeight}
               isAnimatingOut
             />
           </Animated.View>
@@ -320,19 +347,32 @@ export default function DepartScreen() {
               departure={nextDeparture}
               terminalId={ROUTES[route].from}
               terminalName={TERMINAL_NAMES[ROUTES[route].from] || 'Terminal'}
+              height={mainCardHeight}
             />
           </Animated.View>
         )}
 
         {/* Arriving card — the incoming vessel, pulled out of Next Sailing */}
-        {transitionPhase === 'idle' && nextDeparture &&
-          (nextDeparture.status === 'arriving' || nextDeparture.status === 'returning') && (
+        {transitionPhase === 'idle' && hasArriving && (
           <>
-            <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>ARRIVING</Text>
-            <ArrivingCard
-              departure={nextDeparture}
-              backendIncomingCapacity={latestIncoming?.capacityPercent}
-            />
+            <TouchableOpacity
+              style={styles.collapsibleHeader}
+              onPress={() => setArrivingCollapsed(c => !c)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.sectionLabel, { color: theme.colors.textMuted, marginTop: 0 }]}>ARRIVING</Text>
+              <Ionicons
+                name={arrivingCollapsed ? 'chevron-down' : 'chevron-up'}
+                size={16}
+                color={theme.colors.textMuted}
+              />
+            </TouchableOpacity>
+            {!arrivingCollapsed && (
+              <ArrivingCard
+                departure={nextDeparture}
+                backendIncomingCapacity={latestIncoming?.capacityPercent}
+              />
+            )}
           </>
         )}
 
@@ -344,6 +384,7 @@ export default function DepartScreen() {
               departure={nextDeparture}
               terminalId={ROUTES[route].from}
               terminalName={TERMINAL_NAMES[ROUTES[route].from] || 'Terminal'}
+              height={mainCardHeight}
             />
           </>
         )}
@@ -387,7 +428,7 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     position: 'relative',
-    minHeight: MAIN_CARD_HEIGHT + 16,
+    // minHeight is applied inline (dynamic — see mainCardHeight).
   },
   animatingCard: {
     position: 'absolute',
