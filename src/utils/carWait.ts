@@ -44,18 +44,28 @@ const WORD_NUMBERS: Record<string, number> = {
  *   "1 sailing wait", "2-sailing wait", "two sailings",
  *   "2 hour wait", "90 minute wait".
  * Sailings take priority over a duration when both appear.
+ *
+ * Durations are only read when the text actually says "wait" — WSF's
+ * terminalwaittimes notes are frequently a static "advance arrival is
+ * recommended" advisory (e.g. "a 60 minute advance arrival is recommended…
+ * arrive 15 minutes prior to sailing"), which must NOT be read as an hour-long
+ * vehicle wait. A number adjacent to "sailing" is specific enough to trust on
+ * its own.
  */
 function parseWaitText(text: string | null | undefined): ParsedWait | null {
   if (!text) return null;
   const t = text.toLowerCase();
 
-  // "<n> sailing(s)" — digit or small word number.
-  const digitSail = t.match(/(\d+)\s*[-\s]?\s*sailing/);
+  // "<n> sailing(s)" — digit or small word number, immediately adjacent to
+  // "sailing" (so "15 minutes prior to sailing" does not match).
+  const digitSail = t.match(/(\d+)\s*-?\s*sailing/);
   if (digitSail) return { sailings: parseInt(digitSail[1], 10) };
-  const wordSail = t.match(/\b(one|two|three|four|five)\s*[-\s]?\s*sailing/);
+  const wordSail = t.match(/\b(one|two|three|four|five)\s*-?\s*sailing/);
   if (wordSail) return { sailings: WORD_NUMBERS[wordSail[1]] };
 
-  // Duration-based waits.
+  // Duration-based waits — only when the text is explicitly about waiting, not
+  // an "arrive early / advance arrival" advisory.
+  if (!/\bwait/.test(t)) return null;
   const hours = t.match(/(\d+(?:\.\d+)?)\s*(?:hours?|hrs?)\b/);
   if (hours) return { minutes: Math.round(parseFloat(hours[1]) * 60) };
   const mins = t.match(/(\d+)\s*(?:minutes?|mins?)\b/);

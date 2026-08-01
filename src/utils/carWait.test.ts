@@ -32,6 +32,20 @@ describe('parseVehicleWaitNote', () => {
     expect(parseVehicleWaitNote(text as string)).toBeNull();
   });
 
+  test('does NOT read the static WSF "advance arrival" advisory as a wait', () => {
+    // Verbatim from the live terminalwaittimes note for Kingston (terminal 12).
+    const advisory =
+      'Peak traffic volumes occur from the first morning departure until 10 AM. ' +
+      'For this time period, a 60 minute advance arrival is recommended for vehicle traffic. ' +
+      'For non-peak travel, a 20 minute advance arrival is recommended. ' +
+      'Passengers should arrive at least 15 minutes prior to sailing.';
+    expect(parseVehicleWaitNote(advisory)).toBeNull();
+  });
+
+  test('reads a real duration only when phrased as a wait', () => {
+    expect(parseVehicleWaitNote('Currently a 45 minute wait for vehicles')).toEqual({ minutes: 45 });
+  });
+
   test('prefers sailings over duration when both present', () => {
     expect(parseVehicleWaitNote('2 sailing wait, about 90 minutes')).toEqual({ sailings: 2 });
   });
