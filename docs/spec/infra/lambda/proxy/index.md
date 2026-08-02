@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: infra/lambda/proxy/index.ts
-content_sha: 93d0f1d0f7f10df750fe3cac9c42d637da21420cf2da5ed2b7dd28d2bd2b258f
+content_sha: ddb2fe3c67aae0a64450585d7cc81c5f14a5dd17bfb463d37e97c56c152f4b01
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.575Z
+last_audited: 2026-08-02T05:28:25.650Z
 ---
 
 # index.ts
 
 **Path:** `infra/lambda/proxy/index.ts`
-**Lines:** 84
+**Lines:** 94
 **Language:** TypeScript
 
 ## Exports

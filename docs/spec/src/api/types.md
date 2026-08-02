@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/api/types.ts
-content_sha: 5f32ab84682c1c7c7f50001109ee07f28cc5bc68a8e8492201a574401b3d6394
+content_sha: d3f8e08641fc9a78763655456ea0e4951c188a46e53bd54dbdbafcb19d098acd
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.578Z
+last_audited: 2026-08-02T05:28:25.654Z
 ---
 
 # types.ts
 
 **Path:** `src/api/types.ts`
-**Lines:** 136
+**Lines:** 172
 **Language:** TypeScript
 
 ## Exports
@@ -21,6 +21,10 @@ last_audited: 2026-08-01T19:39:26.578Z
 | `VesselLocation` | interface |  |
 | `ScheduledSailing` | interface |  |
 | `SailingTime` | interface |  |
+| `ScheduleTime` | interface |  |
+| `ScheduleTerminalCombo` | interface |  |
+| `ScheduleByDateResponse` | interface |  |
+| `ValidDateRange` | interface |  |
 | `SpaceForArrivalTerminal` | interface |  |
 | `DepartingSpace` | interface |  |
 | `TerminalSailingSpace` | interface |  |

@@ -107,6 +107,13 @@ flowchart TD
 - **Foreground refresh** - re-fetches location when the app returns to foreground
 - **Manual refresh** - pull-to-refresh also updates GPS location
 
+### Schedule Planner
+- **Calendar icon entry point** - opens as a modal from the header (RouteSelector, visible on every tab)
+- **Any future day** - prev/next-day stepper plus a JS-only month calendar popup (no native date-picker dependency, so it stays OTA-shippable); both are clamped to WSF's published valid date range
+- **Predictive leave-by per sailing** - scheduled time minus your recorded transit time (same trimmed-mean model as the Leave tab) minus buffer, shown for each sailing on the selected day
+- **"Usually ~N% full" note** - historical typical delay/capacity for that day-of-week/hour slot, reusing the Trends tab's trend data
+- **Shares config with the Leave tab** - travel-time defaults and route→transit-segment mapping live in one place, so a future-day estimate and today's live recommendation never disagree
+
 ## Personalized Predictions
 
 The Leave tab uses your recorded transit times to provide increasingly accurate leave-by recommendations.
@@ -220,6 +227,7 @@ The app supports 15 team color themes that apply across all screens. Each theme 
 ferry-app/
 ├── app/                          # Expo Router screens
 │   ├── _layout.tsx               # Root layout with providers
+│   ├── planner.tsx               # Schedule Planner modal (future-day sailings + predictive leave-by)
 │   └── (tabs)/
 │       ├── _layout.tsx           # Tab navigator with route selector header
 │       ├── index.tsx             # Time screen
@@ -232,6 +240,7 @@ ferry-app/
 │   ├── api/
 │   │   ├── backend.ts            # Backend API client (trends, transit records)
 │   │   ├── client.ts             # Axios instances for WSF APIs
+│   │   ├── schedule.ts           # Schedule API (today's schedule, schedule-for-date, valid date range)
 │   │   ├── types.ts              # TypeScript interfaces for WSF data
 │   │   ├── vessels.ts            # Vessel locations API
 │   │   └── terminals.ts          # Terminal sailing space API
@@ -247,7 +256,8 @@ ferry-app/
 │   │   ├── KingstonBoardingPassPill.tsx  # Vehicle boarding-pass notice for Kingston departures
 │   │   ├── LastDepartureCard.tsx  # Recently departed ferry card
 │   │   ├── MainDepartureCard.tsx  # Large flippable main departure card
-│   │   └── RouteSelector.tsx     # Route/direction picker header
+│   │   ├── MonthCalendar.tsx     # JS-only month calendar popup for the Schedule Planner (no native date-picker dep)
+│   │   └── RouteSelector.tsx     # Route/direction picker header + planner entry point
 │   │
 │   ├── context/
 │   │   ├── RouteContext.tsx      # Shared route state across tabs
@@ -257,6 +267,7 @@ ferry-app/
 │   │   ├── useDailyTrends.ts     # Trend data management
 │   │   ├── useArrivalEta.ts      # Arrival ETA from next departure + typical transit time
 │   │   ├── useCarWait.ts          # Car-vs-walk/bike departure timing estimate
+│   │   ├── useFutureSchedule.ts   # Future-day schedule + valid date range (Schedule Planner)
 │   │   ├── useLatestDeparture.ts  # Backend departure data for capacity
 │   │   ├── useNextDepartures.ts   # Combined departure data
 │   │   ├── useRecommendation.ts   # Leave-by time calculations
@@ -276,10 +287,13 @@ ferry-app/
 │       ├── arrivalEtaLogic.ts    # Pure ETA functions (selectActiveDeparture, etaDepartureBasis, projectedDockTime)
 │       ├── carWait.ts            # Car-vs-walk/bike wait estimator (waittimes notes → alerts → live capacity → history)
 │       ├── constants.ts          # Terminal IDs, route config, ETA constants
+│       ├── dateHelpers.ts        # Date-only helpers for the Schedule Planner (day math, formatting, clamping)
 │       ├── ferryDeparture.ts     # Unified effective departure time + delay model (feeds Time + Leave cards)
 │       ├── kingstonBoardingPass.ts  # Kingston vehicle boarding-pass seasonal schedule logic
+│       ├── planEstimate.ts       # Predictive leave-by for a future sailing (Schedule Planner)
 │       ├── themes.ts             # Theme definitions (15 themes)
 │       ├── time.ts               # Date parsing and formatting
+│       ├── transitConfig.ts      # Shared travel-time defaults + route→transit-segment map (Leave card + Planner)
 │       ├── transitStats.ts       # Robust "typical" transit time (raw/median/trimmed-mean)
 │       └── typicalConditions.ts  # Historical typical delay/capacity for a route+day/hour slot (trimmed mean, outlier-resistant)
 │
@@ -323,6 +337,15 @@ GET /ferries/api/terminals/rest/terminalwaittimes/{terminalId}
 ```
 - One of the signals feeding the car-wait estimate (Leave tab note + Time tab `CarWaitChip`)
 - WSF's wait-time notes are static "advance arrival recommended" advisories rather than live wait figures, so this signal is usually dormant in practice — car-wait relies mainly on live drive-up capacity and historical typical-capacity data, in that priority order
+
+### Schedule API (Planner)
+```
+GET /ferries/api/schedule/rest/schedule/{TripDate}/{DepartingTerminalID}/{ArrivingTerminalID}
+GET /ferries/api/schedule/rest/validdaterange
+```
+- Powers the Schedule Planner's future-day sailing list and its date-range clamping
+- Proxied at `/wsf/schedule-date/{tripDate}/{departingTerminalId}/{arrivingTerminalId}` and `/wsf/schedule-validrange`
+- Client: `fetchScheduleForDate` / `fetchValidDateRange` (`src/api/schedule.ts`), consumed via `useFutureSchedule` / `useValidDateRange` (`src/hooks/useFutureSchedule.ts`)
 
 ### Terminal IDs
 ```typescript

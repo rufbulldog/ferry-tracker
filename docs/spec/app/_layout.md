@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/_layout.tsx
-content_sha: 03ae9a4540346af16771c88999b9289687bb81ab008cdde08953df7cced0bb85
+content_sha: 5aa5b09f00a420077e94ef90e6022ec265d19ddae443495dcfc8949e081e7e02
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-28T18:29:43.854Z
+last_audited: 2026-08-02T05:28:21.869Z
 ---
 
 # _layout.tsx
 
 **Path:** `app/_layout.tsx`
-**Lines:** 69
+**Lines:** 70
 **Language:** TypeScript (TSX)
 
 ## Exports

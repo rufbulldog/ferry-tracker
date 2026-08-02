@@ -3,23 +3,23 @@ type: l2-module
 spec_version: 1
 path: infra/lambda/proxy
 file_count: 2
-total_lines: 162
+total_lines: 182
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.657Z
+last_audited: 2026-08-02T05:28:25.725Z
 ---
 
 # infra/lambda/proxy — Module Spec
 
 **Folder:** `infra/lambda/proxy`
-**Files:** 2 · **Lines:** 162
+**Files:** 2 · **Lines:** 182
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`index.js`](./index.md) | 78 |  |
-| [`index.ts`](./index.md) | 84 | Map an API Gateway resource template (+ path params) to the upstream WSF REST |
+| [`index.js`](./index.md) | 88 |  |
+| [`index.ts`](./index.md) | 94 | Map an API Gateway resource template (+ path params) to the upstream WSF REST |
 
 ## Internal-only files
 

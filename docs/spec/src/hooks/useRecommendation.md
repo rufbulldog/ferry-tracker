@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useRecommendation.ts
-content_sha: cb027d14823b2fe108aba49aec0cdc47b7e47a71c0fa765ecc429cfbeacb10d4
+content_sha: 7daf78dea44abee2299de15b4e967c5756444d696b3ddf15d7955be576d27115
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.619Z
+last_audited: 2026-08-02T05:28:25.690Z
 ---
 
 # useRecommendation.ts
 
 **Path:** `src/hooks/useRecommendation.ts`
-**Lines:** 247
+**Lines:** 206
 **Language:** TypeScript
 
 ## Exports
@@ -23,11 +23,12 @@ last_audited: 2026-08-01T19:39:26.619Z
 ## Imports
 
 **Internal:**
-- `../types/storage` (`Vehicle`, `TransitRoute`)
+- `../types/storage` (`Vehicle`)
 - `../utils/carWait` (`CarWaitEstimate`)
 - `../utils/constants` (`Route`, `FERRY_CROSSING_MINUTES`, `FERRY_TO_HOME_FALLBACK_MINUTES`)
 - `../utils/ferryDeparture` (`effectiveFerryDeparture`)
 - `../utils/time` (`addMinutes`, `formatTime`)
+- `../utils/transitConfig` (`TRAVEL_TIMES`, `TRANSIT_ROUTE_MAP`)
 - `../utils/transitStats` (`computeTypicalTransitSeconds`)
 - `./useCarWait` (`useCarWait`)
 - `./useNextDepartures` (`useNextDepartures`, `DepartureInfo`)

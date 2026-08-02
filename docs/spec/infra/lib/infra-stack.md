@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: infra/lib/infra-stack.ts
-content_sha: 1be199bb9d34b3ca232db8e4a66ff6b496e920693fd56d259f02218c1476e86c
+content_sha: 363ba59f7c4cba233d404b12edcd8b603f73557f45d9f8519d16f72e5b56e915
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.577Z
+last_audited: 2026-08-02T05:28:25.652Z
 ---
 
 # infra-stack.ts
 
 **Path:** `infra/lib/infra-stack.ts`
-**Lines:** 173
+**Lines:** 185
 **Language:** TypeScript
 
 ## Exports

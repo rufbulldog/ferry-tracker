@@ -2,17 +2,17 @@
 type: l2-module
 spec_version: 1
 path: src/hooks
-file_count: 13
-total_lines: 1617
+file_count: 14
+total_lines: 1625
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.661Z
+last_audited: 2026-08-02T05:28:25.726Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 13 · **Lines:** 1617
+**Files:** 14 · **Lines:** 1625
 
 ## File inventory
 
@@ -21,9 +21,10 @@ last_audited: 2026-08-01T19:39:26.661Z
 | [`useArrivalEta.ts`](./useArrivalEta.md) | 137 |  |
 | [`useCarWait.ts`](./useCarWait.md) | 76 | Combine live capacity, WSF wait-time notes, WSF alerts, and recorded history |
 | [`useDailyTrends.ts`](./useDailyTrends.md) | 124 |  |
+| [`useFutureSchedule.ts`](./useFutureSchedule.md) | 49 | Full sailing list for a route on a given date (YYYY-MM-DD). Schedules are |
 | [`useLatestDeparture.ts`](./useLatestDeparture.md) | 61 |  |
 | [`useNextDepartures.ts`](./useNextDepartures.md) | 337 |  |
-| [`useRecommendation.ts`](./useRecommendation.md) | 247 |  |
+| [`useRecommendation.ts`](./useRecommendation.md) | 206 |  |
 | [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 164 |  |
 | [`useTerminalConditions.ts`](./useTerminalConditions.md) | 29 |  |
 | [`useTerminalWaitTimes.ts`](./useTerminalWaitTimes.md) | 29 | WSF vehicle wait-time notes for a terminal. The `/wsf/waittimes/{id}` proxy |
@@ -41,8 +42,11 @@ Files in this folder imported from elsewhere:
   - `src/components/CheckInFAB.tsx`
 - `useCarWait.ts` — used by 1 file
   - `src/components/CarWaitChip.tsx`
-- `useDailyTrends.ts` — used by 1 file
+- `useDailyTrends.ts` — used by 2 files
   - `app/(tabs)/trends.tsx`
+  - `app/planner.tsx`
+- `useFutureSchedule.ts` — used by 1 file
+  - `app/planner.tsx`
 - `useLatestDeparture.ts` — used by 1 file
   - `app/(tabs)/index.tsx`
 - `useNextDepartures.ts` — used by 5 files
@@ -58,9 +62,10 @@ Files in this folder imported from elsewhere:
   - `src/components/AlertBanner.tsx`
 - `useTimer.ts` — used by 1 file
   - `app/(tabs)/timer.tsx`
-- `useTransitRecords.ts` — used by 2 files
+- `useTransitRecords.ts` — used by 3 files
   - `app/(tabs)/timer.tsx`
   - `app/(tabs)/trends.tsx`
+  - `app/planner.tsx`
 - `useUserLocation.ts` — used by 2 files
   - `app/(tabs)/timer.tsx`
   - `app/_layout.tsx`

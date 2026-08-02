@@ -6,7 +6,7 @@ discovered_from: code-graph + repo config
 resource_count: 14
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-08-01T19:39:26.661Z
+last_audited: 2026-08-02T05:28:25.727Z
 ---
 
 # Architecture overview — System Spec
@@ -30,9 +30,11 @@ flowchart LR
   n_src_store["src/store"]
   n_src_types["src/types"]
   n_src_utils["src/utils"]
+  n_app --> n_src_components
   n_app --> n_src_context
   n_app --> n_src_hooks
   n_app --> n_src_store
+  n_app --> n_src_types
   n_app --> n_src_utils
   n_app_tabs --> n_src_components
   n_app_tabs --> n_src_context

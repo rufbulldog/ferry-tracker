@@ -1,4 +1,4 @@
-import { toYMD, addDays, isSameDay, daysBetween, startOfDay } from './dateHelpers';
+import { toYMD, addDays, isSameDay, daysBetween, startOfDay, formatDayLabel, formatMonthLabel } from './dateHelpers';
 
 describe('dateHelpers', () => {
   test('toYMD formats local date parts, zero-padded', () => {
@@ -26,5 +26,15 @@ describe('dateHelpers', () => {
     const s = startOfDay(new Date(2026, 7, 5, 14, 30, 15));
     expect(s.getHours()).toBe(0);
     expect(s.getMinutes()).toBe(0);
+  });
+
+  test('formatDayLabel renders "Weekday, Month Day"', () => {
+    expect(formatDayLabel(new Date(2026, 7, 10))).toBe('Mon, Aug 10');
+    expect(formatDayLabel(new Date(2026, 0, 1))).toBe('Thu, Jan 1');
+  });
+
+  test('formatMonthLabel renders "Month Year"', () => {
+    expect(formatMonthLabel(new Date(2026, 7, 10))).toBe('August 2026');
+    expect(formatMonthLabel(new Date(2026, 11, 1))).toBe('December 2026');
   });
 });
