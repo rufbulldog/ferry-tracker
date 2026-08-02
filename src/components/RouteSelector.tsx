@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, ROUTE_GROUP_LABELS } from '../context/RouteContext';
 import { useTheme } from '../context/ThemeContext';
@@ -10,6 +11,7 @@ type RouteGroup = 'bainbridge' | 'kingston';
 
 export function RouteSelector() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { routeGroup, setRouteGroup, direction, setDirection, directionLabels } = useRoute();
   const [modalVisible, setModalVisible] = useState(false);
   const { theme } = useTheme();
@@ -30,6 +32,17 @@ export function RouteSelector() {
         <Ionicons name="boat-outline" size={18} color={theme.colors.primary} />
         <Text style={[styles.dropdownText, { color: theme.colors.text }]}>{ROUTE_GROUP_LABELS[routeGroup]}</Text>
         <Ionicons name="chevron-down" size={16} color={theme.colors.textMuted} />
+      </TouchableOpacity>
+
+      {/* Schedule planner — future-day schedules + leave-by estimates */}
+      <TouchableOpacity
+        style={[styles.plannerButton, { top: insets.top + 4, backgroundColor: theme.colors.cardBg }]}
+        onPress={() => router.push('/planner')}
+        activeOpacity={0.7}
+        hitSlop={10}
+        accessibilityLabel="Plan a future trip"
+      >
+        <Ionicons name="calendar-outline" size={20} color={theme.colors.primary} />
       </TouchableOpacity>
 
       {/* Direction Toggle - Pill Buttons */}
@@ -130,6 +143,16 @@ const styles = StyleSheet.create({
   dropdownText: {
     fontSize: 15,
     fontWeight: '600',
+  },
+  // Calendar/planner button — floats at the top-right, aligned with the dropdown.
+  plannerButton: {
+    position: 'absolute',
+    right: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   // Direction toggle row
   directionRow: {

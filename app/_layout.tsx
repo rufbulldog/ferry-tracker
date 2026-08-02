@@ -58,6 +58,7 @@ export default function RootLayout() {
               <LocationDefaultsSetter />
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="planner" options={{ presentation: 'modal' }} />
               </Stack>
             </RouteProvider>
           </ThemeProvider>

@@ -153,6 +153,18 @@ export class InfraStack extends cdk.Stack {
       .addResource('{onlyRemaining}');
     wsfSchedule.addMethod('GET', proxyIntegration);
 
+    // /wsf/schedule-date/{tripDate}/{departingTerminalId}/{arrivingTerminalId}
+    const wsfScheduleDate = wsf
+      .addResource('schedule-date')
+      .addResource('{tripDate}')
+      .addResource('{departingTerminalId}')
+      .addResource('{arrivingTerminalId}');
+    wsfScheduleDate.addMethod('GET', proxyIntegration);
+
+    // /wsf/schedule-validrange
+    const wsfScheduleValidRange = wsf.addResource('schedule-validrange');
+    wsfScheduleValidRange.addMethod('GET', proxyIntegration);
+
     // Outputs
     new cdk.CfnOutput(this, 'ApiUrl', {
       value: api.url,

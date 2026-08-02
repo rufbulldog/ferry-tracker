@@ -50,6 +50,16 @@ export function wsfPathFor(
         ? `schedule/rest/scheduletoday/${encodeURIComponent(routeId)}/${encodeURIComponent(onlyRemaining)}`
         : null;
     }
+    case '/wsf/schedule-date/{tripDate}/{departingTerminalId}/{arrivingTerminalId}': {
+      const tripDate = params?.tripDate;
+      const from = params?.departingTerminalId;
+      const to = params?.arrivingTerminalId;
+      return tripDate && from && to
+        ? `schedule/rest/schedule/${encodeURIComponent(tripDate)}/${encodeURIComponent(from)}/${encodeURIComponent(to)}`
+        : null;
+    }
+    case '/wsf/schedule-validrange':
+      return 'schedule/rest/validdaterange';
     default:
       return null;
   }

@@ -43,6 +43,42 @@ export interface SailingTime {
   AnnotationIndexes: number[];
 }
 
+// --- Schedule-by-date (future planning) ---
+export interface ScheduleTime {
+  DepartingTime: string; // "/Date(1234567890000-0800)/"
+  ArrivingTime: string | null;
+  LoadingRule: number;
+  VesselID: number;
+  VesselName: string;
+  VesselHandicapAccessible: boolean;
+  VesselPositionNum: number | null;
+  Routes: number[];
+  AnnotationIndexes: number[];
+}
+
+export interface ScheduleTerminalCombo {
+  DepartingTerminalID: number;
+  DepartingTerminalName: string;
+  ArrivingTerminalID: number;
+  ArrivingTerminalName: string;
+  SailingNotes: string;
+  Annotations: string[];
+  Times: ScheduleTime[];
+}
+
+export interface ScheduleByDateResponse {
+  ScheduleID: number;
+  ScheduleName: string;
+  ScheduleStart: string;
+  ScheduleEnd: string;
+  TerminalCombos: ScheduleTerminalCombo[];
+}
+
+export interface ValidDateRange {
+  DateFrom: string; // "/Date(...)/"
+  DateThru: string;
+}
+
 export interface SpaceForArrivalTerminal {
   TerminalID: number;
   TerminalName: string;

@@ -34,6 +34,29 @@ describe('wsfPathFor', () => {
     ).toBe('schedule/rest/scheduletoday/5/true');
   });
 
+  it('maps schedule-date with trip date + terminal pair', () => {
+    expect(
+      wsfPathFor('/wsf/schedule-date/{tripDate}/{departingTerminalId}/{arrivingTerminalId}', {
+        tripDate: '2026-08-10',
+        departingTerminalId: '7',
+        arrivingTerminalId: '3',
+      })
+    ).toBe('schedule/rest/schedule/2026-08-10/7/3');
+  });
+
+  it('returns null for schedule-date with missing params', () => {
+    expect(
+      wsfPathFor('/wsf/schedule-date/{tripDate}/{departingTerminalId}/{arrivingTerminalId}', {
+        tripDate: '2026-08-10',
+        departingTerminalId: '7',
+      })
+    ).toBeNull();
+  });
+
+  it('maps schedule-validrange', () => {
+    expect(wsfPathFor('/wsf/schedule-validrange', null)).toBe('schedule/rest/validdaterange');
+  });
+
   it('returns null for unknown routes', () => {
     expect(wsfPathFor('/wsf/whatever', null)).toBeNull();
   });

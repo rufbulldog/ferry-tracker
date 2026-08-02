@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useNextDepartures, DepartureInfo } from './useNextDepartures';
 import { Route, FERRY_CROSSING_MINUTES, FERRY_TO_HOME_FALLBACK_MINUTES } from '../utils/constants';
-import { Vehicle, TransitRoute } from '../types/storage';
+import { Vehicle } from '../types/storage';
 import { addMinutes, formatTime } from '../utils/time';
 import { useTransitRecords } from './useTransitRecords';
 import { useTerminalBulletins } from './useTerminalBulletins';
@@ -9,6 +9,7 @@ import { useCarWait } from './useCarWait';
 import { computeTypicalTransitSeconds } from '../utils/transitStats';
 import { effectiveFerryDeparture } from '../utils/ferryDeparture';
 import { CarWaitEstimate } from '../utils/carWait';
+import { TRAVEL_TIMES, TRANSIT_ROUTE_MAP } from '../utils/transitConfig';
 
 interface RecommendationResult {
   leaveByTime: Date | null;
@@ -27,48 +28,6 @@ interface RecommendationResult {
   etaTime: Date | null;
   etaMessage: string | null;
 }
-
-// Travel times by ferry route and vehicle (static fallbacks)
-// null means that mode is not used for this route
-const TRAVEL_TIMES: Record<Route, {
-  bike: { travel: number; buffer: number } | null;
-  car: { travel: number; buffer: number } | null;
-}> = {
-  // BI to Seattle = going to work from Bainbridge
-  'bainbridge-seattle': {
-    bike: { travel: 7, buffer: 2 },
-    car: { travel: 5, buffer: 10 },
-  },
-  // Seattle to BI = going home to Bainbridge
-  'seattle-bainbridge': {
-    bike: { travel: 10, buffer: 2 },
-    car: null, // Bikes to work, no car
-  },
-  // Kingston to Edmonds = going to work from Kingston area
-  'kingston-edmonds': {
-    bike: null, // Too far to bike
-    car: { travel: 30, buffer: 20 },
-  },
-  // Edmonds to Kingston = going home to Kingston area
-  'edmonds-kingston': {
-    bike: null, // Not used
-    car: null, // Not specified
-  },
-};
-
-// Map (ferry route, vehicle) → TransitRoute for looking up recorded averages
-const TRANSIT_ROUTE_MAP: Partial<Record<Route, Partial<Record<Vehicle, TransitRoute>>>> = {
-  'bainbridge-seattle': {
-    bike: 'home-to-ferry',
-    car: 'home-to-ferry',
-  },
-  'seattle-bainbridge': {
-    bike: 'work-to-ferry',
-  },
-  'kingston-edmonds': {
-    car: 'home-to-ferry',
-  },
-};
 
 // Extra buffer added when there's an active delay alert
 const DELAY_ALERT_BUFFER_MINUTES = 5;
