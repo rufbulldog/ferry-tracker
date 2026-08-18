@@ -113,6 +113,10 @@ export class InfraStack extends cdk.Stack {
     const trendsRecent = trends.addResource('recent');
     trendsRecent.addMethod('GET', lambdaIntegration);
 
+    // /trends/latest
+    const trendsLatest = trends.addResource('latest');
+    trendsLatest.addMethod('GET', lambdaIntegration);
+
     // /transit-records
     const transitRecords = api.root.addResource('transit-records');
     transitRecords.addMethod('GET', lambdaIntegration);
