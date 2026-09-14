@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { useNextDepartures, DepartureInfo } from './useNextDepartures';
-import { Route, FERRY_CROSSING_MINUTES, FERRY_TO_HOME_FALLBACK_MINUTES } from '../utils/constants';
+import { Route, FERRY_TO_HOME_FALLBACK_MINUTES, HISTORY_MIN_SAMPLES, crossingMinutesForRoute } from '../utils/constants';
 import { Vehicle } from '../types/storage';
 import { addMinutes, formatTime } from '../utils/time';
 import { useTransitRecords } from './useTransitRecords';
 import { useTerminalBulletins } from './useTerminalBulletins';
 import { useCarWait } from './useCarWait';
+import { useRecentTrends } from './useDailyTrends';
+import { computeTypicalForSlot } from '../utils/typicalConditions';
 import { computeTypicalTransitSeconds } from '../utils/transitStats';
 import { effectiveFerryDeparture } from '../utils/ferryDeparture';
 import { CarWaitEstimate } from '../utils/carWait';
@@ -45,6 +47,7 @@ export function useRecommendation(
   const { data: transitRecords } = useTransitRecords();
   const { activeAlert } = useTerminalBulletins(ferryRoute);
   const carWaitResult = useCarWait(ferryRoute);
+  const { data: trends } = useRecentTrends(ferryRoute, 30);
 
   return useMemo(() => {
     const reasoning: string[] = [];
@@ -153,13 +156,28 @@ export function useRecommendation(
 
     // Evening "may recover" regime: a not-full evening boat can load fast and
     // leave close to schedule, so a predicted delay must NOT push leave-by later
-    // (that's how you miss the boat). Plan leave-by for the scheduled time; the
-    // predicted delay stays visible via ferryDelayMinutes for the UI.
-    let departureTime = nextDeparture.mayRecover
-      ? nextDeparture.scheduledDeparture
-      : ferryEffective.time;
+    // (that's how you miss the boat). Plan leave-by for the slot's historical
+    // typical departure (data-driven; usually near on-time for these), falling
+    // back to exactly on-time when history is thin. The full live predicted delay
+    // stays visible via ferryDelayMinutes for the UI.
+    let departureTime = ferryEffective.time;
     if (nextDeparture.mayRecover) {
-      reasoning.push('Evening boat may leave on time — planning leave-by for schedule');
+      const typical = computeTypicalForSlot(trends, nextDeparture.scheduledDeparture);
+      const hasHistory =
+        typical.delayMinutes != null && typical.sampleSize >= HISTORY_MIN_SAMPLES;
+      // Cap the planned recovery at the live predicted delay: in a "may recover"
+      // regime the danger is the boat leaving EARLY, so we never plan for more
+      // lateness than it currently shows (and floor at 0). History can only pull
+      // leave-by earlier (toward on-time), never later.
+      const recoveryDelay = hasHistory
+        ? Math.max(0, Math.min(typical.delayMinutes!, ferryEffective.delayMinutes))
+        : 0;
+      departureTime = addMinutes(nextDeparture.scheduledDeparture, recoveryDelay);
+      reasoning.push(
+        hasHistory
+          ? `Evening boat usually leaves ~${recoveryDelay} min late here — planning for that`
+          : 'Evening boat may leave on time — planning leave-by for schedule',
+      );
     }
 
     if (isCar && carWait.note) {
@@ -192,7 +210,7 @@ export function useRecommendation(
         }
       }
 
-      const totalMinutes = FERRY_CROSSING_MINUTES + ferryToHomeMinutes;
+      const totalMinutes = crossingMinutesForRoute(ferryRoute) + ferryToHomeMinutes;
       etaTime = addMinutes(new Date(), totalMinutes);
       etaMessage = `⛴️ Boarded, ETA: ${formatTime(etaTime)}`;
     }
@@ -211,5 +229,5 @@ export function useRecommendation(
       etaTime,
       etaMessage,
     };
-  }, [departures, ferryRoute, vehicle, transitRecords, activeAlert, carWaitResult]);
+  }, [departures, ferryRoute, vehicle, transitRecords, activeAlert, carWaitResult, trends]);
 }

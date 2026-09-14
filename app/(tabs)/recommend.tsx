@@ -197,7 +197,7 @@ export default function RecommendScreen() {
                 <Ionicons name="warning" size={13} color="#ffcdd2" />
                 <Text style={styles.delayText}>
                   {recommendation.nextDeparture?.mayRecover
-                    ? `~${recommendation.ferryDelayMinutes} min behind — may recover, planning on-time`
+                    ? `~${recommendation.ferryDelayMinutes} min behind — may recover`
                     : `~${recommendation.ferryDelayMinutes} min behind schedule`}
                 </Text>
               </View>

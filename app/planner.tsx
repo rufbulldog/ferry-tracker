@@ -151,6 +151,9 @@ export default function PlannerScreen() {
                     </Text>
                     <Text style={[styles.leaveBySub, { color: theme.colors.textMuted }]}>
                       {est.transitMinutes} min {vehicle === 'bike' ? 'bike/walk' : 'drive'}
+                      {est.appliedDelayMinutes > 0
+                        ? ` · usually ~${est.appliedDelayMinutes} min late`
+                        : ''}
                       {est.historySampleSize >= 3 && est.typicalCapacityPercent !== null
                         ? ` · usually ~${est.typicalCapacityPercent}% full`
                         : ''}

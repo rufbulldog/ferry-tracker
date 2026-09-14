@@ -72,4 +72,38 @@ describe('computePlanEstimate', () => {
     expect(e.typicalDelayMinutes).toBeNull();
     expect(e.typicalCapacityPercent).toBeNull();
   });
+
+  test('applies the historical typical delay to leaveBy with enough samples', () => {
+    // 3 prior Mondays ~8am, consistently 5 min late.
+    const trends = [
+      snap('2026-08-03T08:05:00-07:00', 5, 70),
+      snap('2026-07-27T07:55:00-07:00', 5, 70),
+      snap('2026-07-20T08:00:00-07:00', 5, 70),
+    ];
+    const e = computePlanEstimate({ sailing, route: 'bainbridge-seattle', vehicle: 'bike', transitRecords: [], trends });
+    expect(e.appliedDelayMinutes).toBe(5);
+    // leaveBy = (8:00 + 5 delay) − (7 transit + 2 buffer) = 7:56
+    expect(e.leaveBy!.toISOString()).toBe(new Date('2026-08-10T07:56:00-07:00').toISOString());
+  });
+
+  test('does not apply delay below the sample threshold', () => {
+    const trends = [
+      snap('2026-08-03T08:05:00-07:00', 8, 70),
+      snap('2026-07-27T07:55:00-07:00', 8, 70), // only 2 samples < HISTORY_MIN_SAMPLES
+    ];
+    const e = computePlanEstimate({ sailing, route: 'bainbridge-seattle', vehicle: 'bike', transitRecords: [], trends });
+    expect(e.appliedDelayMinutes).toBe(0);
+    expect(e.leaveBy!.toISOString()).toBe(new Date('2026-08-10T07:51:00-07:00').toISOString());
+  });
+
+  test('floors the applied delay at 0 for a slot that historically leaves early', () => {
+    const trends = [
+      snap('2026-08-03T08:05:00-07:00', -3, 40),
+      snap('2026-07-27T07:55:00-07:00', -2, 40),
+      snap('2026-07-20T08:00:00-07:00', -4, 40),
+    ];
+    const e = computePlanEstimate({ sailing, route: 'bainbridge-seattle', vehicle: 'bike', transitRecords: [], trends });
+    expect(e.appliedDelayMinutes).toBe(0);
+    expect(e.leaveBy!.toISOString()).toBe(new Date('2026-08-10T07:51:00-07:00').toISOString());
+  });
 });

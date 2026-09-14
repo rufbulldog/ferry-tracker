@@ -6,7 +6,7 @@
  * Mirrors the live Leave card's transit logic (useRecommendation) but is a pure
  * function so the planner can call it per sailing without any hooks.
  */
-import { Route } from './constants';
+import { Route, HISTORY_MIN_SAMPLES } from './constants';
 import { Vehicle, TransitRecord, DepartureSnapshot } from '../types/storage';
 import { TRAVEL_TIMES, TRANSIT_ROUTE_MAP } from './transitConfig';
 import { computeTypicalTransitSeconds } from './transitStats';
@@ -21,6 +21,8 @@ export interface PlanEstimate {
   /** True when transit came from recorded trips rather than the static default. */
   transitFromRecords: boolean;
   recordCount: number;
+  /** Delay (min) actually folded into leaveBy from history, floored at 0. */
+  appliedDelayMinutes: number;
   /** Typical historical delay/capacity for this weekday+hour (null = no data). */
   typicalDelayMinutes: number | null;
   typicalCapacityPercent: number | null;
@@ -50,6 +52,7 @@ export function computePlanEstimate(params: {
       bufferMinutes: 0,
       transitFromRecords: false,
       recordCount: 0,
+      appliedDelayMinutes: 0,
       typicalDelayMinutes: null,
       typicalCapacityPercent: null,
       historySampleSize: 0,
@@ -74,7 +77,13 @@ export function computePlanEstimate(params: {
   }
 
   const typical = computeTypicalForSlot(trends, sailing);
-  const leaveBy = new Date(sailing.getTime() - (transitMinutes + bufferMinutes) * 60_000);
+  // Fold the slot's historical typical delay into leave-by so it targets the
+  // expected ACTUAL departure, not the bare schedule. Only once we have enough
+  // samples; floored at 0 so we never plan earlier than scheduled.
+  const appliedDelayMinutes =
+    typical.sampleSize >= HISTORY_MIN_SAMPLES ? Math.max(0, typical.delayMinutes ?? 0) : 0;
+  const plannedDeparture = new Date(sailing.getTime() + appliedDelayMinutes * 60_000);
+  const leaveBy = new Date(plannedDeparture.getTime() - (transitMinutes + bufferMinutes) * 60_000);
 
   return {
     available: true,
@@ -83,6 +92,7 @@ export function computePlanEstimate(params: {
     bufferMinutes,
     transitFromRecords,
     recordCount,
+    appliedDelayMinutes,
     typicalDelayMinutes: typical.delayMinutes,
     typicalCapacityPercent: typical.capacityPercent,
     historySampleSize: typical.sampleSize,

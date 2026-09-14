@@ -38,7 +38,25 @@ export const TERMINAL_CAMERAS: Record<number, { name: string; url: string }[]> =
 export const FERRY_CROSSING_MINUTES = 35;
 export const FERRY_TO_HOME_FALLBACK_MINUTES = 15;
 
+// Minimum recorded samples before we trust a "typical" historical statistic
+// (delay or crossing) enough to act on it. Matches carWait's threshold.
+export const HISTORY_MIN_SAMPLES = 3;
+
 export type Route = 'seattle-bainbridge' | 'bainbridge-seattle' | 'kingston-edmonds' | 'edmonds-kingston';
+
+// Per-route nominal crossing time — the fallback used only when there's no live
+// vessel Eta and not enough recorded crossings yet. Measured history (see
+// typicalCrossing.ts) supersedes this once it accrues.
+export const CROSSING_MINUTES_BY_ROUTE: Record<Route, number> = {
+  'seattle-bainbridge': 35,
+  'bainbridge-seattle': 35,
+  'kingston-edmonds': 30,
+  'edmonds-kingston': 30,
+};
+
+export function crossingMinutesForRoute(route: Route): number {
+  return CROSSING_MINUTES_BY_ROUTE[route] ?? FERRY_CROSSING_MINUTES;
+}
 
 export const ROUTES: Record<Route, { from: number; to: number; label: string }> = {
   'seattle-bainbridge': { from: TERMINALS.SEATTLE, to: TERMINALS.BAINBRIDGE, label: 'Seattle → BI' },
