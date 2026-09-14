@@ -10,8 +10,8 @@
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#1565C0"
+      "resizeMode": "cover",
+      "backgroundColor": "#F15911"
     },
     "ios": {
       "supportsTablet": true,
