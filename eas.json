@@ -47,7 +47,13 @@
   },
   "submit": {
     "production": {
-      "ios": {}
+      "ios": {
+        "ascAppId": "6763989160",
+        "appleId": "brtaylorapps@gmail.com",
+        "ascApiKeyPath": "./keys/AuthKey_TQNKNQ462B.p8",
+        "ascApiKeyId": "TQNKNQ462B",
+        "ascApiKeyIssuerId": "01be9e25-6916-4732-ba33-e1b506932512"
+      }
     }
   }
 }
