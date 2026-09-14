@@ -20,7 +20,7 @@ export interface DepartureLike {
 }
 
 // Minimum flip time once a vessel docks *after* its scheduled departure (i.e. it's
-// genuinely late). Mirrors MIN_TURNAROUND_MINUTES in useNextDepartures.ts.
+// genuinely late), used by the arrival-ETA projection below.
 export const MIN_TURNAROUND_MINUTES = 5;
 
 // Window after a ferry pulls away during which hitting "Send ETA" almost certainly

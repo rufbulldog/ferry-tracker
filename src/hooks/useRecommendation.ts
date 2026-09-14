@@ -150,7 +150,17 @@ export function useRecommendation(
     // board the ferry's own departure; drivers must target the boardable one.
     const carWait = carWaitResult.estimate;
     const isCar = vehicle === 'car';
-    let departureTime = ferryEffective.time;
+
+    // Evening "may recover" regime: a not-full evening boat can load fast and
+    // leave close to schedule, so a predicted delay must NOT push leave-by later
+    // (that's how you miss the boat). Plan leave-by for the scheduled time; the
+    // predicted delay stays visible via ferryDelayMinutes for the UI.
+    let departureTime = nextDeparture.mayRecover
+      ? nextDeparture.scheduledDeparture
+      : ferryEffective.time;
+    if (nextDeparture.mayRecover) {
+      reasoning.push('Evening boat may leave on time — planning leave-by for schedule');
+    }
 
     if (isCar && carWait.note) {
       reasoning.push(`Car wait: ${carWait.note}`);

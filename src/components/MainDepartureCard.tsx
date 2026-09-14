@@ -19,6 +19,10 @@ import { useTheme } from '../context/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
+// Cosmetic only: a predicted delay at/above this many minutes uses the "error"
+// color instead of "warning" (matching the app's orange→red lateness cues).
+const SEVERE_PREDICTED_DELAY_MINUTES = 20;
+
 interface MainDepartureCardProps {
   departure: DepartureInfo;
   terminalId: number;
@@ -40,6 +44,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
     driveUpSpaces,
     maxSpaces,
     isCancelled,
+    predictedDelayMinutes,
+    mayRecover,
   } = departure;
 
   // Flip card state
@@ -261,6 +267,38 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                 </Text>
               )}
             </View>
+
+            {/* Predicted-delay badge for an inbound boat (never makes up time in
+                transit). "may leave on time" appears in the evening recover regime. */}
+            {(status === 'arriving' || status === 'returning') && predictedDelayMinutes > 0 && (
+              <View
+                style={[
+                  styles.predictedDelayBadge,
+                  {
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor:
+                      predictedDelayMinutes >= SEVERE_PREDICTED_DELAY_MINUTES
+                        ? theme.colors.error
+                        : theme.colors.warning,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="time"
+                  size={13}
+                  color={
+                    predictedDelayMinutes >= SEVERE_PREDICTED_DELAY_MINUTES
+                      ? theme.colors.error
+                      : theme.colors.warning
+                  }
+                />
+                <Text style={[styles.predictedDelayText, { color: theme.colors.text }]}>
+                  {mayRecover
+                    ? `~${predictedDelayMinutes}m late · may leave on time`
+                    : `Predicted ~${predictedDelayMinutes}m late`}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Center section: Capacity (primary) */}
@@ -552,6 +590,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgba(255,255,255,0.85)',
     fontWeight: '500',
+  },
+  predictedDelayBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 5,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginTop: 8,
+  },
+  predictedDelayText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
   statusIndicator: {
     paddingHorizontal: 16,

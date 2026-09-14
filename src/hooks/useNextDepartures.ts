@@ -3,6 +3,7 @@ import { useTerminalSailingSpace } from './useTerminalConditions';
 import { useVesselLocations } from './useVesselLocations';
 import { ROUTES, Route } from '../utils/constants';
 import { calculateDelayMinutes, getMinutesUntil, parseDate, addMinutes } from '../utils/time';
+import { predictInboundDelay, PredictedDelayBasis } from '../utils/predictedDelay';
 import type { VesselLocation } from '../api/types';
 
 // Parse WSF date format: "/Date(1234567890000-0800)/"
@@ -32,12 +33,13 @@ export interface DepartureInfo {
   vesselAtOppositeTerminal: boolean; // Vessel is at the destination terminal, waiting to return
   vesselProgressPercent: number; // 0-100 for journey progress
   incomingVesselCapacity: number | null; // Capacity % of the vessel coming in (for arriving status)
+  // Predicted lateness of the boat that will run this sailing, derived from the
+  // inbound boat's measured departure lateness (it never makes up time in
+  // transit). See predictedDelay.ts.
+  predictedDelayMinutes: number;
+  predictedDelayBasis: PredictedDelayBasis;
+  mayRecover: boolean; // evening + not-full: may leave on time, so plan leave-by for schedule
 }
-
-// Minimum flip time once a vessel docks *after* its scheduled departure (i.e. it's
-// genuinely late). A boat that docks before its scheduled time keeps the planned time —
-// the schedule already budgets the normal turnaround.
-export const MIN_TURNAROUND_MINUTES = 5;
 
 export function useNextDepartures(route: Route) {
   const { data: allVessels, isLoading: vesselsLoading, isFetching: vesselsFetching, error: vesselsError } = useVesselLocations();
@@ -90,6 +92,9 @@ export function useNextDepartures(route: Route) {
       let vesselAtOppositeTerminal = false;
       let vesselProgressPercent = 0;
       let incomingVesselCapacity: number | null = null;
+      let predictedDelayMinutes = 0;
+      let predictedDelayBasis: PredictedDelayBasis = 'scheduled';
+      let mayRecover = false;
 
       if (vesselInfo) {
         // Check if vessel's current scheduled departure matches this sailing
@@ -183,9 +188,24 @@ export function useNextDepartures(route: Route) {
             }
           }
 
-          // Only late if the vessel won't dock until after its scheduled departure.
-          if (vesselArrivalEta && vesselArrivalEta > scheduledDeparture) {
-            estimatedDeparture = addMinutes(vesselArrivalEta, MIN_TURNAROUND_MINUTES);
+          // Predict our sailing's delay from the inbound boat's MEASURED
+          // lateness leaving its previous dock — it never makes up time in
+          // transit, so that lateness carries forward. This replaces the old
+          // `Eta + 5min turnaround` estimate (catch-up-optimistic + hardcoded).
+          const prediction = predictInboundDelay({
+            scheduledDeparture,
+            inboundLeftDock: parseDate(vesselInfo.LeftDock),
+            inboundScheduledDeparture: vesselInfo.ScheduledDeparture
+              ? parseWsfDate(vesselInfo.ScheduledDeparture)
+              : null,
+            incomingVesselCapacity,
+            now: new Date(now),
+          });
+          predictedDelayMinutes = prediction.predictedDelayMinutes;
+          predictedDelayBasis = prediction.basis;
+          mayRecover = prediction.mayRecover;
+          if (prediction.predictedDelayMinutes > 0) {
+            estimatedDeparture = prediction.predictedDeparture;
           }
         } else if (vesselInfo.AtDock && vesselInfo.DepartingTerminalID === arrivingTerminalId) {
           // Vessel is at the OPPOSITE terminal (destination), waiting to return
@@ -209,17 +229,32 @@ export function useNextDepartures(route: Route) {
             }
           }
 
-          // Estimate when it will arrive based on turnaround + crossing time
-          // Typical crossing is ~35 min, use scheduled departure as guide
+          // Arrival-time DISPLAY still uses a nominal crossing estimate; the
+          // crossing-time de-hardcode is a separate, deferred change. This value
+          // no longer feeds the delay math below.
           if (vesselInfo.ScheduledDeparture) {
             const vesselDepFromOpposite = parseWsfDate(vesselInfo.ScheduledDeparture);
-            const crossingMinutes = 35; // Typical crossing time
-            const arrivalAtOurTerminal = addMinutes(vesselDepFromOpposite, crossingMinutes);
-            vesselArrivalEta = arrivalAtOurTerminal;
+            const crossingMinutes = 35; // display only; delay rule lives in predictedDelay.ts
+            vesselArrivalEta = addMinutes(vesselDepFromOpposite, crossingMinutes);
+          }
 
-            if (arrivalAtOurTerminal > scheduledDeparture) {
-              estimatedDeparture = addMinutes(arrivalAtOurTerminal, MIN_TURNAROUND_MINUTES);
-            }
+          // The return leg hasn't started, so predict our sailing's delay from
+          // measured lateness only: overdue past its scheduled return departure,
+          // otherwise on schedule. No crossing/turnaround constant is added.
+          const prediction = predictInboundDelay({
+            scheduledDeparture,
+            inboundLeftDock: null,
+            inboundScheduledDeparture: vesselInfo.ScheduledDeparture
+              ? parseWsfDate(vesselInfo.ScheduledDeparture)
+              : null,
+            incomingVesselCapacity,
+            now: new Date(now),
+          });
+          predictedDelayMinutes = prediction.predictedDelayMinutes;
+          predictedDelayBasis = prediction.basis;
+          mayRecover = prediction.mayRecover;
+          if (prediction.predictedDelayMinutes > 0) {
+            estimatedDeparture = prediction.predictedDeparture;
           }
         }
       }
@@ -242,6 +277,9 @@ export function useNextDepartures(route: Route) {
         vesselAtOppositeTerminal,
         vesselProgressPercent,
         incomingVesselCapacity,
+        predictedDelayMinutes,
+        predictedDelayBasis,
+        mayRecover,
       } as DepartureInfo;
     })
     .filter(dep => dep.minutesUntilDeparture > -60 || dep.status === 'departed')
@@ -298,6 +336,9 @@ export function useNextDepartures(route: Route) {
           vesselAtOppositeTerminal: false,
           vesselProgressPercent,
           incomingVesselCapacity: null,
+          predictedDelayMinutes: 0,
+          predictedDelayBasis: 'scheduled',
+          mayRecover: false,
         });
       }
 
@@ -321,6 +362,9 @@ export function useNextDepartures(route: Route) {
           vesselProgressPercent: 0,
           vesselAtOppositeTerminal: false,
           incomingVesselCapacity: null,
+          predictedDelayMinutes: 0,
+          predictedDelayBasis: 'scheduled' as const,
+          mayRecover: false,
         };
       }
       return dep;
