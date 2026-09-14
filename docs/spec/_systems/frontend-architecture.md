@@ -6,7 +6,7 @@ discovered_from: code-graph + repo config
 resource_count: 16
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-08-02T05:28:25.727Z
+last_audited: 2026-09-14T02:10:09.350Z
 ---
 
 # Frontend architecture — System Spec
@@ -22,7 +22,7 @@ flowchart TD
   App --> ctx_ThemeContext["ThemeContext — 16 consumers"]
   App -.-> hook_useArrivalEta["useArrivalEta — 2 consumers"]
   App -.-> hook_useCarWait["useCarWait — 2 consumers"]
-  App -.-> hook_useDailyTrends["useDailyTrends — 3 consumers"]
+  App -.-> hook_useDailyTrends["useDailyTrends — 5 consumers"]
   App -.-> hook_useFutureSchedule["useFutureSchedule — 1 consumer"]
   App -.-> hook_useLatestDeparture["useLatestDeparture — 1 consumer"]
   App -.-> hook_useNextDepartures["useNextDepartures — 8 consumers"]
@@ -49,7 +49,7 @@ flowchart TD
 |---|---|
 | [`useArrivalEta.ts`](../src/hooks/useArrivalEta.md) | 2 files |
 | [`useCarWait.ts`](../src/hooks/useCarWait.md) | 2 files |
-| [`useDailyTrends.ts`](../src/hooks/useDailyTrends.md) | 3 files |
+| [`useDailyTrends.ts`](../src/hooks/useDailyTrends.md) | 5 files |
 | [`useFutureSchedule.ts`](../src/hooks/useFutureSchedule.md) | 1 files |
 | [`useLatestDeparture.ts`](../src/hooks/useLatestDeparture.md) | 1 files |
 | [`useNextDepartures.ts`](../src/hooks/useNextDepartures.md) | 8 files |

@@ -2,17 +2,17 @@
 type: l2-module
 spec_version: 1
 path: src/utils
-file_count: 13
-total_lines: 1461
+file_count: 15
+total_lines: 1634
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-08-02T05:28:25.726Z
+last_audited: 2026-09-14T02:10:09.350Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 13 · **Lines:** 1461
+**Files:** 15 · **Lines:** 1634
 
 ## File inventory
 
@@ -20,17 +20,19 @@ last_audited: 2026-08-02T05:28:25.726Z
 |---|---|---|
 | [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 106 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
 | [`carWait.ts`](./carWait.md) | 220 | Parse a WSF terminalwaittimes note (vehicle wait). |
-| [`constants.ts`](./constants.md) | 49 |  |
+| [`constants.ts`](./constants.md) | 67 |  |
 | [`dateHelpers.ts`](./dateHelpers.md) | 43 | Local YYYY-MM-DD (the format WSF's schedule endpoint expects as TripDate). |
 | [`ferryDeparture.ts`](./ferryDeparture.md) | 80 | Resolve the effective departure for a sailing. Preference order: |
 | [`kingstonBoardingPass.ts`](./kingstonBoardingPass.md) | 145 | Resolve the Kingston boarding-pass status for a given instant. |
 | [`locations.ts`](./locations.md) | 90 |  |
-| [`planEstimate.ts`](./planEstimate.md) | 91 |  |
+| [`planEstimate.ts`](./planEstimate.md) | 101 |  |
+| [`predictedDelay.ts`](./predictedDelay.md) | 98 |  |
 | [`themes.ts`](./themes.md) | 426 |  |
 | [`time.ts`](./time.md) | 56 |  |
 | [`transitConfig.ts`](./transitConfig.md) | 50 |  |
 | [`transitStats.ts`](./transitStats.md) | 37 |  |
 | [`typicalConditions.ts`](./typicalConditions.md) | 68 |  |
+| [`typicalCrossing.ts`](./typicalCrossing.md) | 47 |  |
 
 ## Public surface
 
@@ -72,6 +74,8 @@ Files in this folder imported from elsewhere:
   - `app/_layout.tsx`
 - `planEstimate.ts` — used by 1 file
   - `app/planner.tsx`
+- `predictedDelay.ts` — used by 1 file
+  - `src/hooks/useNextDepartures.ts`
 - `themes.ts` — used by 2 files
   - `app/(tabs)/settings.tsx`
   - `src/context/ThemeContext.tsx`
@@ -94,8 +98,11 @@ Files in this folder imported from elsewhere:
   - `src/hooks/useArrivalEta.ts`
   - `src/hooks/useRecommendation.ts`
   - `src/hooks/useTransitRecords.ts`
-- `typicalConditions.ts` — used by 1 file
+- `typicalConditions.ts` — used by 2 files
   - `src/hooks/useCarWait.ts`
+  - `src/hooks/useRecommendation.ts`
+- `typicalCrossing.ts` — used by 1 file
+  - `src/hooks/useArrivalEta.ts`
 
 ## Cross-refs
 

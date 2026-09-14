@@ -2,10 +2,10 @@
 type: l1-file
 spec_version: 1
 source: src/utils/arrivalEtaLogic.ts
-content_sha: 6eca66f3c401cb7e345569065a8b86e957bbc525a51bc1050084c1b287b0d4d0
+content_sha: 9079dbfb266ace341fdb1e93ee109785ce008506a35f587ae97fa70c5d40aab8
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.650Z
+last_audited: 2026-09-14T02:10:09.343Z
 ---
 
 # arrivalEtaLogic.ts

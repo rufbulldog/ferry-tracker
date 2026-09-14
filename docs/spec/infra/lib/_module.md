@@ -3,23 +3,23 @@ type: l2-module
 spec_version: 1
 path: infra/lib
 file_count: 2
-total_lines: 379
+total_lines: 386
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-08-02T05:28:25.726Z
+last_audited: 2026-09-14T02:10:09.348Z
 ---
 
 # infra/lib — Module Spec
 
 **Folder:** `infra/lib`
-**Files:** 2 · **Lines:** 379
+**Files:** 2 · **Lines:** 386
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`infra-stack.js`](./infra-stack.md) | 194 |  |
-| [`infra-stack.ts`](./infra-stack.md) | 185 |  |
+| [`infra-stack.js`](./infra-stack.md) | 197 |  |
+| [`infra-stack.ts`](./infra-stack.md) | 189 |  |
 
 ## Public surface
 

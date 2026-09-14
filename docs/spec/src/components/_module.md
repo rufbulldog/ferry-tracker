@@ -3,16 +3,16 @@ type: l2-module
 spec_version: 1
 path: src/components
 file_count: 12
-total_lines: 2274
+total_lines: 2327
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-08-02T05:28:25.726Z
+last_audited: 2026-09-14T02:10:09.349Z
 ---
 
 # src/components — Module Spec
 
 **Folder:** `src/components`
-**Files:** 12 · **Lines:** 2274
+**Files:** 12 · **Lines:** 2327
 
 ## File inventory
 
@@ -27,7 +27,7 @@ last_audited: 2026-08-02T05:28:25.726Z
 | [`FerryProgressIndicator.tsx`](./FerryProgressIndicator.md) | 121 |  |
 | [`KingstonBoardingPassPill.tsx`](./KingstonBoardingPassPill.md) | 75 | Compact notice for the Kingston terminal's vehicle boarding-pass requirement. |
 | [`LastDepartureCard.tsx`](./LastDepartureCard.md) | 163 |  |
-| [`MainDepartureCard.tsx`](./MainDepartureCard.md) | 658 |  |
+| [`MainDepartureCard.tsx`](./MainDepartureCard.md) | 711 |  |
 | [`MonthCalendar.tsx`](./MonthCalendar.md) | 151 | Lightweight month-grid date picker (pure JS/RN — no native date-picker dep). |
 | [`RouteSelector.tsx`](./RouteSelector.md) | 215 |  |
 

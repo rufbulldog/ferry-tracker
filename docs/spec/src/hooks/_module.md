@@ -3,28 +3,28 @@ type: l2-module
 spec_version: 1
 path: src/hooks
 file_count: 14
-total_lines: 1625
+total_lines: 1719
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-08-02T05:28:25.726Z
+last_audited: 2026-09-14T02:10:09.349Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 14 · **Lines:** 1625
+**Files:** 14 · **Lines:** 1719
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`useArrivalEta.ts`](./useArrivalEta.md) | 137 |  |
+| [`useArrivalEta.ts`](./useArrivalEta.md) | 159 |  |
 | [`useCarWait.ts`](./useCarWait.md) | 76 | Combine live capacity, WSF wait-time notes, WSF alerts, and recorded history |
 | [`useDailyTrends.ts`](./useDailyTrends.md) | 124 |  |
 | [`useFutureSchedule.ts`](./useFutureSchedule.md) | 49 | Full sailing list for a route on a given date (YYYY-MM-DD). Schedules are |
 | [`useLatestDeparture.ts`](./useLatestDeparture.md) | 61 |  |
-| [`useNextDepartures.ts`](./useNextDepartures.md) | 337 |  |
-| [`useRecommendation.ts`](./useRecommendation.md) | 206 |  |
+| [`useNextDepartures.ts`](./useNextDepartures.md) | 381 |  |
+| [`useRecommendation.ts`](./useRecommendation.md) | 234 |  |
 | [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 164 |  |
 | [`useTerminalConditions.ts`](./useTerminalConditions.md) | 29 |  |
 | [`useTerminalWaitTimes.ts`](./useTerminalWaitTimes.md) | 29 | WSF vehicle wait-time notes for a terminal. The `/wsf/waittimes/{id}` proxy |

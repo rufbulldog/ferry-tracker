@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/recommend.tsx
-content_sha: e6a66b4668bbcd97e5fd9d9df6b1c88c8dac54186994f2da5b560a871c214839
+content_sha: 6c44f8598137eb1dc59e0a705d0126eb6488fd9118a187c28f86025fc491dbb1
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.561Z
+last_audited: 2026-09-14T02:10:09.272Z
 ---
 
 # recommend.tsx
 
 **Path:** `app/(tabs)/recommend.tsx`
-**Lines:** 468
+**Lines:** 470
 **Language:** TypeScript (TSX)
 
 ## Exports

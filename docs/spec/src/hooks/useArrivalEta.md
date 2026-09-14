@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useArrivalEta.ts
-content_sha: 81afb7b8f50d503ad3faf2a5fad287b44caaba991cf38ea578e3316e93fbcc5f
+content_sha: 0277d37d4bb710682a9f7bcb032f4f01c4bef7a9bd760f6f7658bc592eeabfb8
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.598Z
+last_audited: 2026-09-14T02:10:09.304Z
 ---
 
 # useArrivalEta.ts
 
 **Path:** `src/hooks/useArrivalEta.ts`
-**Lines:** 137
+**Lines:** 159
 **Language:** TypeScript
 
 ## Exports
@@ -29,9 +29,11 @@ last_audited: 2026-08-01T19:39:26.598Z
 - `../store/checkIn` (`getCheckIn`, `subscribeCheckIn`)
 - `../types/storage` (`TransitRoute`, `Vehicle`)
 - `../utils/arrivalEtaLogic` (`selectActiveDeparture`, `etaDepartureBasis`)
-- `../utils/constants` (`Route`, `FERRY_CROSSING_MINUTES`, `FERRY_TO_HOME_FALLBACK_MINUTES`)
-- `../utils/time` (`addMinutes`)
+- `../utils/constants` (`Route`, `FERRY_TO_HOME_FALLBACK_MINUTES`, `HISTORY_MIN_SAMPLES`, `crossingMinutesForRoute`)
+- `../utils/time` (`addMinutes`, `parseDate`)
 - `../utils/transitStats` (`computeTypicalTransitSeconds`, `TypicalMethod`)
+- `../utils/typicalCrossing` (`typicalCrossingMinutes`)
+- `./useDailyTrends` (`useRecentTrends`)
 - `./useNextDepartures` (`useNextDepartures`, `DepartureInfo`)
 - `./useTransitRecords` (`useTransitRecords`)
 

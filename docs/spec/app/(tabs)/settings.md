@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/settings.tsx
-content_sha: 23acb5a4be89963f5d03dfb10e6d0f0ce4cfa2de5dfdf1a2f00919b3c460ac09
+content_sha: 2624d3f5cdf96304bba9edde666c1a6fcadaaca309dcb2f0c4e6e2a2278968b8
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T01:09:56.160Z
+last_audited: 2026-09-14T02:10:09.275Z
 ---
 
 # settings.tsx
 
 **Path:** `app/(tabs)/settings.tsx`
-**Lines:** 404
+**Lines:** 422
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -29,9 +29,15 @@ last_audited: 2026-08-01T01:09:56.160Z
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
+- `expo-application` (`* as Application`)
 - `expo-constants` (`default as Constants`)
 - `expo-location` (`* as Location`)
+- `expo-updates` (`* as Updates`)
 - `react` (`useState`)
-- `react-native` (`View`, `StyleSheet`, `ScrollView`, `TouchableOpacity`, `Image`, `TextInput`, `Alert`)
+- `react-native` (`View`, `StyleSheet`, `ScrollView`, `TouchableOpacity`, `Image`, `TextInput`, `Alert`, `Platform`)
 - `react-native-paper` (`Text`)
 - `react-native-safe-area-context` (`useSafeAreaInsets`)
+
+## Side effects
+
+- **Reads env:** `EXPO_PUBLIC_APP_ENV`

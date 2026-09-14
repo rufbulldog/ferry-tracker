@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/types/storage.ts
-content_sha: 2a4974e8f099e92486afd033fa3feef467fb705c9f80354c5dee638b3a3e4586
+content_sha: c0a3314e5ac2aaf434ed8cb9edc750586a5df783ed01bad8281b17a582a1062c
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.719Z
+last_audited: 2026-09-14T02:10:09.342Z
 ---
 
 # storage.ts
 
 **Path:** `src/types/storage.ts`
-**Lines:** 43
+**Lines:** 47
 **Language:** TypeScript
 
 ## Exports

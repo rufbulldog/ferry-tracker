@@ -3,23 +3,23 @@ type: l2-module
 spec_version: 1
 path: infra/lambda/collector
 file_count: 2
-total_lines: 491
+total_lines: 698
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.723Z
+last_audited: 2026-09-14T02:10:09.348Z
 ---
 
 # infra/lambda/collector — Module Spec
 
 **Folder:** `infra/lambda/collector`
-**Files:** 2 · **Lines:** 491
+**Files:** 2 · **Lines:** 698
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`index.js`](./index.md) | 209 |  |
-| [`index.ts`](./index.md) | 282 |  |
+| [`index.js`](./index.md) | 298 |  |
+| [`index.ts`](./index.md) | 400 |  |
 
 ## Internal-only files
 
