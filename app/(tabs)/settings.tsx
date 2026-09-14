@@ -7,10 +7,13 @@ import {
   Image,
   TextInput,
   Alert,
+  Platform,
 } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
+import * as Application from 'expo-application';
+import * as Updates from 'expo-updates';
 import * as Location from 'expo-location';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../src/context/ThemeContext';
@@ -20,6 +23,21 @@ import {
   setPersonalCoords,
   type PersonalCoords,
 } from '../../src/store/personalLocations';
+
+// Compact build identifier that matches what App Store Connect / TestFlight shows.
+// The version + build read from the NATIVE binary (expo-application), not the JS
+// manifest, so they never drift when an OTA update lands on top of a build.
+//   v<version> (<build>) · <env> · <channel> · <update>
+function getBuildInfo(): string {
+  const version =
+    Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? '?';
+  const build = Application.nativeBuildVersion ?? '?';
+  const env = process.env.EXPO_PUBLIC_APP_ENV ?? '?';
+  const channel = Updates.channel || (Platform.OS === 'web' ? 'web' : 'embedded');
+  const updateId = Updates.updateId;
+  const shortUpdateId = updateId ? updateId.slice(0, 8) : 'embedded';
+  return `v${version} (${build}) · ${env} · ${channel} · ${shortUpdateId}`;
+}
 
 interface ThemeSwatchProps {
   themeId: ThemeName;
@@ -294,7 +312,7 @@ export default function SettingsScreen() {
           About
         </Text>
         <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
-          Ferry Tracker v{Constants.expoConfig?.version ?? '?'}
+          Ferry Tracker {getBuildInfo()}
         </Text>
       </View>
     </ScrollView>

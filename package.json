@@ -19,6 +19,7 @@
     "axios": "^1.13.4",
     "babel-preset-expo": "^54.0.10",
     "expo": "^54.0.33",
+    "expo-application": "~7.0.8",
     "expo-constants": "~18.0.13",
     "expo-dev-client": "~6.0.20",
     "expo-linear-gradient": "~15.0.8",
