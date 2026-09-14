@@ -1,9 +1,16 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import { useNextDepartures, DepartureInfo } from './useNextDepartures';
 import { useTransitRecords } from './useTransitRecords';
-import { Route, FERRY_CROSSING_MINUTES, FERRY_TO_HOME_FALLBACK_MINUTES } from '../utils/constants';
+import { useRecentTrends } from './useDailyTrends';
+import {
+  Route,
+  FERRY_TO_HOME_FALLBACK_MINUTES,
+  HISTORY_MIN_SAMPLES,
+  crossingMinutesForRoute,
+} from '../utils/constants';
 import { TransitRoute, Vehicle } from '../types/storage';
-import { addMinutes } from '../utils/time';
+import { addMinutes, parseDate } from '../utils/time';
+import { typicalCrossingMinutes } from '../utils/typicalCrossing';
 import { computeTypicalTransitSeconds, TypicalMethod } from '../utils/transitStats';
 import {
   selectActiveDeparture,
@@ -62,6 +69,7 @@ const ARRIVAL_CONFIG: Partial<Record<Route, {
 export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
   const { data: departures } = useNextDepartures(ferryRoute);
   const { data: transitRecords } = useTransitRecords();
+  const { data: trends } = useRecentTrends(ferryRoute, 30);
   const checkIn = useSyncExternalStore(subscribeCheckIn, getCheckIn);
 
   return useMemo(() => {
@@ -76,7 +84,7 @@ export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
         d => d.vesselId === checkIn.vesselId &&
           Math.abs(d.scheduledDeparture.getTime() - checkIn.scheduledDeparture) < 5 * 60_000,
       );
-      const arrivalCutoff = checkIn.scheduledDeparture + (FERRY_CROSSING_MINUTES + CHECKIN_GRACE_MINUTES) * 60_000;
+      const arrivalCutoff = checkIn.scheduledDeparture + (crossingMinutesForRoute(ferryRoute) + CHECKIN_GRACE_MINUTES) * 60_000;
       // Wall-clock read to expire a stale pin; recomputed each time the memo
       // re-runs on data refetch (same pattern as useNextDepartures).
       // eslint-disable-next-line react-hooks/purity
@@ -97,7 +105,21 @@ export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
     }
 
     const departureTime = etaDepartureBasis(activeDeparture);
-    const ferryArrivalTime = addMinutes(departureTime, FERRY_CROSSING_MINUTES);
+    // Crossing time, most-trustworthy first: the vessel's live Eta once it's
+    // underway (that IS the real arrival) → the route's measured typical crossing
+    // from history → a per-route nominal crossing (cold start / not yet departed).
+    const liveEta = parseDate(activeDeparture.etaRaw);
+    let ferryArrivalTime: Date;
+    if (liveEta && liveEta.getTime() > departureTime.getTime()) {
+      ferryArrivalTime = liveEta;
+    } else {
+      const typicalCrossing = typicalCrossingMinutes(trends, ferryRoute);
+      const crossing =
+        typicalCrossing.minutes != null && typicalCrossing.sampleSize >= HISTORY_MIN_SAMPLES
+          ? typicalCrossing.minutes
+          : crossingMinutesForRoute(ferryRoute);
+      ferryArrivalTime = addMinutes(departureTime, crossing);
+    }
 
     let transitMinutes = config.fallbackMinutes;
     let transitMethod: TypicalMethod | 'default' = 'default';
@@ -132,5 +154,5 @@ export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
       nextDeparture: activeDeparture,
       supported: true,
     };
-  }, [departures, ferryRoute, transitRecords, checkIn]);
+  }, [departures, ferryRoute, transitRecords, checkIn, trends]);
 }

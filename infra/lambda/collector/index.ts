@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand, PutCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
@@ -138,6 +138,87 @@ async function savePendingCapacity(
   }));
 }
 
+// Plausible crossing band — anything outside this is dropped (vessel reassignment,
+// a long collector gap, or an unrelated dock event), not recorded.
+const CROSSING_MIN_MINUTES = 5;
+const CROSSING_MAX_MINUTES = 120;
+
+// Pure arithmetic (exported for unit tests): measured crossing = arrival − departure.
+export function computeCrossingMinutes(departure: Date, arrival: Date): number {
+  return Math.round((arrival.getTime() - departure.getTime()) / 60000);
+}
+
+// When a departure is first recorded, stash a pending-arrival marker so a later
+// poll can close the loop when the vessel docks at the destination.
+async function savePendingArrival(
+  route: string,
+  vesselId: number,
+  scheduledTime: string,
+  departureKey: string,
+  actualDeparture: string
+): Promise<void> {
+  const now = new Date();
+  await docClient.send(new PutCommand({
+    TableName: TABLE_NAME,
+    Item: {
+      route: `pending-arrival#${route}`,
+      timestamp: `${vesselId}#${scheduledTime}`,
+      departureKey,       // SK of the departure row to update on arrival
+      actualDeparture,    // ISO — used to compute the crossing
+      ttl: Math.floor(now.getTime() / 1000) + (4 * 60 * 60), // 4 hour TTL
+    },
+  }));
+}
+
+// Find the newest open pending-arrival for a vessel on this route (if any).
+async function getPendingArrival(
+  route: string,
+  vesselId: number
+): Promise<{ sortKey: string; departureKey: string; actualDeparture: string } | null> {
+  const result = await docClient.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    KeyConditionExpression: '#route = :route AND begins_with(#ts, :prefix)',
+    ExpressionAttributeNames: { '#route': 'route', '#ts': 'timestamp' },
+    ExpressionAttributeValues: {
+      ':route': `pending-arrival#${route}`,
+      ':prefix': `${vesselId}#`,
+    },
+  }));
+  const items = result.Items || [];
+  if (items.length === 0) return null;
+  items.sort((a, b) => (b.actualDeparture as string).localeCompare(a.actualDeparture as string));
+  const it = items[0];
+  return {
+    sortKey: it.timestamp as string,
+    departureKey: it.departureKey as string,
+    actualDeparture: it.actualDeparture as string,
+  };
+}
+
+async function deletePendingArrival(route: string, sortKey: string): Promise<void> {
+  await docClient.send(new DeleteCommand({
+    TableName: TABLE_NAME,
+    Key: { route: `pending-arrival#${route}`, timestamp: sortKey },
+  }));
+}
+
+// Attach the measured crossing to the existing departure row (no-op if it's gone).
+async function updateDepartureCrossing(
+  route: string,
+  departureKey: string,
+  crossingMinutes: number,
+  arrivalIso: string
+): Promise<void> {
+  await docClient.send(new UpdateCommand({
+    TableName: TABLE_NAME,
+    Key: { route, timestamp: departureKey },
+    UpdateExpression: 'SET crossingMinutes = :c, actualArrivalTime = :a',
+    ConditionExpression: 'attribute_exists(#route)',
+    ExpressionAttributeNames: { '#route': 'route' },
+    ExpressionAttributeValues: { ':c': crossingMinutes, ':a': arrivalIso },
+  }));
+}
+
 export async function handler() {
   console.log('Starting ferry departure collection...');
 
@@ -268,6 +349,43 @@ export async function handler() {
 
         console.log(`Saved: ${vessel.VesselName} on ${route.id}, delay: ${delayMinutes}min, capacity: ${capacityPercent}%`);
         savedCount++;
+
+        // Open a pending-arrival marker so a later poll can close the loop with a
+        // measured crossing time once this vessel docks at the destination.
+        await savePendingArrival(
+          route.id,
+          vessel.VesselID,
+          scheduledDep.toISOString(),
+          item.timestamp,
+          actualDep.toISOString(),
+        );
+      }
+
+      // PHASE 3: Record measured crossing for vessels that have now docked at the
+      // destination (their departing terminal is this route's 'to').
+      const arrivedVessels = vessels.filter(v =>
+        v.DepartingTerminalID === route.to &&
+        v.AtDock === true
+      );
+
+      for (const vessel of arrivedVessels) {
+        try {
+          const pending = await getPendingArrival(route.id, vessel.VesselID);
+          if (!pending) continue;
+
+          const crossingMinutes = computeCrossingMinutes(new Date(pending.actualDeparture), now);
+          if (crossingMinutes < CROSSING_MIN_MINUTES || crossingMinutes > CROSSING_MAX_MINUTES) {
+            // Implausible (reassignment / collector gap) — drop the marker, don't record.
+            await deletePendingArrival(route.id, pending.sortKey);
+            continue;
+          }
+
+          await updateDepartureCrossing(route.id, pending.departureKey, crossingMinutes, now.toISOString());
+          await deletePendingArrival(route.id, pending.sortKey);
+          console.log(`Crossing: ${vessel.VesselName} on ${route.id}, ${crossingMinutes}min`);
+        } catch (err) {
+          console.error(`Crossing update failed for ${vessel.VesselName} on ${route.id}:`, err);
+        }
       }
     }
 

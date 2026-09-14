@@ -19,6 +19,10 @@ export interface DepartureSnapshot {
   capacityPercent: number;
   route: string;
   timestamp: string; // ISO date string
+  // Measured crossing time (actual arrival − actual departure), filled in by the
+  // collector's arrival phase. Absent on older rows and until arrival is observed.
+  crossingMinutes?: number | null;
+  actualArrivalTime?: string | null; // ISO date string
 }
 
 // Daily trend cache
