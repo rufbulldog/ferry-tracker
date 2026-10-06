@@ -7,12 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "ferrytracker",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#F15911"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ferrytracker.app",
@@ -26,8 +20,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1565C0"
       },
-      "package": "com.ferrytracker.app",
-      "edgeToEdgeEnabled": true
+      "package": "com.ferrytracker.app"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -41,7 +34,17 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Ferry Tracker uses your location to auto-select the nearest ferry route and commute leg."
         }
-      ]
+      ],
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#F15911"
+        }
+      ],
+      "./plugins/withPodDeploymentTarget"
     ],
     "experiments": {
       "typedRoutes": true

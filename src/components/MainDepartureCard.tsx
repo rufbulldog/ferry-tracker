@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   card: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 16,
     overflow: 'hidden',
     backfaceVisibility: 'hidden',
@@ -450,14 +450,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffcdd2',
   },
   tankBackground: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'flex-end',
   },
   tankFill: {
     width: '100%',
   },
   content: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     padding: 16,
     justifyContent: 'space-between',
   },
@@ -626,10 +626,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cameraImage: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   cameraLoading: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#111',

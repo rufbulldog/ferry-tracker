@@ -10,7 +10,7 @@ Ferry Tracker — a React Native (Expo) app for tracking Washington State Ferrie
 
 ```bash
 npm start          # expo start (Metro bundler + dev menu)
-npm run ios        # expo run:ios (build + launch in iOS simulator)
+npm run ios        # expo run:ios (build + launch in iOS simulator; works on Xcode 27)
 npm run android    # expo run:android
 ```
 
@@ -69,6 +69,16 @@ npx cdk deploy
 The backend lives in `infra/` and is deployed with AWS CDK, not SAM. `infra/cdk.json` is the entry point. The mobile app currently hits `https://yv8hqe5rgc.execute-api.us-west-2.amazonaws.com/prod` (per `eas.json`). When backend Lambdas or API shape changes, deploy the CDK stack before pushing mobile changes that depend on the new shape.
 
 There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK deploys go via `npx cdk deploy` from `infra/`. There's no `sam-deployer` agent that fits this repo — handle backend deploys manually until that gap is closed.
+
+## SDK 57 / Xcode 27 notes
+
+- **Expo SDK 57** (React Native 0.86, React 19.2, TypeScript 6) since 1.4.0 (2026-10-06).
+- `plugins/withPodDeploymentTarget.js` raises CocoaPods targets below iOS 15.1 (Xcode 27 rejects them).
+- **TypeScript 6** no longer auto-loads `@types/*`: `tsconfig.json` lists `"types": ["jest"]`
+  (`tsconfig.jest.json` already did).
+- Splash config lives in the `expo-splash-screen` plugin (SDK 57 removed top-level `splash`,
+  `newArchEnabled`, `android.edgeToEdgeEnabled`). `expo-font` is a direct dependency now
+  (`@expo/vector-icons` requires it). `StyleSheet.absoluteFillObject` → `absoluteFill` (RN 0.85).
 
 ## Things to remember
 

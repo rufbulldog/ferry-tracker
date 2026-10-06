@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-09-14T02:10:09.353Z",
+  "generated_at": "2026-10-06T07:24:46.241Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "278ed1f81830c755f9f6bb048dcf89dc94623316a23aca3ba3288532f9c8b5ab",
@@ -128,6 +128,13 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-09-14T02:10:09.288Z"
     },
+    "plugins/withPodDeploymentTarget.js": {
+      "content_sha256": "5fc34283e2819f6a4cd4e1044f5b60d3fecabb9109591e3b973644d6116ae0c0",
+      "spec_path": "docs/spec/plugins/withPodDeploymentTarget.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-10-06T07:24:46.176Z"
+    },
     "src/api/backend.ts": {
       "content_sha256": "b4cbd4bcc0c1c2884a1f0e0a9d103312b009e82ac097c5286692cefc5cb51f0d",
       "spec_path": "docs/spec/src/api/backend.md",
@@ -185,11 +192,11 @@
       "last_audited": "2026-08-01T19:39:26.580Z"
     },
     "src/components/CapacityBar.tsx": {
-      "content_sha256": "9ab6e447be751e72b4b68a5348ba67ee09c7d1da8eb0f232c620f96443966d32",
+      "content_sha256": "3a1f9e6e54383628044073dd941765350dcd3678abbe568607fe3369c936ee95",
       "spec_path": "docs/spec/src/components/CapacityBar.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-07-31T23:25:27.473Z"
+      "last_audited": "2026-10-06T07:24:46.178Z"
     },
     "src/components/CarWaitChip.tsx": {
       "content_sha256": "1049cd518a1b1f347ae64a6316fc5cd112b9ca393f2acf4bc3b4a0f91fa170a2",
@@ -234,11 +241,11 @@
       "last_audited": "2026-08-01T19:39:26.586Z"
     },
     "src/components/MainDepartureCard.tsx": {
-      "content_sha256": "941a1cb4cb5c680b44d17d7565371f199a477983c8e272532bccf7d6dd5e5db0",
+      "content_sha256": "77a619348cc5168b7f2a2d45082db3b2d2f5ab7f4f5e0dfb3f9f35b8c5c43ec5",
       "spec_path": "docs/spec/src/components/MainDepartureCard.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.294Z"
+      "last_audited": "2026-10-06T07:24:46.181Z"
     },
     "src/components/MonthCalendar.tsx": {
       "content_sha256": "ff3361a759bb5fded1c629dc8b7a5797479bb43252e9e425f08a21fb77ef788c",
@@ -550,6 +557,13 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-09-14T02:10:09.348Z"
     },
+    "plugins": {
+      "input_hashes_sha256": "7fb604af906294f54f21904aba959d3af1e559268c647905e55b2824614cd107",
+      "spec_path": "docs/spec/plugins/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-10-06T07:24:46.236Z"
+    },
     "src/api": {
       "input_hashes_sha256": "9cd38068530a88ecdd394c870a9185bb302e23617840a2bd97b5f9587593e5ba",
       "spec_path": "docs/spec/src/api/_module.md",
@@ -558,11 +572,11 @@
       "last_audited": "2026-08-02T05:28:25.726Z"
     },
     "src/components": {
-      "input_hashes_sha256": "68d6bdcc0300d35c21e67a1cb41416b53554b338bded9e60c380609fc3d9f4dd",
+      "input_hashes_sha256": "c9f198038f8356e39f299f786d0ba23bc2aa273026ef4867dab5ccc55431553f",
       "spec_path": "docs/spec/src/components/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.349Z"
+      "last_audited": "2026-10-06T07:24:46.237Z"
     },
     "src/context": {
       "input_hashes_sha256": "35c5563bdd7aa2fab37e012dfb7741499219aed76a23fabbd664a1ed99efee8a",
@@ -602,11 +616,11 @@
   },
   "systems": {
     "architecture": {
-      "input_sha256": "f94331ab72d39a0b65ac31fc29e8b0a1bab341fe511dba65ad3aa3ad23a79680",
+      "input_sha256": "30f1b1b317776418c78e51e3cd210c0ab5fa4ddc5f6c020f9aea10eb56ef7246",
       "spec_path": "docs/spec/_systems/architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-09-14T02:10:09.353Z"
+      "last_audited": "2026-10-06T07:24:46.241Z"
     },
     "frontend-architecture": {
       "input_sha256": "7edaa095f7bb6a049c934e97537318b3cd99997763ad49abb2b04dc339c3f4ee",

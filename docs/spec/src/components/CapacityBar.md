@@ -2,10 +2,10 @@
 type: l1-file
 spec_version: 1
 source: src/components/CapacityBar.tsx
-content_sha: 9ab6e447be751e72b4b68a5348ba67ee09c7d1da8eb0f232c620f96443966d32
+content_sha: 3a1f9e6e54383628044073dd941765350dcd3678abbe568607fe3369c936ee95
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-07-31T23:25:27.473Z
+last_audited: 2026-10-06T07:24:46.178Z
 ---
 
 # CapacityBar.tsx

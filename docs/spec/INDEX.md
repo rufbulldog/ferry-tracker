@@ -1,7 +1,7 @@
 ---
 type: index
 spec_version: 1
-generated_at: 2026-09-14T02:10:09.353Z
+generated_at: 2026-10-06T07:24:46.241Z
 ---
 
 # Spec catalog
@@ -33,6 +33,10 @@ One per source folder. Lists files + public surface + internal-only files.
 - [`infra/lambda/proxy/`](infra/lambda/proxy/_module.md)
 - [`infra/lib/`](infra/lib/_module.md)
 
+### `plugins/`
+
+- [`plugins/`](plugins/_module.md)
+
 ### `src/`
 
 - [`src/api/`](src/api/_module.md)
@@ -45,7 +49,7 @@ One per source folder. Lists files + public surface + internal-only files.
 
 ## L1 — Files
 
-71 file-level specs covering every `.ts`, `.tsx`, `.mjs`, `.js`, and `template.yaml` under the repo. Navigate via the L2 module specs above, or browse `docs/spec/` directly.
+72 file-level specs covering every `.ts`, `.tsx`, `.mjs`, `.js`, and `template.yaml` under the repo. Navigate via the L2 module specs above, or browse `docs/spec/` directly.
 
 ## See also
 

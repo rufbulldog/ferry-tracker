@@ -23,7 +23,8 @@ this file holds only what's specific to ferry-app.
 - Backend has its own suite + lint: `cd infra && npm test && npm run lint` — run both when `infra/**` changed.
 
 ## Verify
-- iOS simulator via the `expo-eas.md` recipe — bundle id `com.ferrytracker.app`. No web testing,
+- iOS simulator: `npx expo run:ios --device "iPhone 17 Pro"` (works on Xcode 27 since the SDK 57
+  upgrade), then Metro on 8081. Bundle id `com.ferrytracker.app`. No web testing,
   ever (the web bundler is configured but the app is mobile-only).
 
 ## Deploy

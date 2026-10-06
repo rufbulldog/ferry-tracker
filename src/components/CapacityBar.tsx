@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
   },
