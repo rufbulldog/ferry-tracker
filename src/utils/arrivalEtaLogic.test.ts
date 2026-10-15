@@ -42,20 +42,37 @@ describe('selectActiveDeparture', () => {
     expect(selectActiveDeparture([loading, scheduled])).toBe(loading);
   });
 
-  test('prefers a boat that left within the last 5 min over the next sailing', () => {
+  test('prefers a boat that just left over the next sailing', () => {
     const justLeft = dep({ status: 'departed', actualDeparture: minsAgo(3) });
     const nextSailing = dep({ status: 'loading', scheduledDeparture: minsAhead(20) });
     expect(selectActiveDeparture([justLeft, nextSailing])).toBe(justLeft);
   });
 
-  test('ignores a boat already well into its crossing (left > 5 min ago)', () => {
+  test('keeps a boat still mid-crossing selected over the next sailing', () => {
+    // You boarded and sent your ETA 13 min after pulling away — still your boat,
+    // not the one loading behind it. (Old behavior jumped to the next sailing.)
     const midCrossing = dep({ status: 'departed', actualDeparture: minsAgo(13) });
     const nextSailing = dep({
-      status: 'arriving',
-      vesselArrivalEta: minsAhead(8),
+      status: 'loading',
       scheduledDeparture: minsAhead(15),
     });
-    expect(selectActiveDeparture([midCrossing, nextSailing])).toBe(nextSailing);
+    expect(selectActiveDeparture([midCrossing, nextSailing])).toBe(midCrossing);
+  });
+
+  test('drops a departed boat once it passes its live arrival ETA (it landed)', () => {
+    const landed = dep({
+      status: 'departed',
+      actualDeparture: minsAgo(40),
+      vesselArrivalEta: minsAgo(2),
+    });
+    const nextSailing = dep({ status: 'loading', scheduledDeparture: minsAhead(15) });
+    expect(selectActiveDeparture([landed, nextSailing])).toBe(nextSailing);
+  });
+
+  test('drops a departed boat once the crossing window elapses (no live ETA)', () => {
+    const stale = dep({ status: 'departed', actualDeparture: minsAgo(60) });
+    const nextSailing = dep({ status: 'scheduled', scheduledDeparture: minsAhead(15) });
+    expect(selectActiveDeparture([stale, nextSailing])).toBe(nextSailing);
   });
 
   test('prefers a loading boat over a first-listed returning/arriving sailing', () => {
@@ -99,8 +116,8 @@ describe('selectActiveDeparture', () => {
   });
 
   test('returns null when everything has departed outside the window', () => {
-    const a = dep({ status: 'departed', actualDeparture: minsAgo(10) });
-    const b = dep({ status: 'departed', actualDeparture: minsAgo(20) });
+    const a = dep({ status: 'departed', actualDeparture: minsAgo(50) });
+    const b = dep({ status: 'departed', actualDeparture: minsAgo(70) });
     expect(selectActiveDeparture([a, b])).toBeNull();
   });
 

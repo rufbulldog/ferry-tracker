@@ -23,18 +23,23 @@ export interface DepartureLike {
 // genuinely late), used by the arrival-ETA projection below.
 export const MIN_TURNAROUND_MINUTES = 5;
 
-// Window after a ferry pulls away during which hitting "Send ETA" almost certainly
-// means you're aboard the boat that just left — not waiting for the next one.
-const JUST_LEFT_MINUTES = 5;
+// How long after a vessel leaves the dock we still treat it as "the boat you're
+// on" when there's no live arrival ETA to go by: a full nominal crossing plus a
+// grace margin for a slow sailing. The old 5-minute window was too short — if you
+// sent your ETA more than a few minutes after pulling away, the selector gave up
+// on your boat and jumped to the next sailing, inflating the ETA by ~one headway.
+const EN_ROUTE_WINDOW_MINUTES = FERRY_CROSSING_MINUTES + 10;
 
 /**
  * The sailing the ETA is for. Normally the next sailing you'd board — the one
  * shown on the "Next Sailing" card (first that hasn't departed). The exception:
- * if a ferry pulled away from the dock just now (≤JUST_LEFT_MINUTES), that's
- * the boat you just boarded, so use it instead of jumping to the next sailing.
+ * a boat that has left the dock but not yet landed is the one you're aboard, so
+ * it wins — for the *whole crossing*, not just the first few minutes.
  *
- * A boat already well into its crossing is a *prior* sailing and must not
- * hijack the ETA from the next sailing you're about to board.
+ * "Landed" is the cutoff that keeps this honest: once a departed boat passes its
+ * live arrival ETA (or, lacking one, a nominal crossing window), it becomes a
+ * *prior* sailing and must no longer hijack the ETA from the next boat you're
+ * about to board. Among boats still mid-crossing, the most recent departure wins.
  */
 export function selectActiveDeparture<T extends DepartureLike>(
   departures: T[] | undefined
@@ -43,17 +48,19 @@ export function selectActiveDeparture<T extends DepartureLike>(
 
   const nowMs = Date.now();
 
-  const justLeft = departures
-    .filter(
-      d =>
-        d.status === 'departed' &&
-        !d.isCancelled &&
-        d.actualDeparture != null &&
-        nowMs - d.actualDeparture.getTime() >= 0 &&
-        nowMs - d.actualDeparture.getTime() <= JUST_LEFT_MINUTES * 60_000,
-    )
+  const enRoute = departures
+    .filter(d => {
+      if (d.status !== 'departed' || d.isCancelled || d.actualDeparture == null) return false;
+      const leftMs = d.actualDeparture.getTime();
+      if (nowMs < leftMs) return false; // clock skew: "left" in the future
+      const landedByMs =
+        d.vesselArrivalEta && d.vesselArrivalEta.getTime() > leftMs
+          ? d.vesselArrivalEta.getTime()
+          : leftMs + EN_ROUTE_WINDOW_MINUTES * 60_000;
+      return nowMs <= landedByMs;
+    })
     .sort((a, b) => b.actualDeparture!.getTime() - a.actualDeparture!.getTime());
-  if (justLeft.length > 0) return justLeft[0];
+  if (enRoute.length > 0) return enRoute[0];
 
   // A boat physically loading at our dock is almost certainly the one you're
   // boarding — prefer it over a first-listed sailing whose assigned vessel is
