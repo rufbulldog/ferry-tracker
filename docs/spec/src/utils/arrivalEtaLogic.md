@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/utils/arrivalEtaLogic.ts
-content_sha: 9079dbfb266ace341fdb1e93ee109785ce008506a35f587ae97fa70c5d40aab8
+content_sha: 2b0e599d5b27eaad12d308788c454e49897d4ff1c6826813d8a66487fca1d8b9
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-09-14T02:10:09.343Z
+last_audited: 2026-10-15T07:40:52.776Z
 ---
 
 # arrivalEtaLogic.ts
 
 **Path:** `src/utils/arrivalEtaLogic.ts`
-**Lines:** 106
+**Lines:** 113
 **Language:** TypeScript
 
 ## Exports

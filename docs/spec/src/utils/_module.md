@@ -3,22 +3,22 @@ type: l2-module
 spec_version: 1
 path: src/utils
 file_count: 15
-total_lines: 1634
+total_lines: 1641
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-09-14T02:10:09.350Z
+last_audited: 2026-10-15T07:40:52.780Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 15 · **Lines:** 1634
+**Files:** 15 · **Lines:** 1641
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 106 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
+| [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 113 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
 | [`carWait.ts`](./carWait.md) | 220 | Parse a WSF terminalwaittimes note (vehicle wait). |
 | [`constants.ts`](./constants.md) | 67 |  |
 | [`dateHelpers.ts`](./dateHelpers.md) | 43 | Local YYYY-MM-DD (the format WSF's schedule endpoint expects as TripDate). |

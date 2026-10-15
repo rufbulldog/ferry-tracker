@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-10-06T07:24:46.241Z",
+  "generated_at": "2026-10-15T07:40:52.784Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "278ed1f81830c755f9f6bb048dcf89dc94623316a23aca3ba3288532f9c8b5ab",
@@ -402,11 +402,11 @@
       "last_audited": "2026-09-14T02:10:09.342Z"
     },
     "src/utils/arrivalEtaLogic.ts": {
-      "content_sha256": "9079dbfb266ace341fdb1e93ee109785ce008506a35f587ae97fa70c5d40aab8",
+      "content_sha256": "2b0e599d5b27eaad12d308788c454e49897d4ff1c6826813d8a66487fca1d8b9",
       "spec_path": "docs/spec/src/utils/arrivalEtaLogic.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.343Z"
+      "last_audited": "2026-10-15T07:40:52.776Z"
     },
     "src/utils/carWait.ts": {
       "content_sha256": "f1ef66ad3a970ac86b7b861a16242ee824844cc723597175aac296e604aaa4e3",
@@ -607,11 +607,11 @@
       "last_audited": "2026-09-14T02:10:09.350Z"
     },
     "src/utils": {
-      "input_hashes_sha256": "8a53a26fc769d768e784c50ab72c7d7680bbb7d992359dc0b90ae7f4e25357ff",
+      "input_hashes_sha256": "9acae478edd18b69a37f402c6de2a6822ccd18ba902a6c64123f77ac023636f4",
       "spec_path": "docs/spec/src/utils/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.350Z"
+      "last_audited": "2026-10-15T07:40:52.780Z"
     }
   },
   "systems": {
