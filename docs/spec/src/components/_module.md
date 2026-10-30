@@ -3,16 +3,16 @@ type: l2-module
 spec_version: 1
 path: src/components
 file_count: 12
-total_lines: 2327
+total_lines: 2345
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-10-06T07:24:46.237Z
+last_audited: 2026-10-30T06:46:27.758Z
 ---
 
 # src/components — Module Spec
 
 **Folder:** `src/components`
-**Files:** 12 · **Lines:** 2327
+**Files:** 12 · **Lines:** 2345
 
 ## File inventory
 
@@ -22,7 +22,7 @@ last_audited: 2026-10-06T07:24:46.237Z
 | [`ArrivingCard.tsx`](./ArrivingCard.md) | 183 | Compact tracker for the incoming vessel, pulled out of the Next Sailing card |
 | [`CapacityBar.tsx`](./CapacityBar.md) | 130 |  |
 | [`CarWaitChip.tsx`](./CarWaitChip.md) | 54 | Compact "cars may wait" notice for the Time screen. Renders nothing unless |
-| [`CheckInFAB.tsx`](./CheckInFAB.md) | 105 |  |
+| [`CheckInFAB.tsx`](./CheckInFAB.md) | 123 |  |
 | [`FerryCard.tsx`](./FerryCard.md) | 297 |  |
 | [`FerryProgressIndicator.tsx`](./FerryProgressIndicator.md) | 121 |  |
 | [`KingstonBoardingPassPill.tsx`](./KingstonBoardingPassPill.md) | 75 | Compact notice for the Kingston terminal's vehicle boarding-pass requirement. |

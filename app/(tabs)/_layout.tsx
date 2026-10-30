@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { RouteSelector } from '../../src/components/RouteSelector';
 import { CheckInFAB } from '../../src/components/CheckInFAB';
 import { useTheme } from '../../src/context/ThemeContext';
+import { tabBarColors } from '../../src/utils/tabBarColors';
 
 function TabHeader() {
   return <RouteSelector />;
@@ -11,14 +12,15 @@ function TabHeader() {
 
 export default function TabLayout() {
   const { theme } = useTheme();
+  const tabColors = tabBarColors(theme);
 
   return (
     <View style={styles.container}>
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: theme.colors.primary,
-          tabBarInactiveTintColor: theme.colors.textMuted,
+          tabBarActiveTintColor: tabColors.active,
+          tabBarInactiveTintColor: tabColors.inactive,
           tabBarStyle: {
             backgroundColor: theme.colors.cardBg,
             borderTopColor: theme.colors.border,

@@ -40,7 +40,7 @@ flowchart TD
 - **Delay awareness** - adds +5 min buffer when an active service delay alert is detected
 - **Bike/walk vs. car departure timing** - walk-ons and bikes board the ferry's own departure; as a car, the card instead calls out the sailing you're actually likely to board (and the extra wait) when the boat you'd otherwise catch is expected to fill, using live drive-up capacity and historical typical-capacity data as the primary signals
 - **Capacity awareness** - shows ferry fill percentage at bottom of card (suppressed when the car-wait note already states it)
-- **Arrival ETA card** - compact secondary card showing estimated home/office arrival time; ETA is built from the planned (scheduled) departure time + 35-min crossing + your recorded transit time (Seattle→Bainbridge shows home ETA; Bainbridge→Seattle shows office ETA; Kingston/Edmonds routes not supported). Deviates from the schedule only when a delay is known: uses actual departure if the boat has already left, or projects departure as dock-time + 5-min turnaround if the vessel won't arrive until after its scheduled time
+- **Arrival ETA card** - compact secondary card showing estimated home/office arrival time; ETA is built from the planned (scheduled) departure time + 35-min crossing + your recorded transit time (Seattle→Bainbridge shows home ETA; Bainbridge→Seattle shows office ETA; Kingston/Edmonds routes not supported). Deviates from the schedule only when a delay is known: uses actual departure if the boat has already left, or projects departure as dock-time + 5-min turnaround if the vessel won't arrive until after its scheduled time; a sailing that hasn't left but is past its scheduled time uses "now" as its departure, so the ETA is never in the past
 - **Pull-to-refresh** - pull down to refresh all data and GPS location
 
 ### Time Tab
@@ -94,6 +94,8 @@ flowchart TD
 - **ETA matches the Leave tab** - sources its ETA from `useArrivalEta`: planned (scheduled) departure time + 35-min crossing + your recorded ferry-to-home bike transit (typical stat, or 15 min default); identical to the arrival card shown on the Leave tab. Selects the sailing you're about to board — a ferry that has pulled away but not yet landed is treated as the boat you're aboard and stays selected for the whole crossing (until its live arrival ETA, or a nominal crossing window when none is available); once it lands, or if no boat has recently departed, it uses the next upcoming sailing
 - **Pins the boarded vessel on send** - pressing Send ETA also records a check-in (route, vessel, scheduled departure) so the displayed ETA stays locked to that sailing through the loading→departed transition, instead of jumping when the boat later shows as departed
 - **Disabled when idle** - button is shown at 50% opacity and non-tappable when there is no upcoming departure
+- **Live data refetch on foreground** - react-query `focusManager` is wired to RN `AppState`, so live queries refetch when the app returns to foreground
+- **Waits for fresh data** - when the app returns to foreground, the button refetches vessel locations and terminal sailing space, and is disabled showing "Updating…" until that finishes
 - **No backend required** - uses native `Linking.openURL` with `sms:` scheme
 
 ### Service Delay Alerts
@@ -181,6 +183,9 @@ The app supports 15 team color themes that apply across all screens. Each theme 
    - Each theme defines: `primary`, `pageBg`, `cardBg`, `inputBg`, `text`, `textMuted`, `border`, etc.
    - All themes include `logoUrl` for ESPN team logos
    - White variants use light backgrounds with team accent colors for interactive elements
+
+3. **Tab bar colors** (`src/utils/tabBarColors.ts`)
+   - Active tint is the first of `primary` / `pillText` that is non-grey (chroma ≥ 0.15) and has ≥ 3:1 contrast against `cardBg`, otherwise the theme `text` color; inactive is `textMuted` blended 45% toward `cardBg`
 
 3. **Usage in Components**
    ```typescript
@@ -291,6 +296,7 @@ ferry-app/
 │       ├── ferryDeparture.ts     # Unified effective departure time + delay model (feeds Time + Leave cards)
 │       ├── kingstonBoardingPass.ts  # Kingston vehicle boarding-pass seasonal schedule logic
 │       ├── planEstimate.ts       # Predictive leave-by for a future sailing (Schedule Planner)
+│       ├── tabBarColors.ts       # Tab-bar active/inactive tint derivation (contrast-checked per theme)
 │       ├── themes.ts             # Theme definitions (15 themes)
 │       ├── time.ts               # Date parsing and formatting
 │       ├── transitConfig.ts      # Shared travel-time defaults + route→transit-segment map (Leave card + Planner)

@@ -91,8 +91,8 @@ export function projectedDockTime<T extends DepartureLike>(d: T): Date | null {
  * The departure time the ETA is built from, kept deliberately *conservative*
  * so it doesn't jump around during the loading→departed transition:
  *   • once the boat has left, use the actual leave-dock time;
- *   • a boat still loading past its scheduled time is genuinely late and about
- *     to leave — use `now`;
+ *   • a sailing that hasn't left but whose scheduled time has passed is late
+ *     (or the row is stale) — use `now`, so the ETA is never already in the past;
  *   • otherwise use the planned (scheduled) departure.
  *
  * Notably it does NOT fold in the `arriving`/`returning` vessel projection.
@@ -104,7 +104,11 @@ export function projectedDockTime<T extends DepartureLike>(d: T): Date | null {
 export function etaDepartureBasis<T extends DepartureLike>(d: T, nowMs: number = Date.now()): Date {
   if (d.actualDeparture) return d.actualDeparture;
 
-  if (d.status === 'loading' && nowMs > d.scheduledDeparture.getTime()) {
+  // A sailing that hasn't left can't leave in the past. Whatever its status
+  // (loading late, an inbound boat running behind, or a stale row the selector
+  // fell back to), clamp to `now` — otherwise an old scheduled time yields an
+  // ETA that's already passed (e.g. "ETA 4:45" sent at 4:55, mid-crossing).
+  if (nowMs > d.scheduledDeparture.getTime()) {
     return new Date(nowMs);
   }
 

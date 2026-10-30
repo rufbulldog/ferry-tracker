@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "generated_at": "2026-10-15T07:40:52.784Z",
+  "generated_at": "2026-10-30T06:46:27.763Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
-      "content_sha256": "278ed1f81830c755f9f6bb048dcf89dc94623316a23aca3ba3288532f9c8b5ab",
+      "content_sha256": "24794d32cb5b5c798b23be7721b648afa4b710b1f4138fde144609d13f0fbbdc",
       "spec_path": "docs/spec/app/(tabs)/_layout.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.613Z"
+      "last_audited": "2026-10-30T06:46:27.653Z"
     },
     "app/(tabs)/index.tsx": {
       "content_sha256": "8a39ac6499864d365a82369fb4d748fdaa803210a1630c34d13747c4f4079c99",
@@ -45,11 +45,11 @@
       "last_audited": "2026-07-31T23:25:27.462Z"
     },
     "app/_layout.tsx": {
-      "content_sha256": "5aa5b09f00a420077e94ef90e6022ec265d19ddae443495dcfc8949e081e7e02",
+      "content_sha256": "0cd175a99a5fa3915357bd4470d1f2a43d08ff43c904dfb446826f10c8c66254",
       "spec_path": "docs/spec/app/_layout.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-08-02T05:28:21.869Z"
+      "last_audited": "2026-10-30T06:46:23.080Z"
     },
     "app/planner.tsx": {
       "content_sha256": "84f94d1daab4c7ee824eb12ad6a7aec04427eac0c6d3b0b318f6d08e993ddbe2",
@@ -206,11 +206,11 @@
       "last_audited": "2026-08-01T19:39:26.582Z"
     },
     "src/components/CheckInFAB.tsx": {
-      "content_sha256": "c9df2b6c0019bae7be52bfb4b60c485e9e8c5d30a7fea4b2ee7a81a351d12312",
+      "content_sha256": "3cf9dc19788c04a4a38c309e94ec5ef65565e8ab203e0e030cca888584bd95b1",
       "spec_path": "docs/spec/src/components/CheckInFAB.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-08-01T19:39:26.582Z"
+      "last_audited": "2026-10-30T06:46:27.690Z"
     },
     "src/components/FerryCard.tsx": {
       "content_sha256": "de1fe3e71bd377e62f7a5cb2951696b24dff302188317644dd992d3dc90928a2",
@@ -402,11 +402,11 @@
       "last_audited": "2026-09-14T02:10:09.342Z"
     },
     "src/utils/arrivalEtaLogic.ts": {
-      "content_sha256": "2b0e599d5b27eaad12d308788c454e49897d4ff1c6826813d8a66487fca1d8b9",
+      "content_sha256": "f1aef11f1e362ad751972b9e1e880b72423f5a45c4d56302812488ec658a30a8",
       "spec_path": "docs/spec/src/utils/arrivalEtaLogic.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-15T07:40:52.776Z"
+      "last_audited": "2026-10-30T06:46:27.750Z"
     },
     "src/utils/carWait.ts": {
       "content_sha256": "f1ef66ad3a970ac86b7b861a16242ee824844cc723597175aac296e604aaa4e3",
@@ -464,6 +464,13 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-09-14T02:10:09.346Z"
     },
+    "src/utils/tabBarColors.ts": {
+      "content_sha256": "a386b0793ce1ed6e42898545f56b6bc4a306b4a826eb3a82e28cfc275f521969",
+      "spec_path": "docs/spec/src/utils/tabBarColors.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-10-30T06:46:27.754Z"
+    },
     "src/utils/themes.ts": {
       "content_sha256": "a69ec20cde5f7b7c6a3e8d00757364b5b376df704374ee78c825922d2141927c",
       "spec_path": "docs/spec/src/utils/themes.md",
@@ -509,18 +516,18 @@
   },
   "modules": {
     "app": {
-      "input_hashes_sha256": "e98e6cbf8700499879b55814d6dd9bbd3154d4cc307e36c64650098232c85b0d",
+      "input_hashes_sha256": "d49411ee07b5fea8691e32447b8f288979b349cfaa720e1938b6a71d06498ada",
       "spec_path": "docs/spec/app/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.347Z"
+      "last_audited": "2026-10-30T06:46:27.757Z"
     },
     "app/(tabs)": {
-      "input_hashes_sha256": "2ee2e5253644565d0e7d291018e5378c1fbf0c34445af7c89016cfa2f753f36e",
+      "input_hashes_sha256": "2842c2c825c2a2ad859c480f2f5c0e6da849027749d074387f5a872490d6aa92",
       "spec_path": "docs/spec/app/(tabs)/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.348Z"
+      "last_audited": "2026-10-30T06:46:27.758Z"
     },
     "infra/bin": {
       "input_hashes_sha256": "80db745028249664456090ce818b0e33095fa4b63857381db316a1d1eba830a2",
@@ -572,11 +579,11 @@
       "last_audited": "2026-08-02T05:28:25.726Z"
     },
     "src/components": {
-      "input_hashes_sha256": "c9f198038f8356e39f299f786d0ba23bc2aa273026ef4867dab5ccc55431553f",
+      "input_hashes_sha256": "605b2a8bd36023f2f548b9781643aa57bd82530abfc0ed4fc3222c3d4cdbf10a",
       "spec_path": "docs/spec/src/components/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-06T07:24:46.237Z"
+      "last_audited": "2026-10-30T06:46:27.758Z"
     },
     "src/context": {
       "input_hashes_sha256": "35c5563bdd7aa2fab37e012dfb7741499219aed76a23fabbd664a1ed99efee8a",
@@ -607,20 +614,20 @@
       "last_audited": "2026-09-14T02:10:09.350Z"
     },
     "src/utils": {
-      "input_hashes_sha256": "9acae478edd18b69a37f402c6de2a6822ccd18ba902a6c64123f77ac023636f4",
+      "input_hashes_sha256": "fcd65bf46ce36610339a7f90e3381313c4a761320e0627b41e5284fbe10fd6a5",
       "spec_path": "docs/spec/src/utils/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-15T07:40:52.780Z"
+      "last_audited": "2026-10-30T06:46:27.759Z"
     }
   },
   "systems": {
     "architecture": {
-      "input_sha256": "30f1b1b317776418c78e51e3cd210c0ab5fa4ddc5f6c020f9aea10eb56ef7246",
+      "input_sha256": "7b00d45aad73600b826cf45e471bd76b13e776c80188fe6e733680e336cb52c8",
       "spec_path": "docs/spec/_systems/architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-10-06T07:24:46.241Z"
+      "last_audited": "2026-10-30T06:46:27.763Z"
     },
     "frontend-architecture": {
       "input_sha256": "7edaa095f7bb6a049c934e97537318b3cd99997763ad49abb2b04dc339c3f4ee",

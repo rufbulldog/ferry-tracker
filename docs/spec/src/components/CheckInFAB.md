@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/CheckInFAB.tsx
-content_sha: c9df2b6c0019bae7be52bfb4b60c485e9e8c5d30a7fea4b2ee7a81a351d12312
+content_sha: 3cf9dc19788c04a4a38c309e94ec5ef65565e8ab203e0e030cca888584bd95b1
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.582Z
+last_audited: 2026-10-30T06:46:27.690Z
 ---
 
 # CheckInFAB.tsx
 
 **Path:** `src/components/CheckInFAB.tsx`
-**Lines:** 105
+**Lines:** 123
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -31,7 +31,8 @@ last_audited: 2026-08-01T19:39:26.582Z
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
+- `@tanstack/react-query` (`useQueryClient`)
 - `expo-router` (`useRouter`)
 - `react` (`useState`, `useEffect`)
-- `react-native` (`Linking`, `StyleSheet`, `TouchableOpacity`)
+- `react-native` (`AppState`, `Linking`, `StyleSheet`, `TouchableOpacity`)
 - `react-native-paper` (`Text`)

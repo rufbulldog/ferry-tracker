@@ -2,23 +2,23 @@
 type: l2-module
 spec_version: 1
 path: src/utils
-file_count: 15
-total_lines: 1641
+file_count: 16
+total_lines: 1721
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-10-15T07:40:52.780Z
+last_audited: 2026-10-30T06:46:27.759Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 15 · **Lines:** 1641
+**Files:** 16 · **Lines:** 1721
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 113 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
+| [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 117 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
 | [`carWait.ts`](./carWait.md) | 220 | Parse a WSF terminalwaittimes note (vehicle wait). |
 | [`constants.ts`](./constants.md) | 67 |  |
 | [`dateHelpers.ts`](./dateHelpers.md) | 43 | Local YYYY-MM-DD (the format WSF's schedule endpoint expects as TripDate). |
@@ -27,6 +27,7 @@ last_audited: 2026-10-15T07:40:52.780Z
 | [`locations.ts`](./locations.md) | 90 |  |
 | [`planEstimate.ts`](./planEstimate.md) | 101 |  |
 | [`predictedDelay.ts`](./predictedDelay.md) | 98 |  |
+| [`tabBarColors.ts`](./tabBarColors.md) | 76 |  |
 | [`themes.ts`](./themes.md) | 426 |  |
 | [`time.ts`](./time.md) | 56 |  |
 | [`transitConfig.ts`](./transitConfig.md) | 50 |  |
@@ -76,6 +77,8 @@ Files in this folder imported from elsewhere:
   - `app/planner.tsx`
 - `predictedDelay.ts` — used by 1 file
   - `src/hooks/useNextDepartures.ts`
+- `tabBarColors.ts` — used by 1 file
+  - `app/(tabs)/_layout.tsx`
 - `themes.ts` — used by 2 files
   - `app/(tabs)/settings.tsx`
   - `src/context/ThemeContext.tsx`

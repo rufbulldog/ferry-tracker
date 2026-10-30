@@ -205,6 +205,15 @@ describe('etaDepartureBasis', () => {
     expect(result.getTime()).toBe(NOW);
   });
 
+  test('any not-yet-departed sailing past its scheduled time uses now, never the past', () => {
+    // Regression: a stale/late row (scheduled an hour ago, no actual departure)
+    // produced an ETA earlier than the moment the SMS was sent.
+    for (const status of ['arriving', 'returning', 'scheduled'] as const) {
+      const result = etaDepartureBasis(dep({ status, scheduledDeparture: minsAgo(60) }));
+      expect(result.getTime()).toBe(NOW);
+    }
+  });
+
   test('loading before the scheduled time keeps scheduled (boat loaded early)', () => {
     const scheduled = minsAhead(8);
     const result = etaDepartureBasis(dep({ status: 'loading', scheduledDeparture: scheduled }));

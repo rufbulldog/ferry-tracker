@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Linking, StyleSheet, TouchableOpacity } from 'react-native';
+import { AppState, Linking, StyleSheet, TouchableOpacity } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -14,10 +15,27 @@ export function CheckInFAB() {
   const { route } = useRoute();
   const { arrival, nextDeparture } = useArrivalEta(route);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  // True while live vessel/terminal data is being re-fetched after the app
+  // returns from the background. Until it lands, the ETA is computed from
+  // pre-suspend positions (possibly the *previous* boat), so hold the button.
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     return subscribePersonalLocations(() => setContactNumber(getContactNumber()));
   }, []);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      setRefreshing(true);
+      Promise.all([
+        queryClient.refetchQueries({ queryKey: ['vesselLocations'] }),
+        queryClient.refetchQueries({ queryKey: ['terminalSailingSpace'] }),
+      ]).finally(() => setRefreshing(false));
+    });
+    return () => sub.remove();
+  }, [queryClient]);
 
   // The Send ETA / check-in flow only applies to the home-bound sailing.
   if (route !== 'seattle-bainbridge') {
@@ -40,7 +58,7 @@ export function CheckInFAB() {
   }
 
   const handlePress = () => {
-    if (!arrival || !arrival.etaTime) return;
+    if (refreshing || !arrival || !arrival.etaTime) return;
     // Pressing Send ETA doubles as a check-in: pin the boat we're aboard so the
     // ETA stays locked to it through the loading→departed transition.
     if (nextDeparture) {
@@ -56,7 +74,7 @@ export function CheckInFAB() {
     Linking.openURL(smsUrl);
   };
 
-  const disabled = !arrival || !arrival.etaTime;
+  const disabled = refreshing || !arrival || !arrival.etaTime;
 
   return (
     <TouchableOpacity
@@ -66,7 +84,7 @@ export function CheckInFAB() {
       disabled={disabled}
     >
       <Ionicons name="chatbubble-ellipses" size={18} color="#fff" />
-      <Text style={styles.label}>Send ETA</Text>
+      <Text style={styles.label}>{refreshing ? 'Updating…' : 'Send ETA'}</Text>
     </TouchableOpacity>
   );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, AppState, Platform } from 'react-native';
 import { Stack } from 'expo-router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RouteProvider, useRoute } from '../src/context/RouteContext';
@@ -9,6 +9,16 @@ import { ThemeProvider } from '../src/context/ThemeContext';
 import { useUserLocation } from '../src/hooks/useUserLocation';
 import { findNearestLocation, getRouteDefaults } from '../src/utils/locations';
 import { loadPersonalLocations } from '../src/store/personalLocations';
+
+// React Native has no window focus events, so react-query never knows the app
+// came back from the background — it would keep serving the pre-suspend vessel
+// positions until the next poll tick. Tie "focused" to AppState so every live
+// query refetches the moment the app is foregrounded.
+focusManager.setEventListener((handleFocus) => {
+  if (Platform.OS === 'web') return undefined;
+  const sub = AppState.addEventListener('change', (state) => handleFocus(state === 'active'));
+  return () => sub.remove();
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
