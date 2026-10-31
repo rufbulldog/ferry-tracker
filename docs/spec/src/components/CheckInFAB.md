@@ -2,23 +2,23 @@
 type: l1-file
 spec_version: 1
 source: src/components/CheckInFAB.tsx
-content_sha: 3cf9dc19788c04a4a38c309e94ec5ef65565e8ab203e0e030cca888584bd95b1
+content_sha: 493ba1c38ca570395da6295118d11f13f52d1bc8c1919cd0e4746f2019550a02
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-10-30T06:46:27.690Z
+last_audited: 2026-10-31T07:21:21.471Z
 ---
 
 # CheckInFAB.tsx
 
 **Path:** `src/components/CheckInFAB.tsx`
-**Lines:** 123
+**Lines:** 138
 **Language:** TypeScript (TSX)
 
 ## Exports
 
 | Name | Kind | Signature |
 |---|---|---|
-| `CheckInFAB` | function | `(): import("/Users/brandontaylor/Coding/ferry-app/node_modules/@types/react/index").JSX.Element` |
+| `CheckInFAB` | function | `({ inline = false }: CheckInFABProps): import("/home/user/ferry-tracker/node_modules/@types/react/index").JSX.Element` |
 
 ## Imports
 

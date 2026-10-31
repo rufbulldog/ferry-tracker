@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { RouteSelector } from '../../src/components/RouteSelector';
 import { CheckInFAB } from '../../src/components/CheckInFAB';
@@ -13,6 +13,8 @@ function TabHeader() {
 export default function TabLayout() {
   const { theme } = useTheme();
   const tabColors = tabBarColors(theme);
+  // The Ferry tab shows Send ETA inline under the sailing card.
+  const pathname = usePathname();
 
   return (
     <View style={styles.container}>
@@ -30,20 +32,9 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Time',
+            title: 'Ferry',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="boat" size={size} color={color} />
-            ),
-            header: () => <TabHeader />,
-            headerShown: true,
-          }}
-        />
-        <Tabs.Screen
-          name="recommend"
-          options={{
-            title: 'Leave',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="bulb" size={size} color={color} />
             ),
             header: () => <TabHeader />,
             headerShown: true,
@@ -79,7 +70,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      <CheckInFAB />
+      {pathname !== '/' && <CheckInFAB />}
     </View>
   );
 }

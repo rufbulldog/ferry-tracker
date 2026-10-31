@@ -6,7 +6,7 @@ discovered_from: code-graph + repo config
 resource_count: 16
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-09-14T02:10:09.350Z
+last_audited: 2026-10-31T07:21:21.596Z
 ---
 
 # Frontend architecture — System Spec
@@ -18,8 +18,8 @@ Cross-cutting view of how the app is wired: which contexts exist, which files co
 ```mermaid
 flowchart TD
   App["App (screens + components)"]
-  App --> ctx_RouteContext["RouteContext — 7 consumers"]
-  App --> ctx_ThemeContext["ThemeContext — 16 consumers"]
+  App --> ctx_RouteContext["RouteContext — 6 consumers"]
+  App --> ctx_ThemeContext["ThemeContext — 15 consumers"]
   App -.-> hook_useArrivalEta["useArrivalEta — 2 consumers"]
   App -.-> hook_useCarWait["useCarWait — 2 consumers"]
   App -.-> hook_useDailyTrends["useDailyTrends — 5 consumers"]
@@ -40,8 +40,8 @@ flowchart TD
 
 | Context | Exports | Consumers |
 |---|---|---|
-| [`RouteContext.tsx`](../src/context/RouteContext.md) | `RouteProvider`, `useRoute`, `ROUTE_GROUP_LABELS` | 7 files |
-| [`ThemeContext.tsx`](../src/context/ThemeContext.md) | `ThemeProvider`, `useTheme` | 16 files |
+| [`RouteContext.tsx`](../src/context/RouteContext.md) | `RouteProvider`, `useRoute`, `ROUTE_GROUP_LABELS` | 6 files |
+| [`ThemeContext.tsx`](../src/context/ThemeContext.md) | `ThemeProvider`, `useTheme` | 15 files |
 
 ## Custom hooks (14)
 

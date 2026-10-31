@@ -10,7 +10,12 @@ import { getContactNumber, subscribePersonalLocations } from '../store/personalL
 import { setCheckIn } from '../store/checkIn';
 import { formatTime } from '../utils/time';
 
-export function CheckInFAB() {
+interface CheckInFABProps {
+  /** Render as a full-width button in the page flow instead of floating. */
+  inline?: boolean;
+}
+
+export function CheckInFAB({ inline = false }: CheckInFABProps) {
   const [contactNumber, setContactNumber] = useState(() => getContactNumber());
   const { route } = useRoute();
   const { arrival, nextDeparture } = useArrivalEta(route);
@@ -47,7 +52,7 @@ export function CheckInFAB() {
   if (!contactNumber) {
     return (
       <TouchableOpacity
-        style={[styles.fab, styles.fabReminder]}
+        style={[inline ? styles.inline : styles.fab, styles.fabReminder]}
         onPress={() => router.navigate('/settings')}
         activeOpacity={0.8}
       >
@@ -78,7 +83,7 @@ export function CheckInFAB() {
 
   return (
     <TouchableOpacity
-      style={[styles.fab, disabled && styles.fabDisabled]}
+      style={[inline ? styles.inline : styles.fab, disabled && styles.fabDisabled]}
       onPress={handlePress}
       activeOpacity={0.8}
       disabled={disabled}
@@ -106,6 +111,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 6,
+  },
+  inline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: '#1565C0',
+    marginBottom: 16,
   },
   fabDisabled: {
     opacity: 0.5,

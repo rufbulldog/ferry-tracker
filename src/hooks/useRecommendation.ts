@@ -26,6 +26,9 @@ interface RecommendationResult {
   // Car-overflow: extra wait + the sailing a driver can actually board.
   carWait: CarWaitEstimate | null;
   boardableDepartureTime: Date | null;
+  // The departure leave-by is planned against (delay, evening recovery and car
+  // overflow folded in). Arrival estimates for the plan start from this.
+  plannedDepartureTime: Date | null;
   // ETA feature (seattle-bainbridge only)
   etaTime: Date | null;
   etaMessage: string | null;
@@ -69,6 +72,7 @@ export function useRecommendation(
         ferryDelayMinutes: 0,
         carWait: null,
         boardableDepartureTime: null,
+        plannedDepartureTime: null,
         etaTime: null,
         etaMessage: null,
       };
@@ -100,6 +104,7 @@ export function useRecommendation(
         ferryDelayMinutes: ferryEffective.delayMinutes,
         carWait: null,
         boardableDepartureTime: null,
+        plannedDepartureTime: null,
         etaTime: null,
         etaMessage: null,
       };
@@ -226,6 +231,7 @@ export function useRecommendation(
       ferryDelayMinutes: ferryEffective.delayMinutes,
       carWait,
       boardableDepartureTime: carWaitResult.boardableDepartureTime,
+      plannedDepartureTime: departureTime,
       etaTime,
       etaMessage,
     };

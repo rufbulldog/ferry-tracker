@@ -1,7 +1,7 @@
 ---
 type: index
 spec_version: 1
-generated_at: 2026-10-30T06:46:27.763Z
+generated_at: 2026-10-31T07:22:22.343Z
 ---
 
 # Spec catalog
@@ -49,7 +49,7 @@ One per source folder. Lists files + public surface + internal-only files.
 
 ## L1 — Files
 
-73 file-level specs covering every `.ts`, `.tsx`, `.mjs`, `.js`, and `template.yaml` under the repo. Navigate via the L2 module specs above, or browse `docs/spec/` directly.
+69 file-level specs covering every `.ts`, `.tsx`, `.mjs`, `.js`, and `template.yaml` under the repo. Navigate via the L2 module specs above, or browse `docs/spec/` directly.
 
 ## See also
 

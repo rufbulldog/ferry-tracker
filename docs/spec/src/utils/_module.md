@@ -2,23 +2,25 @@
 type: l2-module
 spec_version: 1
 path: src/utils
-file_count: 16
-total_lines: 1721
+file_count: 18
+total_lines: 1878
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-10-30T06:46:27.759Z
+last_audited: 2026-10-31T07:21:21.596Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 16 · **Lines:** 1721
+**Files:** 18 · **Lines:** 1878
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 117 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
+| [`arrivalPlan.ts`](./arrivalPlan.md) | 115 | Arrival for a sailing leaving at `departureTime`. `liveEta` is the vessel's |
+| [`capacityMeter.ts`](./capacityMeter.md) | 42 | Percent of drive-up space taken, 0–100, or null when space data is missing. |
 | [`carWait.ts`](./carWait.md) | 220 | Parse a WSF terminalwaittimes note (vehicle wait). |
 | [`constants.ts`](./constants.md) | 67 |  |
 | [`dateHelpers.ts`](./dateHelpers.md) | 43 | Local YYYY-MM-DD (the format WSF's schedule endpoint expects as TripDate). |
@@ -41,6 +43,12 @@ Files in this folder imported from elsewhere:
 
 - `arrivalEtaLogic.ts` — used by 1 file
   - `src/hooks/useArrivalEta.ts`
+- `arrivalPlan.ts` — used by 2 files
+  - `src/components/MainDepartureCard.tsx`
+  - `src/hooks/useArrivalEta.ts`
+- `capacityMeter.ts` — used by 2 files
+  - `src/components/CarMeter.tsx`
+  - `src/components/MainDepartureCard.tsx`
 - `carWait.ts` — used by 2 files
   - `src/hooks/useCarWait.ts`
   - `src/hooks/useRecommendation.ts`
@@ -83,7 +91,7 @@ Files in this folder imported from elsewhere:
   - `app/(tabs)/settings.tsx`
   - `src/context/ThemeContext.tsx`
 - `time.ts` — used by 11 files
-  - `app/(tabs)/recommend.tsx`
+  - `app/(tabs)/index.tsx`
   - `app/planner.tsx`
   - `src/components/ArrivingCard.tsx`
   - `src/components/CheckInFAB.tsx`
@@ -94,18 +102,22 @@ Files in this folder imported from elsewhere:
   - `src/hooks/useFutureSchedule.ts`
   - `src/hooks/useNextDepartures.ts`
   - `src/hooks/useRecommendation.ts`
-- `transitConfig.ts` — used by 2 files
+- `transitConfig.ts` — used by 3 files
+  - `app/(tabs)/index.tsx`
   - `app/planner.tsx`
   - `src/hooks/useRecommendation.ts`
-- `transitStats.ts` — used by 3 files
-  - `src/hooks/useArrivalEta.ts`
+- `transitStats.ts` — used by 2 files
   - `src/hooks/useRecommendation.ts`
   - `src/hooks/useTransitRecords.ts`
 - `typicalConditions.ts` — used by 2 files
   - `src/hooks/useCarWait.ts`
   - `src/hooks/useRecommendation.ts`
-- `typicalCrossing.ts` — used by 1 file
-  - `src/hooks/useArrivalEta.ts`
+
+## Internal-only files
+
+Files in this folder not imported by any file outside it (candidates for cleanup or relocation):
+
+- `typicalCrossing.ts`
 
 ## Cross-refs
 

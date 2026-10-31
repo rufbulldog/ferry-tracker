@@ -3,28 +3,28 @@ type: l2-module
 spec_version: 1
 path: src/hooks
 file_count: 14
-total_lines: 1719
+total_lines: 1664
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-09-14T02:10:09.349Z
+last_audited: 2026-10-31T07:21:21.595Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 14 · **Lines:** 1719
+**Files:** 14 · **Lines:** 1664
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`useArrivalEta.ts`](./useArrivalEta.md) | 159 |  |
+| [`useArrivalEta.ts`](./useArrivalEta.md) | 98 | Arrival for the sailing the leave-by plan targets (not the boat currently |
 | [`useCarWait.ts`](./useCarWait.md) | 76 | Combine live capacity, WSF wait-time notes, WSF alerts, and recorded history |
 | [`useDailyTrends.ts`](./useDailyTrends.md) | 124 |  |
 | [`useFutureSchedule.ts`](./useFutureSchedule.md) | 49 | Full sailing list for a route on a given date (YYYY-MM-DD). Schedules are |
 | [`useLatestDeparture.ts`](./useLatestDeparture.md) | 61 |  |
 | [`useNextDepartures.ts`](./useNextDepartures.md) | 381 |  |
-| [`useRecommendation.ts`](./useRecommendation.md) | 234 |  |
+| [`useRecommendation.ts`](./useRecommendation.md) | 240 |  |
 | [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 164 |  |
 | [`useTerminalConditions.ts`](./useTerminalConditions.md) | 29 |  |
 | [`useTerminalWaitTimes.ts`](./useTerminalWaitTimes.md) | 29 | WSF vehicle wait-time notes for a terminal. The `/wsf/waittimes/{id}` proxy |
@@ -38,7 +38,7 @@ last_audited: 2026-09-14T02:10:09.349Z
 Files in this folder imported from elsewhere:
 
 - `useArrivalEta.ts` — used by 2 files
-  - `app/(tabs)/recommend.tsx`
+  - `app/(tabs)/index.tsx`
   - `src/components/CheckInFAB.tsx`
 - `useCarWait.ts` — used by 1 file
   - `src/components/CarWaitChip.tsx`
@@ -56,7 +56,7 @@ Files in this folder imported from elsewhere:
   - `src/components/LastDepartureCard.tsx`
   - `src/components/MainDepartureCard.tsx`
 - `useRecommendation.ts` — used by 1 file
-  - `app/(tabs)/recommend.tsx`
+  - `app/(tabs)/index.tsx`
 - `useTerminalBulletins.ts` — used by 2 files
   - `app/(tabs)/index.tsx`
   - `src/components/AlertBanner.tsx`

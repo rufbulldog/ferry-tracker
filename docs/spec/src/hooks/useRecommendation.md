@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useRecommendation.ts
-content_sha: b19d602c5c9322bc422304aef5fb4ac8310daead63249c1038b99d5f0345a390
+content_sha: 589718d0b7c8134af4ceff131243277407e44d3d2809508e6132e853c68a50d3
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-09-14T02:10:09.321Z
+last_audited: 2026-10-31T07:21:21.536Z
 ---
 
 # useRecommendation.ts
 
 **Path:** `src/hooks/useRecommendation.ts`
-**Lines:** 234
+**Lines:** 240
 **Language:** TypeScript
 
 ## Exports
