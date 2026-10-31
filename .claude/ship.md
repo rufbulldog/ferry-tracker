@@ -28,7 +28,7 @@ this file holds only what's specific to ferry-app.
 ## Verify
 
 - iOS simulator: `npx expo run:ios --device "iPhone 17 Pro"` (works on Xcode 27 since the SDK 57
-  upgrade), then Metro on 8081. Bundle id `com.ferrytracker.app`. No web testing,
+  upgrade; Metro port and Xcode-update fixes: `expo-eas.md`). Bundle id `com.ferrytracker.app`. No web testing,
   ever (the web bundler is configured but the app is mobile-only).
 
 ## Deploy
