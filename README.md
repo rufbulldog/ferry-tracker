@@ -247,8 +247,8 @@ ferry-app/
 │   │
 │   ├── components/
 │   │   ├── AlertBanner.tsx       # Service delay alert banner
-│   │   ├── ArrivingCard.tsx      # Inbound-vessel card (part of the Departed/Arriving block)
 │   │   ├── CapacityBar.tsx       # Animated capacity fill bar
+│   │   ├── CarMeter.tsx          # 40-bar car-deck fill meter on the Ferry tab
 │   │   ├── CarWaitChip.tsx       # Notice when drivers face a later sailing than walk-ons/bikes
 │   │   ├── CheckInFAB.tsx        # Send ETA floating action button
 │   │   ├── FerryCard.tsx         # Compact departure card
@@ -336,7 +336,7 @@ GET /ferries/api/terminals/rest/terminalsailingspace
 ```
 GET /ferries/api/terminals/rest/terminalwaittimes/{terminalId}
 ```
-- One of the signals feeding the car-wait estimate (Leave tab note + Time tab `CarWaitChip`)
+- One of the signals feeding the car-wait estimate (the Ferry tab's `CarWaitChip`)
 - WSF's wait-time notes are static "advance arrival recommended" advisories rather than live wait figures, so this signal is usually dormant in practice — car-wait relies mainly on live drive-up capacity and historical typical-capacity data, in that priority order
 
 ### Schedule API (Planner)

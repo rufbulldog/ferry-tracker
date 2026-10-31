@@ -91,4 +91,28 @@ describe('computeArrival', () => {
     expect(a.transitMethod).toBe('default');
     expect(a.transitMinutes).toBe(15);
   });
+
+  test('falls back to the nominal crossing when history is too thin', () => {
+    const trends = [crossingSnap(1, 33), crossingSnap(2, 33)];
+    const a = computeArrival({ route: 'bainbridge-seattle', departureTime: departure, transitRecords: [], trends })!;
+    expect(a.ferryArrivalTime!.toISOString()).toBe(
+      minutesAfter(departure, crossingMinutesForRoute('bainbridge-seattle'))
+    );
+  });
+
+  test('home arrival uses measured ferry-to-home bike time, rounded up to whole minutes', () => {
+    const a = computeArrival({
+      route: 'seattle-bainbridge',
+      departureTime: departure,
+      transitRecords: [rec('ferry-to-home', 'bike', 17 * 60 + 1), rec('ferry-to-work', 'bike', 40 * 60)],
+      trends: [],
+    })!;
+    expect(a.kind).toBe('home');
+    expect(a.label).toBe('Home by');
+    expect(a.transitMinutes).toBe(18);
+    expect(a.transitMethod).not.toBe('default');
+    expect(a.etaTime!.toISOString()).toBe(
+      minutesAfter(departure, crossingMinutesForRoute('seattle-bainbridge') + 18)
+    );
+  });
 });
