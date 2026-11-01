@@ -36,11 +36,11 @@ Machine-readable **L1 (per-file)** + **L2 (per-folder)** specs for `app/`, `src/
 
 ## EAS Profiles
 
-| Profile | Distribution | Channel | `EXPO_PUBLIC_APP_ENV` | Use case |
-|---|---|---|---|---|
-| `development` | internal | `development` | `dev` | Dev client (Mac required) |
-| `preview` | internal | `preview` | `prod` | Internal smoke build before TestFlight; iOS internal install link / Android `.apk` |
-| `production` | store | `production` | `prod` | Prod TestFlight (`com.ferrytracker.app`) |
+| Profile       | Distribution | Channel       | `EXPO_PUBLIC_APP_ENV` | Use case                                                                           |
+| ------------- | ------------ | ------------- | --------------------- | ---------------------------------------------------------------------------------- |
+| `development` | internal     | `development` | `dev`                 | Dev client (Mac required)                                                          |
+| `preview`     | internal     | `preview`     | `prod`                | Internal smoke build before TestFlight; iOS internal install link / Android `.apk` |
+| `production`  | store        | `production`  | `prod`                | Prod TestFlight (`com.ferrytracker.app`)                                           |
 
 Both `preview` and `production` point at the **same backend API** (`EXPO_PUBLIC_API_URL` in `eas.json`) and the **same env signature**. The two channels exist to give a smoke-test stage (`preview` on your device) before shipping to TestFlight (`production`), not because they target different backends.
 
@@ -51,6 +51,7 @@ Mobile-app releases follow the global `/ship` skill (shared [`rufbulldog/dev-uti
 **One user-gated checkpoint** (do not bypass): after iOS simulator testing, one explicit approval covers commit + push + the production TestFlight deploy. There is no preview stage — the `preview` profile exists but `/ship` doesn't use it.
 
 **EAS path is auto-picked from the diff:**
+
 - JS/TS/asset-only changes → OTA update via `eas-update` agent (~2 min).
 - Native changes (`app.json`, `eas.json`, native deps, icons, permissions, `ios/`, `android/`) → full `eas build` + `eas submit` via `eas-release` agent (~25 min).
 - Surface the choice before running so the user can override.
@@ -58,10 +59,12 @@ Mobile-app releases follow the global `/ship` skill (shared [`rufbulldog/dev-uti
 **Critical OTA rule:** `eas update` reads env vars from the local shell, not from `eas.json` build profiles. Every `eas update` must be prefixed with all env vars from the matching profile (e.g. `EXPO_PUBLIC_APP_ENV=prod EXPO_PUBLIC_API_URL=https://...`). The `eas-update` agent enforces this — always delegate OTA work to it rather than running `eas update` directly.
 
 **Backend safety check before mobile deploy:** if a mobile change depends on CDK changes that aren't deployed, mobile deploys will silently break. `/ship` checks `infra/` for diff and stops if found; respect the gate. Backend deploy command is roughly:
+
 ```bash
 cd infra
 npx cdk deploy
 ```
+
 (verify by reading `infra/README.md` or asking — backend deploy mechanics are not yet codified into a dedicated agent for this repo.)
 
 ## Backend (CDK)
@@ -79,6 +82,21 @@ There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK dep
 - Splash config lives in the `expo-splash-screen` plugin (SDK 57 removed top-level `splash`,
   `newArchEnabled`, `android.edgeToEdgeEnabled`). `expo-font` is a direct dependency now
   (`@expo/vector-icons` requires it). `StyleSheet.absoluteFillObject` → `absoluteFill` (RN 0.85).
+
+## Best sailing, Live Activity & CarPlay
+
+- **Best from here** (`src/utils/bestSailing.ts`, `useBestSailing`, `BestSailingContext`): picks the
+  terminal + sailing you can make by car from your live location across both route groups. Drive time
+  is a straight-line heuristic for now (no native routing).
+- **Live Activity** (Lock Screen, Dynamic Island, CarPlay dashboard on iOS 26+ via the `.small`
+  supplemental family): widget extension in `targets/widgets/` (built by `@bacons/apple-targets`),
+  started/updated through the local Expo module `modules/ferry-live/`. `FerryActivityAttributes.swift`
+  exists in both places and must stay identical. Native → full `eas build`, not OTA.
+- **CarPlay app** (Driving Task list screen, `modules/ferry-live/ios/FerryCarPlay.swift`): **off by
+  default**. `plugins/withCarPlay.js` only adds the scene manifest + `carplay-driving-task` entitlement
+  when `FERRY_CARPLAY=1` is set at prebuild. The entitlement is Apple-managed — until Apple grants it,
+  any signed (EAS/TestFlight) build that requests it fails provisioning, so only use the flag for local
+  simulator builds.
 
 ## Things to remember
 

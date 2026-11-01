@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ferry Tracker",
     "slug": "ferry-tracker",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -12,8 +12,10 @@
       "bundleIdentifier": "com.ferrytracker.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocationWhenInUseUsageDescription": "Ferry Tracker uses your location to auto-select the nearest ferry route and commute leg."
-      }
+        "NSLocationWhenInUseUsageDescription": "Ferry Tracker uses your location to auto-select the nearest ferry route and commute leg.",
+        "NSSupportsLiveActivities": true
+      },
+      "appleTeamId": "JVFS86F8UX"
     },
     "android": {
       "adaptiveIcon": {
@@ -44,7 +46,9 @@
           "backgroundColor": "#F15911"
         }
       ],
-      "./plugins/withPodDeploymentTarget"
+      "./plugins/withPodDeploymentTarget",
+      "./plugins/withCarPlay",
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true
@@ -56,7 +60,7 @@
       }
     },
     "owner": "rufbulldog",
-    "runtimeVersion": "1.4.0",
+    "runtimeVersion": "1.7.0",
     "updates": {
       "url": "https://u.expo.dev/db0629f9-b086-40d2-8c1c-619c3c0e8e3e"
     }

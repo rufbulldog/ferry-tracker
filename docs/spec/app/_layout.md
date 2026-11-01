@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/_layout.tsx
-content_sha: 0cd175a99a5fa3915357bd4470d1f2a43d08ff43c904dfb446826f10c8c66254
+content_sha: c72c28787818000a2001b95232feabe6de659d2b25145b0e5b4785b1300d403d
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-10-30T06:46:23.080Z
+last_audited: 2026-11-01T19:07:44.337Z
 ---
 
 # _layout.tsx
 
 **Path:** `app/_layout.tsx`
-**Lines:** 80
+**Lines:** 83
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -23,6 +23,7 @@ last_audited: 2026-10-30T06:46:23.080Z
 ## Imports
 
 **Internal:**
+- `../src/context/BestSailingContext` (`BestSailingProvider`)
 - `../src/context/RouteContext` (`RouteProvider`, `useRoute`)
 - `../src/context/ThemeContext` (`ThemeProvider`)
 - `../src/hooks/useUserLocation` (`useUserLocation`)

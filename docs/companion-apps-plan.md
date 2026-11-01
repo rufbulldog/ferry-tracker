@@ -4,7 +4,12 @@ Design doc for a Watch + CarPlay companion experience for Ferry Tracker, centere
 the core **Time / Leave** data: *when's the next ferry at the nearest terminal, a couple
 more upcoming, when to leave, and will I make it.*
 
-Status: **planning only** — no build order committed yet. Decisions locked so far:
+Status (2026-11-01): **CarPlay path partly built, differently from this plan** — the leave-by brain
+stayed in TypeScript (`src/utils/bestSailing.ts`, in-process), surfaced as a Live Activity
+(`targets/widgets/`, shows on the CarPlay dashboard on iOS 26+, no entitlement) and a native Swift
+CarPlay list screen fed by JS (`modules/ferry-live/`, gated behind `FERRY_CARPLAY=1` until Apple grants
+the entitlement). See CLAUDE.md "Best sailing, Live Activity & CarPlay". The Watch app and the `/plan`
+endpoint below are still unbuilt. Original status: Decisions locked so far:
 - Scope: capture the architecture; pick a build order later.
 - Leave-by "brain": **backend `/plan` endpoint** (shared by both surfaces).
 

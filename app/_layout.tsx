@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RouteProvider, useRoute } from '../src/context/RouteContext';
+import { BestSailingProvider } from '../src/context/BestSailingContext';
 import { ThemeProvider } from '../src/context/ThemeContext';
 import { useUserLocation } from '../src/hooks/useUserLocation';
 import { findNearestLocation, getRouteDefaults } from '../src/utils/locations';
@@ -66,10 +67,12 @@ export default function RootLayout() {
           <ThemeProvider>
             <RouteProvider>
               <LocationDefaultsSetter />
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="planner" options={{ presentation: 'modal' }} />
-              </Stack>
+              <BestSailingProvider>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="planner" options={{ presentation: 'modal' }} />
+                </Stack>
+              </BestSailingProvider>
             </RouteProvider>
           </ThemeProvider>
         </SafeAreaProvider>

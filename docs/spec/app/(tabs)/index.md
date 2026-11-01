@@ -2,28 +2,29 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/index.tsx
-content_sha: ca5a825f75c93fb31bd597c6594933b77d99d97517ee73e593203d705fdd5d85
+content_sha: 469e483d314e6b21d9549ae57b34bd12e1e441ed1d4ce4f205a4f621b4c002c6
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-10-31T07:21:21.438Z
+last_audited: 2026-11-01T19:07:47.818Z
 ---
 
 # index.tsx
 
 **Path:** `app/(tabs)/index.tsx`
-**Lines:** 558
+**Lines:** 652
 **Language:** TypeScript (TSX)
 
 ## Exports
 
 | Name | Kind | Signature |
 |---|---|---|
-| `default` | default | `(): import("/home/user/ferry-tracker/node_modules/@types/react/index").JSX.Element` |
+| `default` | default | `(): import("/Users/brandontaylor/Coding/ferry-app/node_modules/@types/react/index").JSX.Element` |
 
 ## Imports
 
 **Internal:**
 - `../../src/components/AlertBanner` (`AlertBanner`)
+- `../../src/components/BestSailingCard` (`BestSailingCard`)
 - `../../src/components/CarWaitChip` (`CarWaitChip`)
 - `../../src/components/CheckInFAB` (`CheckInFAB`)
 - `../../src/components/FerryCard` (`FerryCard`)

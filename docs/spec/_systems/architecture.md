@@ -3,10 +3,10 @@ type: l3-system
 spec_version: 1
 name: architecture
 discovered_from: code-graph + repo config
-resource_count: 15
+resource_count: 16
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-11-01T06:16:16.516Z
+last_audited: 2026-11-01T19:07:47.901Z
 ---
 
 # Architecture overview — System Spec
@@ -15,7 +15,7 @@ Repo-level view of how the source folders depend on each other, aggregated from 
 
 ## Module dependency graph
 
-Folders that import across folder boundaries (11 of 15). Self-contained folders are listed below.
+Folders that import across folder boundaries (12 of 16). Self-contained folders are listed below.
 
 ```mermaid
 flowchart LR
@@ -23,6 +23,7 @@ flowchart LR
   n_app_tabs["app/(tabs)"]
   n_infra_bin["infra/bin"]
   n_infra_lib["infra/lib"]
+  n_modules_ferry_live["modules/ferry-live"]
   n_src_api["src/api"]
   n_src_components["src/components"]
   n_src_context["src/context"]
@@ -49,7 +50,9 @@ flowchart LR
   n_src_components --> n_src_store
   n_src_components --> n_src_types
   n_src_components --> n_src_utils
+  n_src_context --> n_src_hooks
   n_src_context --> n_src_utils
+  n_src_hooks --> n_modules_ferry_live
   n_src_hooks --> n_src_api
   n_src_hooks --> n_src_store
   n_src_hooks --> n_src_types

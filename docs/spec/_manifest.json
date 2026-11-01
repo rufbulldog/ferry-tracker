@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-11-01T06:16:16.520Z",
+  "generated_at": "2026-11-01T19:07:47.907Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "e8b792519402426409612a64360ac107d69390dfa3ff87298f73a832c304427f",
@@ -10,11 +10,11 @@
       "last_audited": "2026-10-31T07:21:21.431Z"
     },
     "app/(tabs)/index.tsx": {
-      "content_sha256": "ca5a825f75c93fb31bd597c6594933b77d99d97517ee73e593203d705fdd5d85",
+      "content_sha256": "469e483d314e6b21d9549ae57b34bd12e1e441ed1d4ce4f205a4f621b4c002c6",
       "spec_path": "docs/spec/app/(tabs)/index.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-31T07:21:21.438Z"
+      "last_audited": "2026-11-01T19:07:47.818Z"
     },
     "app/(tabs)/settings.tsx": {
       "content_sha256": "2624d3f5cdf96304bba9edde666c1a6fcadaaca309dcb2f0c4e6e2a2278968b8",
@@ -38,11 +38,11 @@
       "last_audited": "2026-11-01T06:16:16.436Z"
     },
     "app/_layout.tsx": {
-      "content_sha256": "0cd175a99a5fa3915357bd4470d1f2a43d08ff43c904dfb446826f10c8c66254",
+      "content_sha256": "c72c28787818000a2001b95232feabe6de659d2b25145b0e5b4785b1300d403d",
       "spec_path": "docs/spec/app/_layout.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-30T06:46:23.080Z"
+      "last_audited": "2026-11-01T19:07:44.337Z"
     },
     "app/planner.tsx": {
       "content_sha256": "84f94d1daab4c7ee824eb12ad6a7aec04427eac0c6d3b0b318f6d08e993ddbe2",
@@ -85,6 +85,20 @@
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
       "last_audited": "2026-09-14T02:10:09.288Z"
+    },
+    "modules/ferry-live/index.ts": {
+      "content_sha256": "09682eec543b8acff7dfa83a6da2fd265d8ae1b1d0403413b0f439287d3c669b",
+      "spec_path": "docs/spec/modules/ferry-live/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.833Z"
+    },
+    "plugins/withCarPlay.js": {
+      "content_sha256": "1a6875d8fdf8091a9abe9db37527e5f6d8b18cdc365ae411e23b45207f1ccaf9",
+      "spec_path": "docs/spec/plugins/withCarPlay.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.834Z"
     },
     "plugins/withPodDeploymentTarget.js": {
       "content_sha256": "5fc34283e2819f6a4cd4e1044f5b60d3fecabb9109591e3b973644d6116ae0c0",
@@ -141,6 +155,13 @@
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
       "last_audited": "2026-07-31T23:25:27.472Z"
+    },
+    "src/components/BestSailingCard.tsx": {
+      "content_sha256": "f419f898b83a93bdc87c68a743302a2ae82422dbdb6795590f9a0796d0193965",
+      "spec_path": "docs/spec/src/components/BestSailingCard.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.835Z"
     },
     "src/components/CapacityBar.tsx": {
       "content_sha256": "3a1f9e6e54383628044073dd941765350dcd3678abbe568607fe3369c936ee95",
@@ -219,6 +240,13 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-08-02T05:28:25.658Z"
     },
+    "src/context/BestSailingContext.tsx": {
+      "content_sha256": "cd79e29ef7e2899133bfe260cdc5b87fac40ee86bd4d9b775965a46af37e649c",
+      "spec_path": "docs/spec/src/context/BestSailingContext.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.841Z"
+    },
     "src/context/RouteContext.tsx": {
       "content_sha256": "3fa0953b7746006d13e4e71dd797f0ecd9aa88ec2869bdf7b8d3ecc4b2473c87",
       "spec_path": "docs/spec/src/context/RouteContext.md",
@@ -239,6 +267,13 @@
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
       "last_audited": "2026-10-31T07:21:21.502Z"
+    },
+    "src/hooks/useBestSailing.ts": {
+      "content_sha256": "7707a2a0d6afebce1df594c024f0c48a7d94ca382a1543f05d6ae182f2a012d4",
+      "spec_path": "docs/spec/src/hooks/useBestSailing.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.851Z"
     },
     "src/hooks/useCarWait.ts": {
       "content_sha256": "0fe3be7259552ee8d06a9e7263b616664b2977f430b35d908e5d6928c19ef08f",
@@ -267,6 +302,13 @@
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
       "last_audited": "2026-06-23T02:13:37.662Z"
+    },
+    "src/hooks/useLiveActivity.ts": {
+      "content_sha256": "4bad820b2913f70e42425a21896f1317e8cb7337507306b086e46d533d7ecb5d",
+      "spec_path": "docs/spec/src/hooks/useLiveActivity.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.864Z"
     },
     "src/hooks/useNextDepartures.ts": {
       "content_sha256": "3fd61d93565876d4516761b73ce2e37d6c6b05c6d6390750a326aa3173a8faaf",
@@ -331,6 +373,13 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-06-23T02:13:37.718Z"
     },
+    "src/hooks/useWatchedLocation.ts": {
+      "content_sha256": "2f6a31248b42724705cb4915419c45d0e054b9a1a215568f24ad7dc66fc46b26",
+      "spec_path": "docs/spec/src/hooks/useWatchedLocation.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.893Z"
+    },
     "src/store/checkIn.ts": {
       "content_sha256": "2d397ef20fb38522961afcecf428bddd338590a431f969b1a825678bf039e745",
       "spec_path": "docs/spec/src/store/checkIn.md",
@@ -372,6 +421,13 @@
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
       "last_audited": "2026-10-31T07:21:21.585Z"
+    },
+    "src/utils/bestSailing.ts": {
+      "content_sha256": "c3fe0c4234934ac0f0e069d22ab424723f43dbc8463a7cd57aa976a8f3e727c5",
+      "spec_path": "docs/spec/src/utils/bestSailing.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.894Z"
     },
     "src/utils/capacityMeter.ts": {
       "content_sha256": "02f06879ee5e3f491b13ccfb5702542fac95d2a17fc2a4f1e1abd2696f1e7c34",
@@ -416,11 +472,11 @@
       "last_audited": "2026-08-01T19:39:26.652Z"
     },
     "src/utils/locations.ts": {
-      "content_sha256": "87de8c33cc41b4fc927d279e94a31a3de5e88dec23a4eaa30494794800197c06",
+      "content_sha256": "1b437815bc68578927f944248f1de77d4e8cbae59dd5bac3a6180a5078b139ac",
       "spec_path": "docs/spec/src/utils/locations.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-07-31T23:25:27.524Z"
+      "last_audited": "2026-11-01T19:07:47.895Z"
     },
     "src/utils/planEstimate.ts": {
       "content_sha256": "c8f28089718d9d30aa47337a5883b596ec4eccabcf9040a8c222cc80c8cbe9b3",
@@ -502,18 +558,18 @@
   },
   "modules": {
     "app": {
-      "input_hashes_sha256": "d49411ee07b5fea8691e32447b8f288979b349cfaa720e1938b6a71d06498ada",
+      "input_hashes_sha256": "8ffcfa98f3fd99c1eafa84a4f619c453cbdc73a3aca8eb3b87e4ecc360ab58dc",
       "spec_path": "docs/spec/app/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-30T06:46:27.757Z"
+      "last_audited": "2026-11-01T19:07:47.899Z"
     },
     "app/(tabs)": {
-      "input_hashes_sha256": "816514858b151ed4a46c3dec26a20c3bd4713bdb9dfb28c2013b34e48c5a774d",
+      "input_hashes_sha256": "2f70a24c7a37462d3787bd1619d6c2f1d0f6e9b81915fd8873d87d42435fe31a",
       "spec_path": "docs/spec/app/(tabs)/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T06:16:16.515Z"
+      "last_audited": "2026-11-01T19:07:47.899Z"
     },
     "infra/bin": {
       "input_hashes_sha256": "9c0e8b95a35bd301b1e81f9f1860b91a9fd467c03c07ff682546e0613def3df9",
@@ -550,12 +606,19 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-10-31T07:21:21.594Z"
     },
+    "modules/ferry-live": {
+      "input_hashes_sha256": "6a4babd367cb7e1c25697d0b3583ed64f145a065851b52c3276042ec25bc79e5",
+      "spec_path": "docs/spec/modules/ferry-live/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-01T19:07:47.900Z"
+    },
     "plugins": {
-      "input_hashes_sha256": "7fb604af906294f54f21904aba959d3af1e559268c647905e55b2824614cd107",
+      "input_hashes_sha256": "a3cf71667f9eff4c36e48b5dd130776cddf35cb91adc472cc14072e79d08ce69",
       "spec_path": "docs/spec/plugins/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-06T07:24:46.236Z"
+      "last_audited": "2026-11-01T19:07:47.900Z"
     },
     "src/api": {
       "input_hashes_sha256": "9cd38068530a88ecdd394c870a9185bb302e23617840a2bd97b5f9587593e5ba",
@@ -565,25 +628,25 @@
       "last_audited": "2026-08-02T05:28:25.726Z"
     },
     "src/components": {
-      "input_hashes_sha256": "cf7a4d3538b7c5f2e3893f6b54669987bc7fedb59de39bfb4b791e1bd46249bc",
+      "input_hashes_sha256": "ca2bb1b804fa6fec32c8c08332a5db3729b64ff1e6663109b0458deee0580e40",
       "spec_path": "docs/spec/src/components/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-31T07:22:22.334Z"
+      "last_audited": "2026-11-01T19:07:47.900Z"
     },
     "src/context": {
-      "input_hashes_sha256": "35c5563bdd7aa2fab37e012dfb7741499219aed76a23fabbd664a1ed99efee8a",
+      "input_hashes_sha256": "c039776dc52466d3bab32a3e3fae1abb9dcddc7bb3ba09a1faa5b9e0f3a092b8",
       "spec_path": "docs/spec/src/context/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.724Z"
+      "last_audited": "2026-11-01T19:07:47.900Z"
     },
     "src/hooks": {
-      "input_hashes_sha256": "fec23707ae99e81b970e1deeedc5063398074df1db43e5b3c3712c898ffafe90",
+      "input_hashes_sha256": "c9ca3e1ec0b849644904e81475bc82ec6900ce4925fda480102b85c5fa133c59",
       "spec_path": "docs/spec/src/hooks/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-31T07:21:21.595Z"
+      "last_audited": "2026-11-01T19:07:47.901Z"
     },
     "src/store": {
       "input_hashes_sha256": "2541a62f0ac13a8540d75945de52964e20d1a73448c4e4957bfe9cc5520f7a2c",
@@ -600,27 +663,27 @@
       "last_audited": "2026-09-14T02:10:09.350Z"
     },
     "src/utils": {
-      "input_hashes_sha256": "deb03107bc1acb0c0b2a401142dcd88cccfce9668d899b0baf7704b9a78c77f1",
+      "input_hashes_sha256": "e90a911f12011ac0b21b25c95440e3f1b5e64fb49de2b90749f73580647bde00",
       "spec_path": "docs/spec/src/utils/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T06:16:16.516Z"
+      "last_audited": "2026-11-01T19:07:47.901Z"
     }
   },
   "systems": {
     "architecture": {
-      "input_sha256": "bfdbaf986b58d5471c69132501aeaf8fdbe05c99f22b392129b811e38eaa7c24",
+      "input_sha256": "e6e9e91e2e986f65195b7c727ffdf8decb965c1e41671ef264d997a40c4b1829",
       "spec_path": "docs/spec/_systems/architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-11-01T06:16:16.520Z"
+      "last_audited": "2026-11-01T19:07:47.907Z"
     },
     "frontend-architecture": {
-      "input_sha256": "41ac7dc9846a9b39b472207daec57aebe46124fc996ad795803fcdd9fa656907",
+      "input_sha256": "a4148688075e48f711358275f7977a2219a7f995f12009a9bba9216339e27dee",
       "spec_path": "docs/spec/_systems/frontend-architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-10-31T07:21:21.601Z"
+      "last_audited": "2026-11-01T19:07:47.907Z"
     },
     "tech-stack": {
       "input_sha256": "bce6f1ea890db91effb906a0173bc357fac85d1527914d8f62d064850094fb13",

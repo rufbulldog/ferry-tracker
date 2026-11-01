@@ -2,23 +2,24 @@
 type: l2-module
 spec_version: 1
 path: src/components
-file_count: 12
-total_lines: 2210
+file_count: 13
+total_lines: 2387
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-10-31T07:22:22.334Z
+last_audited: 2026-11-01T19:07:47.900Z
 ---
 
 # src/components — Module Spec
 
 **Folder:** `src/components`
-**Files:** 12 · **Lines:** 2210
+**Files:** 13 · **Lines:** 2387
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`AlertBanner.tsx`](./AlertBanner.md) | 122 |  |
+| [`BestSailingCard.tsx`](./BestSailingCard.md) | 177 | "Best from here" — which terminal to drive to and which sailing you can make, |
 | [`CapacityBar.tsx`](./CapacityBar.md) | 130 |  |
 | [`CarMeter.tsx`](./CarMeter.md) | 50 |  |
 | [`CarWaitChip.tsx`](./CarWaitChip.md) | 54 | Compact "cars may wait" notice for the Time screen. Renders nothing unless |
@@ -37,6 +38,11 @@ Files in this folder imported from elsewhere:
 
 - `AlertBanner.tsx` — used by 1 file
   - `app/(tabs)/index.tsx`
+- `BestSailingCard.tsx` — used by 1 file
+  - `app/(tabs)/index.tsx`
+- `CarMeter.tsx` — used by 2 files
+  - `app/(tabs)/timer.tsx`
+  - `app/(tabs)/trends.tsx`
 - `CarWaitChip.tsx` — used by 1 file
   - `app/(tabs)/index.tsx`
 - `CheckInFAB.tsx` — used by 2 files
@@ -60,7 +66,6 @@ Files in this folder imported from elsewhere:
 Files in this folder not imported by any file outside it (candidates for cleanup or relocation):
 
 - `CapacityBar.tsx`
-- `CarMeter.tsx`
 - `FerryProgressIndicator.tsx`
 
 ## Cross-refs

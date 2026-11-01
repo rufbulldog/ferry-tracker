@@ -2,22 +2,23 @@
 type: l2-module
 spec_version: 1
 path: src/context
-file_count: 2
-total_lines: 143
+file_count: 3
+total_lines: 176
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.724Z
+last_audited: 2026-11-01T19:07:47.900Z
 ---
 
 # src/context — Module Spec
 
 **Folder:** `src/context`
-**Files:** 2 · **Lines:** 143
+**Files:** 3 · **Lines:** 176
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
+| [`BestSailingContext.tsx`](./BestSailingContext.md) | 33 |  |
 | [`RouteContext.tsx`](./RouteContext.md) | 92 |  |
 | [`ThemeContext.tsx`](./ThemeContext.md) | 51 |  |
 
@@ -25,24 +26,32 @@ last_audited: 2026-06-23T02:13:37.724Z
 
 Files in this folder imported from elsewhere:
 
-- `RouteContext.tsx` — used by 6 files
+- `BestSailingContext.tsx` — used by 2 files
+  - `app/_layout.tsx`
+  - `src/components/BestSailingCard.tsx`
+- `RouteContext.tsx` — used by 7 files
   - `app/(tabs)/index.tsx`
-  - `app/(tabs)/recommend.tsx`
   - `app/(tabs)/trends.tsx`
   - `app/_layout.tsx`
+  - `app/planner.tsx`
+  - `src/components/BestSailingCard.tsx`
   - `src/components/CheckInFAB.tsx`
   - `src/components/RouteSelector.tsx`
-- `ThemeContext.tsx` — used by 11 files
+- `ThemeContext.tsx` — used by 15 files
   - `app/(tabs)/_layout.tsx`
   - `app/(tabs)/index.tsx`
-  - `app/(tabs)/recommend.tsx`
   - `app/(tabs)/settings.tsx`
   - `app/(tabs)/timer.tsx`
   - `app/(tabs)/trends.tsx`
   - `app/_layout.tsx`
+  - `app/planner.tsx`
+  - `src/components/BestSailingCard.tsx`
+  - `src/components/CarWaitChip.tsx`
   - `src/components/FerryCard.tsx`
+  - `src/components/KingstonBoardingPassPill.tsx`
   - `src/components/LastDepartureCard.tsx`
   - `src/components/MainDepartureCard.tsx`
+  - `src/components/MonthCalendar.tsx`
   - `src/components/RouteSelector.tsx`
 
 ## Cross-refs
