@@ -2,17 +2,17 @@
 type: l2-module
 spec_version: 1
 path: src/utils
-file_count: 18
-total_lines: 1878
+file_count: 20
+total_lines: 2182
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-10-31T07:21:21.596Z
+last_audited: 2026-11-01T06:16:16.516Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 18 · **Lines:** 1878
+**Files:** 20 · **Lines:** 2182
 
 ## File inventory
 
@@ -29,9 +29,11 @@ last_audited: 2026-10-31T07:21:21.596Z
 | [`locations.ts`](./locations.md) | 90 |  |
 | [`planEstimate.ts`](./planEstimate.md) | 101 |  |
 | [`predictedDelay.ts`](./predictedDelay.md) | 98 |  |
+| [`sailingStats.ts`](./sailingStats.md) | 177 | Minutes after local midnight of a snapshot's scheduled departure. |
 | [`tabBarColors.ts`](./tabBarColors.md) | 76 |  |
 | [`themes.ts`](./themes.md) | 426 |  |
 | [`time.ts`](./time.md) | 56 |  |
+| [`timerLegs.ts`](./timerLegs.md) | 127 | Label for a saved record. Car home→ferry is shared by Bainbridge and Kingston. |
 | [`transitConfig.ts`](./transitConfig.md) | 50 |  |
 | [`transitStats.ts`](./transitStats.md) | 37 |  |
 | [`typicalConditions.ts`](./typicalConditions.md) | 68 |  |
@@ -46,7 +48,8 @@ Files in this folder imported from elsewhere:
 - `arrivalPlan.ts` — used by 2 files
   - `src/components/MainDepartureCard.tsx`
   - `src/hooks/useArrivalEta.ts`
-- `capacityMeter.ts` — used by 2 files
+- `capacityMeter.ts` — used by 3 files
+  - `app/(tabs)/trends.tsx`
   - `src/components/CarMeter.tsx`
   - `src/components/MainDepartureCard.tsx`
 - `carWait.ts` — used by 2 files
@@ -71,7 +74,8 @@ Files in this folder imported from elsewhere:
 - `dateHelpers.ts` — used by 2 files
   - `app/planner.tsx`
   - `src/components/MonthCalendar.tsx`
-- `ferryDeparture.ts` — used by 4 files
+- `ferryDeparture.ts` — used by 5 files
+  - `app/(tabs)/timer.tsx`
   - `src/components/LastDepartureCard.tsx`
   - `src/components/MainDepartureCard.tsx`
   - `src/hooks/useCarWait.ts`
@@ -85,15 +89,18 @@ Files in this folder imported from elsewhere:
   - `app/planner.tsx`
 - `predictedDelay.ts` — used by 1 file
   - `src/hooks/useNextDepartures.ts`
+- `sailingStats.ts` — used by 1 file
+  - `app/(tabs)/trends.tsx`
 - `tabBarColors.ts` — used by 1 file
   - `app/(tabs)/_layout.tsx`
-- `themes.ts` — used by 2 files
+- `themes.ts` — used by 3 files
   - `app/(tabs)/settings.tsx`
+  - `app/(tabs)/trends.tsx`
   - `src/context/ThemeContext.tsx`
 - `time.ts` — used by 11 files
   - `app/(tabs)/index.tsx`
+  - `app/(tabs)/timer.tsx`
   - `app/planner.tsx`
-  - `src/components/ArrivingCard.tsx`
   - `src/components/CheckInFAB.tsx`
   - `src/components/FerryCard.tsx`
   - `src/components/LastDepartureCard.tsx`
@@ -102,6 +109,8 @@ Files in this folder imported from elsewhere:
   - `src/hooks/useFutureSchedule.ts`
   - `src/hooks/useNextDepartures.ts`
   - `src/hooks/useRecommendation.ts`
+- `timerLegs.ts` — used by 1 file
+  - `app/(tabs)/timer.tsx`
 - `transitConfig.ts` — used by 3 files
   - `app/(tabs)/index.tsx`
   - `app/planner.tsx`
@@ -112,12 +121,8 @@ Files in this folder imported from elsewhere:
 - `typicalConditions.ts` — used by 2 files
   - `src/hooks/useCarWait.ts`
   - `src/hooks/useRecommendation.ts`
-
-## Internal-only files
-
-Files in this folder not imported by any file outside it (candidates for cleanup or relocation):
-
-- `typicalCrossing.ts`
+- `typicalCrossing.ts` — used by 1 file
+  - `app/(tabs)/trends.tsx`
 
 ## Cross-refs
 

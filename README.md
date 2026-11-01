@@ -55,26 +55,21 @@ The old Time and Leave tabs, combined into one Next Sailing card.
 - **Pull-to-refresh** - manual refresh for all data
 
 ### Trends Tab
-- **Prominent stats card** - large display of average delay and capacity
-- **My Transit Times** - personal commute averages from Timer recordings
-  - Filtered by selected route and direction
-  - Shows trip count and average duration
-- **Departure accuracy chart** - visualize how often ferries run late or early
-- **Capacity chart** - see how full ferries are at departure time
+- **Sailing hero card** - opens on the Ferry tab's next boat (tap any sailing to switch): typical delay, on-time rate (within 3 min), typical car-deck fullness meter and crossing time. Same trimmed-mean typicals the Ferry tab falls back on.
+- **7 / 30-day and Weekdays / Weekends toggles** - defaults to today's day type
+- **Sailings list** - per-sailing delay pill, fullness bar and on-time %, in service order (after-midnight boats last)
+- **Last 10 days grid** - sailings × days, coloured by delay or fullness, with a callout for the worst visible sailing
 - **Server-side data collection** - Lambda captures departures every 2 minutes (no app needed)
 
 ### Timer Tab
-- **Large timer card** - prominent display with state-based colors
-  - Blue (idle), Red (running), Orange (paused)
-- **Personal transit timing** - track your commute times to improve recommendations
-- **5 route options** with vehicle restrictions:
-  - Home → Bainbridge Ferry (bike or car)
-  - Seattle dock → Work (bike only)
-  - Work → Seattle ferry (bike only)
-  - Bainbridge dock → Home (bike only)
-  - Home → Kingston ferry (car only)
-- **Smart vehicle toggle** - only shows valid options per route
-- **History view** - route-specific labels (e.g., "Home → BI Ferry")
+- **Leg card** in the Ferry card's style - leg picker plus a bike/car toggle for legs that allow both
+  - Idle: typical and last times, and which Ferry-tab number the leg feeds ("Leave in", "At office by", "Home by")
+  - Running: elapsed, time to/over typical, a pace meter, and "Arrive ≈ X · makes the Y with N min spare" for legs that end at a terminal
+  - Stopped: delta vs typical, with Discard (confirmed), Resume and Save
+- **Legs list** - grouped Morning / Evening (current half first) with each leg's typical and ride count:
+  - Home → Bainbridge ferry (bike or car), Seattle dock → Work (bike), Home → Kingston ferry (car)
+  - Work → Seattle ferry (bike), Bainbridge dock → Home (bike)
+- **Recent rides** - hold a ride to delete it
 - **Persistent storage** - times saved to backend database
 
 ### Settings Tab
@@ -291,9 +286,11 @@ ferry-app/
 │       ├── ferryDeparture.ts     # Unified effective departure time + delay model (feeds the Next Sailing card + leave-by plan)
 │       ├── kingstonBoardingPass.ts  # Kingston vehicle boarding-pass seasonal schedule logic
 │       ├── planEstimate.ts       # Predictive leave-by for a future sailing (Schedule Planner)
+│       ├── sailingStats.ts      # Per-sailing delay/on-time/capacity stats + reliability grid (Trends)
 │       ├── tabBarColors.ts       # Tab-bar active/inactive tint derivation (contrast-checked per theme)
 │       ├── themes.ts             # Theme definitions (15 themes)
 │       ├── time.ts               # Date parsing and formatting
+│       ├── timerLegs.ts         # Timer leg definitions, per-leg stats, pace + on-pace sailing (Timer)
 │       ├── transitConfig.ts      # Shared travel-time defaults + route→transit-segment map (Leave card + Planner)
 │       ├── transitStats.ts       # Robust "typical" transit time (raw/median/trimmed-mean)
 │       └── typicalConditions.ts  # Historical typical delay/capacity for a route+day/hour slot (trimmed mean, outlier-resistant)

@@ -6,7 +6,7 @@ discovered_from: code-graph + repo config
 resource_count: 15
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-10-31T07:22:22.336Z
+last_audited: 2026-11-01T06:16:16.516Z
 ---
 
 # Architecture overview — System Spec

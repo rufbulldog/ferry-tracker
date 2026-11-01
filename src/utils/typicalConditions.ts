@@ -22,7 +22,7 @@ function isWeekend(day: number): boolean {
   return day === 0 || day === 6;
 }
 
-function trimmedMean(values: number[]): number {
+export function trimmedMean(values: number[]): number {
   if (values.length === 0) return 0;
   if (values.length < 4) {
     return values.reduce((a, b) => a + b, 0) / values.length;

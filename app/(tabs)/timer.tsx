@@ -1,66 +1,36 @@
-import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, Pressable, Dimensions } from 'react-native';
-import { Text, IconButton } from 'react-native-paper';
-import { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { Text } from 'react-native-paper';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTimer } from '../../src/hooks/useTimer';
-import { useRecentTransitRecords, useSaveTransitRecord, useDeleteTransitRecord } from '../../src/hooks/useTransitRecords';
+import { useTransitRecords, useRecentTransitRecords, useSaveTransitRecord, useDeleteTransitRecord } from '../../src/hooks/useTransitRecords';
+import { useNextDepartures } from '../../src/hooks/useNextDepartures';
 import { useTheme } from '../../src/context/ThemeContext';
 import { useUserLocation } from '../../src/hooks/useUserLocation';
 import { findNearestLocation, getTimerRouteDefault } from '../../src/utils/locations';
-import { TransitRoute, Vehicle } from '../../src/types/storage';
+import { effectiveFerryDeparture } from '../../src/utils/ferryDeparture';
+import { formatTime } from '../../src/utils/time';
+import { CarMeter } from '../../src/components/CarMeter';
+import {
+  TIMER_LEGS,
+  TimerLegId,
+  currentPeriod,
+  formatClock,
+  formatMinSec,
+  getLeg,
+  legStats,
+  paceAgainstTypical,
+  recordLabel,
+  sailingOnPaceFor,
+} from '../../src/utils/timerLegs';
+import { TransitRecord, Vehicle } from '../../src/types/storage';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const PERIOD_TITLE = { morning: 'Morning', evening: 'Evening' } as const;
 
-// Timer route options - these map to TransitRoute types for storage
-type TimerRoute =
-  | 'bi-home-to-ferry'      // Home → Bainbridge Ferry
-  | 'bi-ferry-to-work'      // Seattle dock → Work
-  | 'bi-work-to-ferry'      // Work → Seattle ferry
-  | 'bi-ferry-to-home'      // Bainbridge dock → Home
-  | 'kingston-home-to-ferry'; // Home → Kingston ferry
-
-const TIMER_ROUTES: { id: TimerRoute; label: string; shortLabel: string; storageRoute: TransitRoute; bikeAllowed: boolean; carAllowed: boolean }[] = [
-  { id: 'bi-home-to-ferry', label: 'Home → Bainbridge Ferry', shortLabel: 'Home → BI Ferry', storageRoute: 'home-to-ferry', bikeAllowed: true, carAllowed: true },
-  { id: 'bi-ferry-to-work', label: 'Seattle dock → Work', shortLabel: 'Seattle → Work', storageRoute: 'ferry-to-work', bikeAllowed: true, carAllowed: false },
-  { id: 'bi-work-to-ferry', label: 'Work → Seattle ferry', shortLabel: 'Work → Seattle', storageRoute: 'work-to-ferry', bikeAllowed: true, carAllowed: false },
-  { id: 'bi-ferry-to-home', label: 'Bainbridge dock → Home', shortLabel: 'BI dock → Home', storageRoute: 'ferry-to-home', bikeAllowed: true, carAllowed: false },
-  { id: 'kingston-home-to-ferry', label: 'Home → Kingston ferry', shortLabel: 'Home → Kingston', storageRoute: 'home-to-ferry', bikeAllowed: false, carAllowed: true },
-];
-
-// Get display label for a record based on route + vehicle
-function getRecordLabel(route: TransitRoute, vehicle: Vehicle): string {
-  // Bike routes are always Bainbridge
-  if (vehicle === 'bike') {
-    switch (route) {
-      case 'home-to-ferry': return 'Home → BI Ferry';
-      case 'ferry-to-work': return 'Seattle → Work';
-      case 'work-to-ferry': return 'Work → Seattle';
-      case 'ferry-to-home': return 'BI Ferry → Home';
-    }
-  }
-  // Car home-to-ferry could be Bainbridge or Kingston
-  if (route === 'home-to-ferry') {
-    return 'Home → Ferry';
-  }
-  // Fallback (shouldn't happen with valid data)
-  return route;
-}
-
-function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  if (mins >= 60) {
-    const hrs = Math.floor(mins / 60);
-    const remainingMins = mins % 60;
-    return `${hrs}h ${remainingMins}m`;
-  }
-  return `${mins}m ${secs}s`;
-}
-
-function formatDate(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleDateString('en-US', {
+function formatRideDate(isoString: string): string {
+  return new Date(isoString).toLocaleDateString('en-US', {
+    weekday: 'short',
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
@@ -70,7 +40,7 @@ function formatDate(isoString: string): string {
 
 export default function TimerScreen() {
   const insets = useSafeAreaInsets();
-  const [selectedRouteId, setSelectedRouteId] = useState<TimerRoute>('bi-home-to-ferry');
+  const [legId, setLegId] = useState<TimerLegId>('bi-home-to-ferry');
   const [vehicle, setVehicle] = useState<Vehicle>('bike');
   const [modalVisible, setModalVisible] = useState(false);
   const { theme } = useTheme();
@@ -78,249 +48,342 @@ export default function TimerScreen() {
   const gpsApplied = useRef(false);
 
   const timer = useTimer();
-  const { data: recentRecords, isLoading: recordsLoading } = useRecentTransitRecords(10);
+  const { data: records } = useTransitRecords();
+  const { data: recentRecords, isLoading: recordsLoading } = useRecentTransitRecords(8);
   const saveRecord = useSaveTransitRecord();
   const deleteRecord = useDeleteTransitRecord();
 
-  const selectedRoute = TIMER_ROUTES.find(r => r.id === selectedRouteId) || TIMER_ROUTES[0];
+  const leg = getLeg(legId);
+  const stats = legStats(records, leg.storageRoute, vehicle);
+  const isActive = timer.isRunning || timer.isPaused;
 
-  // Auto-select timer route based on GPS (only once, before user interacts)
+  // Sailings at the end of this leg, for the "makes the 7:55" footer. The hook
+  // needs a route either way; its result is ignored for legs that end at home/work.
+  const { data: departures } = useNextDepartures(leg.catchesRoute ?? 'bainbridge-seattle');
+
+  const selectLeg = (id: TimerLegId, v?: Vehicle) => {
+    const next = getLeg(id);
+    setLegId(id);
+    setVehicle(v ?? (next.vehicles.includes(vehicle) ? vehicle : next.vehicles[0]));
+  };
+
+  // Auto-select the leg from GPS (only once, before the user interacts)
   useEffect(() => {
     if (gpsApplied.current || !location) return;
     const nearest = findNearestLocation(location.latitude, location.longitude);
     if (nearest && nearest.distanceMeters < 5000) {
-      const defaultRoute = getTimerRouteDefault(nearest.location.id);
-      if (defaultRoute && TIMER_ROUTES.some(r => r.id === defaultRoute)) {
+      const defaultLeg = TIMER_LEGS.find((l) => l.id === getTimerRouteDefault(nearest.location.id));
+      if (defaultLeg) {
         // One-time sync from an external system (GPS) once location resolves.
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSelectedRouteId(defaultRoute as TimerRoute);
+        setLegId(defaultLeg.id);
+        setVehicle((v) => (defaultLeg.vehicles.includes(v) ? v : defaultLeg.vehicles[0]));
         gpsApplied.current = true;
       }
     }
   }, [location]);
 
-  // Force valid vehicle when route changes — corrects an invalid route/vehicle
-  // combination (e.g. bike selected on a car-only route).
-  useEffect(() => {
-    if (!selectedRoute.bikeAllowed && vehicle === 'bike') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setVehicle('car');
-    } else if (!selectedRoute.carAllowed && vehicle === 'car') {
-      setVehicle('bike');
-    }
-  }, [selectedRoute, vehicle]);
+  const handleDelete = (record: TransitRecord) => {
+    Alert.alert('Delete ride', `Delete this ${recordLabel(record.route, record.vehicle)} ride (${formatClock(record.durationSeconds)})?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => deleteRecord.mutate(record.id) },
+    ]);
+  };
 
-  const handleDelete = (id: string, route: TransitRoute, vehicle: Vehicle) => {
-    Alert.alert(
-      'Delete Record',
-      `Delete this ${getRecordLabel(route, vehicle)} record?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => deleteRecord.mutate(id),
-        },
-      ]
-    );
+  const handleDiscard = () => {
+    Alert.alert('Discard this ride?', 'The time won\'t be saved.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Discard', style: 'destructive', onPress: timer.reset },
+    ]);
   };
 
   const handleSave = () => {
     saveRecord.mutate({
-      route: selectedRoute.storageRoute,
+      route: leg.storageRoute,
       vehicle,
       durationSeconds: timer.elapsedSeconds,
     });
     timer.reset();
   };
 
-  const canSave = timer.isPaused && timer.elapsedSeconds > 0;
-  const isActive = timer.isRunning || timer.isPaused;
+  const typical = stats.typicalSeconds;
+  const pace = typical !== null ? paceAgainstTypical(timer.elapsedSeconds, typical) : null;
+  const over = pace !== null && pace.remainingSeconds < 0;
+  const paceColor = over ? theme.colors.warning : theme.colors.primary;
 
-  // Card color based on state
-  const getCardColor = () => {
-    if (timer.isRunning) return '#C62828'; // Red when running
-    if (timer.isPaused && timer.elapsedSeconds > 0) return '#F57C00'; // Orange when paused with time
-    return theme.colors.primary; // Theme primary when idle
-  };
+  const onPace = (() => {
+    if (!timer.isRunning || !pace || !leg.catchesRoute || !departures) return null;
+    const upcoming = departures
+      .filter((d) => d.status !== 'departed' && !d.isCancelled)
+      .map((d) => effectiveFerryDeparture(d).time);
+    return sailingOnPaceFor(upcoming, pace.remainingSeconds);
+  })();
+
+  // Legs grouped by morning/evening, the current half first.
+  const legGroups = useMemo(() => {
+    const first = currentPeriod();
+    const order = first === 'morning' ? (['morning', 'evening'] as const) : (['evening', 'morning'] as const);
+    return order.map((period) => ({
+      period,
+      rows: TIMER_LEGS.filter((l) => l.period === period).flatMap((l) =>
+        l.vehicles.map((v) => ({ leg: l, vehicle: v, stats: legStats(records, l.storageRoute, v) })),
+      ),
+    }));
+  }, [records]);
+
+  const showVehicleToggle = leg.vehicles.length > 1 && !isActive;
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.pageBg }]} contentContainerStyle={[styles.content, { paddingTop: insets.top + 16 }]}>
-      {/* Main Timer Card */}
-      <View style={[styles.mainCard, { backgroundColor: getCardColor() }]}>
-        {/* Top: Route selector + vehicle toggle */}
-        <View style={styles.topRow}>
-          <TouchableOpacity
-            style={[styles.routeSelector, timer.isRunning && styles.routeSelectorDisabled]}
-            onPress={() => !timer.isRunning && setModalVisible(true)}
-            disabled={timer.isRunning}
-          >
-            <Text style={[styles.routeText, timer.isRunning && styles.routeTextDisabled]}>
-              {selectedRoute.shortLabel}
-            </Text>
-            {!timer.isRunning && (
-              <Ionicons name="chevron-down" size={20} color="rgba(255,255,255,0.8)" />
+      {/* Current leg — same anatomy as the Ferry tab's main card */}
+      <View style={[styles.card, { backgroundColor: theme.colors.cardBg }, timer.isRunning && { borderWidth: 2, borderColor: theme.colors.error }]}>
+        <View style={styles.body}>
+          <View style={styles.headerRow}>
+            <TouchableOpacity
+              style={styles.legButton}
+              onPress={() => setModalVisible(true)}
+              disabled={isActive}
+              accessibilityRole="button"
+              accessibilityLabel={`Leg: ${leg.label}`}
+            >
+              {timer.isRunning && <View style={[styles.recDot, { backgroundColor: theme.colors.error }]} />}
+              <Text style={[styles.legLabel, { color: theme.colors.text }]} numberOfLines={1}>{leg.label}</Text>
+              {!isActive && <Ionicons name="chevron-down" size={18} color={theme.colors.textMuted} />}
+            </TouchableOpacity>
+            {showVehicleToggle ? (
+              <View style={[styles.toggle, { backgroundColor: theme.colors.inputBg }]}>
+                {leg.vehicles.map((v) => {
+                  const active = vehicle === v;
+                  return (
+                    <TouchableOpacity
+                      key={v}
+                      style={[styles.toggleButton, active && { backgroundColor: theme.colors.primary }]}
+                      onPress={() => setVehicle(v)}
+                      accessibilityRole="button"
+                      accessibilityLabel={v === 'bike' ? 'Bike' : 'Car'}
+                      accessibilityState={{ selected: active }}
+                    >
+                      <Ionicons name={v === 'bike' ? 'bicycle' : 'car'} size={18} color={active ? '#fff' : theme.colors.textMuted} />
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <Ionicons name={vehicle === 'bike' ? 'bicycle' : 'car'} size={20} color={theme.colors.textMuted} />
             )}
-          </TouchableOpacity>
+          </View>
 
-          {/* Vehicle toggle - show only valid options */}
-          {(selectedRoute.bikeAllowed || selectedRoute.carAllowed) && (
-            <View style={styles.vehicleRow}>
-              {selectedRoute.bikeAllowed && (
-                <TouchableOpacity
-                  style={[styles.vehicleButton, vehicle === 'bike' && styles.vehicleButtonActive]}
-                  onPress={() => !timer.isRunning && setVehicle('bike')}
-                  disabled={timer.isRunning}
-                >
-                  <Ionicons
-                    name="bicycle"
-                    size={24}
-                    color={vehicle === 'bike' ? '#fff' : 'rgba(255,255,255,0.5)'}
-                  />
-                </TouchableOpacity>
-              )}
-              {selectedRoute.carAllowed && (
-                <TouchableOpacity
-                  style={[styles.vehicleButton, vehicle === 'car' && styles.vehicleButtonActive]}
-                  onPress={() => !timer.isRunning && setVehicle('car')}
-                  disabled={timer.isRunning}
-                >
-                  <Ionicons
-                    name="car"
-                    size={24}
-                    color={vehicle === 'car' ? '#fff' : 'rgba(255,255,255,0.5)'}
-                  />
-                </TouchableOpacity>
-              )}
+          {!isActive ? (
+            <View style={styles.numbersRow}>
+              <View style={styles.numberCol}>
+                <Text style={[styles.numberLabel, { color: theme.colors.textMuted }]}>TYPICAL</Text>
+                <Text style={[styles.bigNumber, { color: typical !== null ? theme.colors.text : theme.colors.textMuted }]}>
+                  {typical !== null ? formatClock(typical) : '—'}
+                  {typical !== null && <Text style={[styles.bigUnit, { color: theme.colors.textMuted }]}> min</Text>}
+                </Text>
+                <Text style={[styles.numberSub, { color: theme.colors.textMuted }]}>
+                  {stats.rides > 0 ? `from ${stats.rides} ride${stats.rides !== 1 ? 's' : ''}` : 'No rides yet'}
+                </Text>
+              </View>
+              <View style={styles.numberCol}>
+                <Text style={[styles.numberLabel, { color: theme.colors.textMuted }]}>LAST</Text>
+                <Text style={[styles.bigNumber, { color: theme.colors.textMuted }]}>
+                  {stats.last ? formatClock(stats.last.durationSeconds) : '—'}
+                  {stats.last && <Text style={[styles.bigUnit, { color: theme.colors.textMuted }]}> min</Text>}
+                </Text>
+                <Text style={[styles.numberSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                  {stats.last ? new Date(stats.last.timestamp).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : ' '}
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.numbersRow}>
+              <View style={styles.numberCol}>
+                <Text style={[styles.numberLabel, { color: theme.colors.textMuted }]}>{timer.isRunning ? 'ELAPSED' : 'STOPPED AT'}</Text>
+                <Text style={[styles.bigNumber, { color: theme.colors.text }]}>{formatClock(timer.elapsedSeconds)}</Text>
+                <Text style={[styles.numberSub, { color: theme.colors.textMuted }]}>{timer.isRunning ? 'Recording' : 'Paused'}</Text>
+              </View>
+              <View style={styles.numberCol}>
+                {pace ? (
+                  <>
+                    {/* Running: time left to your typical. Stopped: how this ride compares. */}
+                    <Text style={[styles.numberLabel, { color: theme.colors.textMuted }]}>
+                      {timer.isPaused ? 'VS TYPICAL' : over ? 'OVER TYPICAL' : 'TO TYPICAL'}
+                    </Text>
+                    <Text style={[styles.bigNumber, { color: over ? theme.colors.warning : theme.colors.success }]}>
+                      {timer.isPaused ? (over ? '+' : '−') : over ? '+' : ''}{formatClock(Math.abs(pace.remainingSeconds))}
+                    </Text>
+                    <Text style={[styles.numberSub, { color: theme.colors.textMuted }]}>
+                      {timer.isPaused ? `${over ? 'slower' : 'faster'} than ${formatClock(typical!)}` : `typical ${formatClock(typical!)}`}
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={[styles.numberLabel, { color: theme.colors.textMuted }]}>FIRST RIDE</Text>
+                    <Text style={[styles.bigNumber, { color: theme.colors.textMuted }]}>—</Text>
+                    <Text style={[styles.numberSub, { color: theme.colors.textMuted }]}>sets your typical</Text>
+                  </>
+                )}
+              </View>
             </View>
           )}
-        </View>
 
-        {/* Center: Timer display */}
-        <View style={styles.centerContent}>
-          <Text style={styles.timerDisplay}>
-            {timer.formattedTime}
-          </Text>
-          {timer.isRunning && (
-            <Text style={styles.runningLabel}>Recording...</Text>
+          {!isActive && (
+            <View style={styles.noteRow}>
+              <Ionicons name="boat-outline" size={14} color={theme.colors.textMuted} />
+              <Text style={[styles.noteText, { color: theme.colors.textMuted }]}>Feeds “{leg.feeds}” on the Ferry tab</Text>
+            </View>
           )}
-          {timer.isPaused && timer.elapsedSeconds > 0 && (
-            <Text style={styles.pausedLabel}>Paused</Text>
-          )}
-        </View>
 
-        {/* Bottom: Controls */}
-        <View style={styles.controlsRow}>
+          {/* Controls */}
           {!isActive ? (
-            <TouchableOpacity style={styles.mainButton} onPress={timer.start}>
-              <Ionicons name="play" size={28} color="#fff" />
-              <Text style={styles.mainButtonText}>Start</Text>
+            <TouchableOpacity style={[styles.primaryButton, { backgroundColor: theme.colors.primary }]} onPress={timer.start}>
+              <Ionicons name="play" size={22} color="#fff" />
+              <Text style={styles.primaryButtonText}>Start</Text>
             </TouchableOpacity>
           ) : timer.isRunning ? (
-            <TouchableOpacity style={styles.mainButton} onPress={timer.stop}>
-              <Ionicons name="pause" size={28} color="#fff" />
-              <Text style={styles.mainButtonText}>Stop</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={[styles.secondaryButton, { backgroundColor: theme.colors.inputBg }]} onPress={handleDiscard}>
+                <Text style={[styles.secondaryButtonText, { color: theme.colors.text }]}>Discard</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.primaryButton, styles.flex, { backgroundColor: theme.colors.error }]} onPress={timer.stop}>
+                <Ionicons name="stop" size={20} color="#fff" />
+                <Text style={styles.primaryButtonText}>Stop</Text>
+              </TouchableOpacity>
+            </View>
           ) : (
-            <View style={styles.pausedControls}>
-              <TouchableOpacity style={styles.secondaryButton} onPress={timer.resume}>
-                <Ionicons name="play" size={24} color="#fff" />
-                <Text style={styles.secondaryButtonText}>Resume</Text>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={[styles.secondaryButton, { backgroundColor: theme.colors.inputBg }]} onPress={handleDiscard}>
+                <Text style={[styles.secondaryButtonText, { color: theme.colors.text }]}>Discard</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.secondaryButton, { backgroundColor: theme.colors.inputBg }]} onPress={timer.resume}>
+                <Text style={[styles.secondaryButtonText, { color: theme.colors.text }]}>Resume</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.primaryButton, !canSave && styles.buttonDisabled]}
+                style={[styles.primaryButton, styles.flex, { backgroundColor: theme.colors.success }, saveRecord.isPending && styles.buttonDisabled]}
                 onPress={handleSave}
-                disabled={!canSave || saveRecord.isPending}
+                disabled={timer.elapsedSeconds <= 0 || saveRecord.isPending}
               >
-                <Ionicons name="checkmark" size={24} color="#fff" />
-                <Text style={styles.primaryButtonText}>
-                  {saveRecord.isPending ? 'Saving...' : 'Save'}
-                </Text>
+                <Ionicons name="checkmark" size={20} color="#fff" />
+                <Text style={styles.primaryButtonText}>{saveRecord.isPending ? 'Saving…' : 'Save'}</Text>
               </TouchableOpacity>
             </View>
           )}
         </View>
 
-        {/* Reset button - only when active */}
-        {isActive && (
-          <TouchableOpacity
-            style={styles.resetButton}
-            onPress={timer.reset}
-            disabled={timer.isRunning}
-          >
-            <Text style={[styles.resetText, timer.isRunning && styles.resetTextDisabled]}>
-              Reset
-            </Text>
-          </TouchableOpacity>
+        {/* Pace meter — fills toward your typical while timing */}
+        {timer.isRunning && pace && (
+          <View style={[styles.meterStrip, { backgroundColor: theme.colors.inputBg }]}>
+            <CarMeter percent={pace.percent} color={paceColor} emptyColor={theme.colors.hoverBg} />
+            <View style={styles.meterLegend}>
+              <Text style={[styles.meterLegendText, { color: theme.colors.textMuted }]}>0:00</Text>
+              <Text style={[styles.meterLegendText, { color: theme.colors.textMuted }]}>typical {formatClock(typical!)}</Text>
+            </View>
+            {onPace && (
+              <Text style={[styles.onPaceText, { color: theme.colors.textMuted, borderTopColor: theme.colors.hoverBg }]}>
+                Arrive ≈ {formatTime(onPace.arrive)} · makes the{' '}
+                <Text style={[styles.strong, { color: theme.colors.text }]}>{formatTime(onPace.departure)}</Text>
+                {' '}with {onPace.spareMinutes} min spare
+              </Text>
+            )}
+          </View>
         )}
       </View>
 
-      {/* Route Selection Modal */}
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
+      {/* Leg picker */}
+      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
         <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
           <View style={[styles.modalContent, { backgroundColor: theme.colors.cardBg }]}>
-            <Text style={[styles.modalTitle, { color: theme.colors.text, borderBottomColor: theme.colors.border }]}>Select Route</Text>
-            {TIMER_ROUTES.map((route) => (
+            <Text style={[styles.modalTitle, { color: theme.colors.text, borderBottomColor: theme.colors.hoverBg }]}>Choose a leg</Text>
+            {TIMER_LEGS.map((l) => (
               <TouchableOpacity
-                key={route.id}
-                style={[styles.option, { borderBottomColor: theme.colors.border }, selectedRouteId === route.id && { backgroundColor: theme.colors.inputBg }]}
+                key={l.id}
+                style={[styles.option, { borderBottomColor: theme.colors.hoverBg }, legId === l.id && { backgroundColor: theme.colors.inputBg }]}
                 onPress={() => {
-                  setSelectedRouteId(route.id);
+                  selectLeg(l.id);
                   setModalVisible(false);
                 }}
               >
-                <Text style={[styles.optionText, { color: theme.colors.text }, selectedRouteId === route.id && { color: theme.colors.primary }]}>
-                  {route.label}
-                </Text>
-                {selectedRouteId === route.id && (
-                  <Ionicons name="checkmark" size={20} color={theme.colors.primary} />
-                )}
+                <Text style={[styles.optionText, { color: legId === l.id ? theme.colors.primary : theme.colors.text }]}>{l.label}</Text>
+                {legId === l.id && <Ionicons name="checkmark" size={20} color={theme.colors.primary} />}
               </TouchableOpacity>
             ))}
           </View>
         </Pressable>
       </Modal>
 
-      {/* Recent Times */}
-      <View style={[styles.historySection, { backgroundColor: theme.colors.cardBg }]}>
-        <Text style={[styles.historyTitle, { color: theme.colors.text }]}>Recent Times</Text>
-        {recordsLoading ? (
-          <Text style={[styles.placeholderText, { color: theme.colors.textMuted }]}>Loading...</Text>
-        ) : recentRecords.length === 0 ? (
-          <Text style={[styles.placeholderText, { color: theme.colors.textMuted }]}>
-            No recorded times yet. Start tracking your commute!
-          </Text>
-        ) : (
-          <View style={styles.recordsList}>
-            {recentRecords.map((record) => (
-              <View key={record.id} style={[styles.recordRow, { borderBottomColor: theme.colors.border }]}>
-                <View style={styles.recordInfo}>
-                  <Text style={[styles.recordRoute, { color: theme.colors.text }]}>
-                    {getRecordLabel(record.route, record.vehicle)}
+      {/* Every leg's typical — tap to switch */}
+      {legGroups.map((group) => (
+        <View key={group.period} style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{PERIOD_TITLE[group.period]}</Text>
+          <View style={[styles.listCard, { backgroundColor: theme.colors.cardBg }]}>
+            {group.rows.map((row, i) => {
+              const selected = row.leg.id === legId && row.vehicle === vehicle;
+              const hasData = row.stats.typicalSeconds !== null;
+              return (
+                <TouchableOpacity
+                  key={`${row.leg.id}-${row.vehicle}`}
+                  style={[
+                    styles.legRow,
+                    i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.colors.hoverBg },
+                    selected && { backgroundColor: theme.colors.inputBg },
+                  ]}
+                  onPress={() => selectLeg(row.leg.id, row.vehicle)}
+                  disabled={isActive}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected, disabled: isActive }}
+                >
+                  <Ionicons name={row.vehicle === 'bike' ? 'bicycle' : 'car'} size={18} color={theme.colors.textMuted} />
+                  <Text style={[styles.legRowLabel, { color: hasData ? theme.colors.text : theme.colors.textMuted }]} numberOfLines={1}>
+                    {row.leg.label}
                   </Text>
-                  <Text style={[styles.recordMeta, { color: theme.colors.textMuted }]}>
-                    {record.vehicle} · {formatDate(record.timestamp)}
+                  <Text style={[styles.legRowTime, { color: hasData ? theme.colors.text : theme.colors.textMuted }]}>
+                    {hasData ? formatMinSec(row.stats.typicalSeconds!) : '—'}
                   </Text>
-                </View>
-                <Text style={[styles.recordDuration, { color: theme.colors.primary }]}>
-                  {formatDuration(record.durationSeconds)}
-                </Text>
-                <IconButton
-                  icon="close"
-                  size={18}
-                  iconColor={theme.colors.textMuted}
-                  onPress={() => handleDelete(record.id, record.route, record.vehicle)}
-                  style={styles.deleteButton}
-                />
-              </View>
-            ))}
+                  <Text style={[styles.legRowCount, { color: theme.colors.textMuted }]}>{row.stats.rides}×</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
-        )}
+        </View>
+      ))}
+
+      {/* Recent rides */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent rides</Text>
+        <View style={[styles.listCard, { backgroundColor: theme.colors.cardBg }]}>
+          {recordsLoading ? (
+            <Text style={[styles.placeholderText, { color: theme.colors.textMuted }]}>Loading…</Text>
+          ) : recentRecords.length === 0 ? (
+            <Text style={[styles.placeholderText, { color: theme.colors.textMuted }]}>
+              Time a ride to set your typical for each leg.
+            </Text>
+          ) : (
+            <>
+              {recentRecords.map((record, i) => (
+                <TouchableOpacity
+                  key={record.id}
+                  style={[styles.legRow, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.colors.hoverBg }]}
+                  onLongPress={() => handleDelete(record)}
+                  delayLongPress={400}
+                  accessibilityHint="Long press to delete"
+                >
+                  <Ionicons name={record.vehicle === 'bike' ? 'bicycle' : 'car'} size={18} color={theme.colors.textMuted} />
+                  <View style={styles.flex}>
+                    <Text style={[styles.recordRoute, { color: theme.colors.text }]} numberOfLines={1}>
+                      {recordLabel(record.route, record.vehicle)}
+                    </Text>
+                    <Text style={[styles.recordMeta, { color: theme.colors.textMuted }]}>{formatRideDate(record.timestamp)}</Text>
+                  </View>
+                  <Text style={[styles.legRowTime, { color: theme.colors.text }]}>{formatMinSec(record.durationSeconds)}</Text>
+                </TouchableOpacity>
+              ))}
+              <Text style={[styles.hint, { color: theme.colors.textMuted, borderTopColor: theme.colors.hoverBg }]}>
+                Hold a ride to delete it
+              </Text>
+            </>
+          )}
+        </View>
       </View>
     </ScrollView>
   );
@@ -332,142 +395,141 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingBottom: 24,
   },
-  // Main card
-  mainCard: {
-    height: SCREEN_HEIGHT * 0.55,
-    borderRadius: 16,
-    padding: 16,
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  // Top row
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  routeSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  routeSelectorDisabled: {
-    backgroundColor: 'rgba(0,0,0,0.1)',
-  },
-  routeText: {
-    fontSize: 14,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  routeTextDisabled: {
-    color: 'rgba(255,255,255,0.6)',
-  },
-  vehicleRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  vehicleButton: {
-    padding: 10,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0,0,0,0.1)',
-  },
-  vehicleButtonActive: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-  // Center
-  centerContent: {
-    alignItems: 'center',
+  flex: {
     flex: 1,
-    justifyContent: 'center',
   },
-  timerDisplay: {
-    fontSize: 72,
-    fontWeight: 'bold',
-    color: '#fff',
-    fontVariant: ['tabular-nums'],
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+  card: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: 20,
   },
-  runningLabel: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 8,
+  body: {
+    padding: 18,
+    gap: 16,
   },
-  pausedLabel: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 8,
-  },
-  // Controls
-  controlsRow: {
-    alignItems: 'center',
-  },
-  mainButton: {
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 30,
   },
-  mainButtonText: {
-    fontSize: 20,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  pausedControls: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  secondaryButton: {
+  legButton: {
+    flex: 1,
+    minWidth: 0,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 25,
   },
-  secondaryButtonText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '500',
+  recDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  legLabel: {
+    fontSize: 17,
+    fontWeight: '700',
+    flexShrink: 1,
+  },
+  toggle: {
+    flexDirection: 'row',
+    borderRadius: 18,
+    padding: 3,
+    gap: 2,
+  },
+  toggleButton: {
+    width: 38,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  numbersRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  numberCol: {
+    flex: 1,
+  },
+  numberLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.2,
+  },
+  bigNumber: {
+    fontSize: 56,
+    fontWeight: '800',
+    letterSpacing: -1.5,
+    lineHeight: 62,
+    fontVariant: ['tabular-nums'],
+  },
+  bigUnit: {
+    fontSize: 20,
+    fontWeight: '600',
+    letterSpacing: 0,
+  },
+  numberSub: {
+    fontSize: 14,
+  },
+  noteRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  noteText: {
+    fontSize: 13,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 8,
   },
   primaryButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#2E7D32',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    height: 50,
     borderRadius: 25,
+    paddingHorizontal: 20,
   },
   primaryButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#fff',
+    fontWeight: '700',
+  },
+  secondaryButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    borderRadius: 25,
+    paddingHorizontal: 18,
+  },
+  secondaryButtonText: {
+    fontSize: 16,
     fontWeight: '600',
   },
   buttonDisabled: {
     opacity: 0.5,
   },
-  resetButton: {
-    alignSelf: 'center',
-    marginTop: 12,
+  meterStrip: {
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    gap: 8,
   },
-  resetText: {
+  meterLegend: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  meterLegendText: {
+    fontSize: 12,
+  },
+  onPaceText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: 8,
   },
-  resetTextDisabled: {
-    color: 'rgba(255,255,255,0.3)',
+  strong: {
+    fontWeight: '700',
   },
   // Modal
   modalOverlay: {
@@ -499,31 +561,40 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '500',
   },
-  // History section
-  historySection: {
-    borderRadius: 12,
-    padding: 16,
+  // Lists
+  section: {
+    marginBottom: 20,
   },
-  historyTitle: {
-    fontSize: 14,
+  sectionTitle: {
+    fontSize: 16,
     fontWeight: '600',
     marginBottom: 12,
   },
-  placeholderText: {
-    textAlign: 'center',
-    paddingVertical: 16,
+  listCard: {
+    borderRadius: 12,
+    overflow: 'hidden',
   },
-  recordsList: {
-    gap: 0,
-  },
-  recordRow: {
+  legRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
   },
-  recordInfo: {
+  legRowLabel: {
     flex: 1,
+    fontSize: 15,
+  },
+  legRowTime: {
+    fontSize: 16,
+    fontWeight: '700',
+    fontVariant: ['tabular-nums'],
+  },
+  legRowCount: {
+    width: 30,
+    textAlign: 'right',
+    fontSize: 12,
+    fontVariant: ['tabular-nums'],
   },
   recordRoute: {
     fontSize: 14,
@@ -533,12 +604,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
-  recordDuration: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginRight: 4,
+  placeholderText: {
+    textAlign: 'center',
+    padding: 20,
   },
-  deleteButton: {
-    margin: 0,
+  hint: {
+    fontSize: 12,
+    textAlign: 'center',
+    paddingVertical: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
 });
