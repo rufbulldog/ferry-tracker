@@ -241,4 +241,24 @@ describe("buildPlan", () => {
     expect(plan.routes[0].carWait.reason).toBe("none");
     expect(plan.best?.route).toBe("seattle-bremerton");
   });
+
+  it("lists the boat on the water once, even with the whole day's timetable", () => {
+    const leftDock = wsfDate(-20);
+    const onWater = inputs({
+      vessels: [
+        {
+          VesselID: 74, VesselName: "Chimacum", DepartingTerminalID: 4, ArrivingTerminalID: 7,
+          AtDock: false, LeftDock: leftDock, Eta: wsfDate(40), ScheduledDeparture: wsfDate(-25),
+        } as unknown as NonNullable<PlanInputs["vessels"]>[number],
+      ],
+    });
+    onWater.terminals = onWater.terminals!.filter((t) => t.TerminalID !== 4);
+    onWater.schedules = {
+      "bremerton-seattle": [-300, -180, -25, 50].map((m) => ({ DepartingTime: wsfDate(m), VesselID: 74, VesselName: "Chimacum" })),
+    };
+    const plan = buildPlan(query({ location: null, routes: ["bremerton-seattle"] }), onWater, NOW);
+    const departed = plan.routes[0].sailings.filter((x) => x.status === "departed");
+    expect(departed).toHaveLength(1);
+    expect(departed[0].scheduledDeparture).toBe(new Date(NOW.getTime() - 25 * 60_000).toISOString());
+  });
 });

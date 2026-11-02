@@ -403,6 +403,21 @@ function pickOut(p: SailingPick<DepartureInfo, string>): PickOut {
   };
 }
 
+/**
+ * A vessel is on at most one departed sailing. The timetable fallback lists the
+ * whole day, so every earlier sailing of the boat now on the water matches it
+ * as "departed"; keep only the latest (the one it's actually running).
+ */
+function oneDepartedPerVessel(deps: DepartureInfo[]): DepartureInfo[] {
+  const latest = new Map<number, DepartureInfo>();
+  for (const d of deps) {
+    if (d.status !== "departed") continue;
+    const kept = latest.get(d.vesselId);
+    if (!kept || d.scheduledDeparture > kept.scheduledDeparture) latest.set(d.vesselId, d);
+  }
+  return deps.filter((d) => d.status !== "departed" || latest.get(d.vesselId) === d);
+}
+
 export function buildPlan(
   query: PlanQuery,
   inputs: PlanInputs,
@@ -412,12 +427,14 @@ export function buildPlan(
   const carWaitByRoute = new Map<string, CarWaitEstimate>();
   for (const id of query.routes) {
     const r = PLAN_ROUTES[id];
-    const deps = composeDepartures(
-      r.from,
-      r.to,
-      inputs.vessels,
-      sailingSpaceFor(id, inputs),
-      now.getTime(),
+    const deps = oneDepartedPerVessel(
+      composeDepartures(
+        r.from,
+        r.to,
+        inputs.vessels,
+        sailingSpaceFor(id, inputs),
+        now.getTime(),
+      ),
     );
     departuresByRoute.set(id, deps);
     carWaitByRoute.set(id, carWaitFor(id, deps, inputs));

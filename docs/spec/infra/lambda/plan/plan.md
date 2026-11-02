@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: infra/lambda/plan/plan.ts
-content_sha: 9c5a720406edd4b9603c0e9ac1420552ab9ecf32d1d4e89f7f1f4fa27a2ce6dc
+content_sha: 5b33a354a6665c5ec6d98011617f6277decb943b21950de4920d54d360cdd2db
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T02:40:10.649Z
+last_audited: 2026-11-02T02:50:49.414Z
 ---
 
 # plan.ts
 
 **Path:** `infra/lambda/plan/plan.ts`
-**Lines:** 492
+**Lines:** 509
 **Language:** TypeScript
 
 ## Exports

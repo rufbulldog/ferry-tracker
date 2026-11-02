@@ -3,23 +3,23 @@ type: l2-module
 spec_version: 1
 path: infra/lambda/plan
 file_count: 2
-total_lines: 681
+total_lines: 698
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T02:40:10.725Z
+last_audited: 2026-11-02T02:50:49.488Z
 ---
 
 # infra/lambda/plan — Module Spec
 
 **Folder:** `infra/lambda/plan`
-**Files:** 2 · **Lines:** 681
+**Files:** 2 · **Lines:** 698
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`index.ts`](./index.md) | 189 |  |
-| [`plan.ts`](./plan.md) | 492 | Routes to plan against. A terminal pair is one crossing; you're on whichever |
+| [`plan.ts`](./plan.md) | 509 | Routes to plan against. A terminal pair is one crossing; you're on whichever |
 
 ## Internal-only files
 
