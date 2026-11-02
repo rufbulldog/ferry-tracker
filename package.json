@@ -54,5 +54,12 @@
     "ts-jest": "^29.4.11",
     "typescript": "~6.0.3"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "@bacons/apple-targets": {
+      "@expo/require-utils": {
+        "typescript": "$typescript"
+      }
+    }
+  }
 }
