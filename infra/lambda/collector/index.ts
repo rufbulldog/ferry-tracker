@@ -13,6 +13,7 @@ const TERMINALS = {
   BAINBRIDGE: 3,
   EDMONDS: 8,
   KINGSTON: 12,
+  BREMERTON: 4,
 };
 
 // Routes we're tracking
@@ -21,6 +22,10 @@ const ROUTES = [
   { id: 'seattle-bainbridge', from: TERMINALS.SEATTLE, to: TERMINALS.BAINBRIDGE },
   { id: 'kingston-edmonds', from: TERMINALS.KINGSTON, to: TERMINALS.EDMONDS },
   { id: 'edmonds-kingston', from: TERMINALS.EDMONDS, to: TERMINALS.KINGSTON },
+  // Recorded even while the app has the Bremerton group switched off, so
+  // Trends has history the day it's turned on.
+  { id: 'seattle-bremerton', from: TERMINALS.SEATTLE, to: TERMINALS.BREMERTON },
+  { id: 'bremerton-seattle', from: TERMINALS.BREMERTON, to: TERMINALS.SEATTLE },
 ];
 
 interface VesselLocation {

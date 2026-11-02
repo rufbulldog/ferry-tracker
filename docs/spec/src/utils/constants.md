@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/utils/constants.ts
-content_sha: 3b9d25a6ae4ed42b485dbe18b5b0301fd1c3a747b97202c0df9a025b5f150b52
+content_sha: f9b38fc95883b8690d1a293238974a07c4c553b6cdf01d4288e2c570982b89fd
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-09-14T02:10:09.344Z
+last_audited: 2026-11-02T03:07:16.478Z
 ---
 
 # constants.ts
 
 **Path:** `src/utils/constants.ts`
-**Lines:** 67
+**Lines:** 75
 **Language:** TypeScript
 
 ## Exports

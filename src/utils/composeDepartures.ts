@@ -364,3 +364,89 @@ export function composeDepartures(
     return dep;
   });
 }
+
+/** One row of WSF's schedule `Times` (the fields we use). */
+export interface ScheduledSailing {
+  DepartingTime: string; // "/Date(1234567890000-0800)/"
+  VesselID: number;
+  VesselName: string;
+}
+
+/** True when WSF's sailing-space feed lists departures from → to. */
+export function hasRouteSailingSpace(
+  terminals: TerminalSailingSpace[] | undefined,
+  departingTerminalId: number,
+  arrivingTerminalId: number,
+): boolean {
+  const t = terminals?.find((x) => x.TerminalID === departingTerminalId);
+  return !!t?.DepartingSpaces.some((d) =>
+    d.SpaceForArrivalTerminals.some((a) => a.TerminalID === arrivingTerminalId),
+  );
+}
+
+/**
+ * WSF only publishes sailing space for terminals that track drive-up space
+ * (Seattle and Bremerton are often absent). For those routes, stand in the
+ * timetable as space-less departures so live vessels still match for delays;
+ * drive-up space and car overflow then read as unknown.
+ */
+function withTimetable(
+  terminals: TerminalSailingSpace[] | undefined,
+  departingTerminalId: number,
+  arrivingTerminalId: number,
+  timetable: ScheduledSailing[] | undefined,
+): TerminalSailingSpace[] | undefined {
+  if (!timetable?.length || hasRouteSailingSpace(terminals, departingTerminalId, arrivingTerminalId)) {
+    return terminals;
+  }
+  const stand = {
+    TerminalID: departingTerminalId,
+    DepartingSpaces: timetable.map((t) => ({
+      Departure: t.DepartingTime,
+      IsCancelled: false,
+      VesselID: t.VesselID,
+      VesselName: t.VesselName,
+      MaxSpaceCount: 0,
+      SpaceForArrivalTerminals: [{ TerminalID: arrivingTerminalId, DriveUpSpaceCount: null }],
+    })),
+  } as unknown as TerminalSailingSpace;
+  return [stand, ...(terminals ?? []).filter((t) => t.TerminalID !== departingTerminalId)];
+}
+
+/**
+ * A vessel is on at most one departed sailing. The timetable lists the whole
+ * day, so every earlier sailing of the boat now on the water matches it as
+ * "departed"; keep only the latest (the one it's actually running).
+ */
+function oneDepartedPerVessel(deps: DepartureInfo[]): DepartureInfo[] {
+  const latest = new Map<number, DepartureInfo>();
+  for (const d of deps) {
+    if (d.status !== 'departed') continue;
+    const kept = latest.get(d.vesselId);
+    if (!kept || d.scheduledDeparture > kept.scheduledDeparture) latest.set(d.vesselId, d);
+  }
+  return deps.filter((d) => d.status !== 'departed' || latest.get(d.vesselId) === d);
+}
+
+/**
+ * A route's departures, falling back to the timetable when WSF's sailing-space
+ * feed doesn't cover it. Use this rather than composeDepartures directly.
+ */
+export function composeRouteDepartures(
+  departingTerminalId: number,
+  arrivingTerminalId: number,
+  allVessels: VesselLocation[] | undefined,
+  terminals: TerminalSailingSpace[] | undefined,
+  timetable: ScheduledSailing[] | undefined,
+  now: number = Date.now(),
+): DepartureInfo[] {
+  return oneDepartedPerVessel(
+    composeDepartures(
+      departingTerminalId,
+      arrivingTerminalId,
+      allVessels,
+      withTimetable(terminals, departingTerminalId, arrivingTerminalId, timetable),
+      now,
+    ),
+  );
+}

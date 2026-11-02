@@ -6,7 +6,7 @@ file_count: 2
 total_lines: 364
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:47.899Z
+last_audited: 2026-11-02T03:07:16.486Z
 ---
 
 # app — Module Spec

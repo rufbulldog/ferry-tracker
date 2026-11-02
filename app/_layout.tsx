@@ -32,7 +32,7 @@ const queryClient = new QueryClient({
 
 function LocationDefaultsSetter() {
   const { location } = useUserLocation();
-  const { setLocationDefaults } = useRoute();
+  const { setLocationDefaults, enabledGroups } = useRoute();
   const [personalLoaded, setPersonalLoaded] = useState(false);
 
   // Load saved personal settings once at startup (from on-device storage).
@@ -51,10 +51,10 @@ function LocationDefaultsSetter() {
     if (!location || !personalLoaded) return;
     const nearest = findNearestLocation(location.latitude, location.longitude);
     if (nearest && nearest.distanceMeters < 10000) {
-      const defaults = getRouteDefaults(nearest.location.id);
-      setLocationDefaults(defaults.routeGroup, defaults.direction);
+      const defaults = getRouteDefaults(nearest.location.id, enabledGroups);
+      if (defaults) setLocationDefaults(defaults.routeGroup, defaults.direction);
     }
-  }, [location, personalLoaded, setLocationDefaults]);
+  }, [location, personalLoaded, setLocationDefaults, enabledGroups]);
 
   return null;
 }

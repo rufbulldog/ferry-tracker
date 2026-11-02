@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/settings.tsx
-content_sha: 2624d3f5cdf96304bba9edde666c1a6fcadaaca309dcb2f0c4e6e2a2278968b8
+content_sha: 57d36578cb6c8697a3625828450bf265bc3b23cea6bf6476c0f131e24af5f33a
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-09-14T02:10:09.275Z
+last_audited: 2026-11-02T03:07:16.383Z
 ---
 
 # settings.tsx
 
 **Path:** `app/(tabs)/settings.tsx`
-**Lines:** 422
+**Lines:** 472
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -23,8 +23,10 @@ last_audited: 2026-09-14T02:10:09.275Z
 ## Imports
 
 **Internal:**
+- `../../src/context/RouteContext` (`useRoute`)
 - `../../src/context/ThemeContext` (`useTheme`)
 - `../../src/store/personalLocations` (`getPersonalCoords`, `setPersonalCoords`, `PersonalCoords`)
+- `../../src/utils/routeGroups` (`ALL_ROUTE_GROUPS`, `ROUTE_GROUPS`)
 - `../../src/utils/themes` (`themes`, `ThemeName`, `Theme`, `themeNames`)
 
 **External:**
@@ -34,7 +36,7 @@ last_audited: 2026-09-14T02:10:09.275Z
 - `expo-location` (`* as Location`)
 - `expo-updates` (`* as Updates`)
 - `react` (`useState`)
-- `react-native` (`View`, `StyleSheet`, `ScrollView`, `TouchableOpacity`, `Image`, `TextInput`, `Alert`, `Platform`)
+- `react-native` (`View`, `StyleSheet`, `ScrollView`, `TouchableOpacity`, `Image`, `TextInput`, `Alert`, `Platform`, `Switch`)
 - `react-native-paper` (`Text`)
 - `react-native-safe-area-context` (`useSafeAreaInsets`)
 

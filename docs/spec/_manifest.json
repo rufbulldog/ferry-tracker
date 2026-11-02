@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-11-02T02:50:49.493Z",
+  "generated_at": "2026-11-02T03:07:16.492Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "e8b792519402426409612a64360ac107d69390dfa3ff87298f73a832c304427f",
@@ -10,18 +10,18 @@
       "last_audited": "2026-10-31T07:21:21.431Z"
     },
     "app/(tabs)/index.tsx": {
-      "content_sha256": "469e483d314e6b21d9549ae57b34bd12e1e441ed1d4ce4f205a4f621b4c002c6",
+      "content_sha256": "57585efe51115104ff346da773fd89b2d0dcd8713888a2a711788868b2dc6712",
       "spec_path": "docs/spec/app/(tabs)/index.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.818Z"
+      "last_audited": "2026-11-02T03:07:16.380Z"
     },
     "app/(tabs)/settings.tsx": {
-      "content_sha256": "2624d3f5cdf96304bba9edde666c1a6fcadaaca309dcb2f0c4e6e2a2278968b8",
+      "content_sha256": "57d36578cb6c8697a3625828450bf265bc3b23cea6bf6476c0f131e24af5f33a",
       "spec_path": "docs/spec/app/(tabs)/settings.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.275Z"
+      "last_audited": "2026-11-02T03:07:16.383Z"
     },
     "app/(tabs)/timer.tsx": {
       "content_sha256": "2bdf175642a5be58bddb3926376b021dd10b036627d577f8223fedae507d6225",
@@ -38,11 +38,11 @@
       "last_audited": "2026-11-01T06:16:16.436Z"
     },
     "app/_layout.tsx": {
-      "content_sha256": "c72c28787818000a2001b95232feabe6de659d2b25145b0e5b4785b1300d403d",
+      "content_sha256": "13e08d5ecdb069a6739e850bd392dcb500d58f64e84dac8e674d0c5a88b3a751",
       "spec_path": "docs/spec/app/_layout.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:44.337Z"
+      "last_audited": "2026-11-02T03:07:13.242Z"
     },
     "app/planner.tsx": {
       "content_sha256": "84f94d1daab4c7ee824eb12ad6a7aec04427eac0c6d3b0b318f6d08e993ddbe2",
@@ -66,11 +66,11 @@
       "last_audited": "2026-06-23T02:13:37.629Z"
     },
     "infra/lambda/collector/index.ts": {
-      "content_sha256": "dc839b123162677bd1c5ceb136a94ab3e8975d6abf7cb99fbc9760e170d17a05",
+      "content_sha256": "3eb88de2fa4e2663cccbfcefcbd62a9252347c50c217cdabd79e0a7a9fc6eec1",
       "spec_path": "docs/spec/infra/lambda/collector/index.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.281Z"
+      "last_audited": "2026-11-02T03:07:16.391Z"
     },
     "infra/lambda/plan/index.ts": {
       "content_sha256": "49e8caccc3238b97ca4208b7e5a4333d92f9c8e30e831799ea206748a6647d28",
@@ -80,11 +80,11 @@
       "last_audited": "2026-11-02T02:40:10.648Z"
     },
     "infra/lambda/plan/plan.ts": {
-      "content_sha256": "5b33a354a6665c5ec6d98011617f6277decb943b21950de4920d54d360cdd2db",
+      "content_sha256": "4e684e3c2cdfe0b2b94a4ee73f9574c16996ff2ad9fa9f204f7208bde8b49eec",
       "spec_path": "docs/spec/infra/lambda/plan/plan.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T02:50:49.414Z"
+      "last_audited": "2026-11-02T03:07:16.399Z"
     },
     "infra/lambda/proxy/index.ts": {
       "content_sha256": "ddb2fe3c67aae0a64450585d7cc81c5f14a5dd17bfb463d37e97c56c152f4b01",
@@ -171,11 +171,11 @@
       "last_audited": "2026-07-31T23:25:27.472Z"
     },
     "src/components/BestSailingCard.tsx": {
-      "content_sha256": "f419f898b83a93bdc87c68a743302a2ae82422dbdb6795590f9a0796d0193965",
+      "content_sha256": "7ae71cca65c755dd374e0db710f7d7859de97dfebc63875f1815cf8d1370a433",
       "spec_path": "docs/spec/src/components/BestSailingCard.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.835Z"
+      "last_audited": "2026-11-02T03:07:16.405Z"
     },
     "src/components/CapacityBar.tsx": {
       "content_sha256": "3a1f9e6e54383628044073dd941765350dcd3678abbe568607fe3369c936ee95",
@@ -248,11 +248,11 @@
       "last_audited": "2026-08-02T05:28:25.658Z"
     },
     "src/components/RouteSelector.tsx": {
-      "content_sha256": "250536d3f4298b98e22b325ae562f5d67d133a78547fdc48046c97be8acfc4bf",
+      "content_sha256": "f17c0aa24e2e9a9d66382e1a22f445692c826e8e7718f48dd564b0e6c29350e7",
       "spec_path": "docs/spec/src/components/RouteSelector.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-08-02T05:28:25.658Z"
+      "last_audited": "2026-11-02T03:07:16.409Z"
     },
     "src/context/BestSailingContext.tsx": {
       "content_sha256": "cd79e29ef7e2899133bfe260cdc5b87fac40ee86bd4d9b775965a46af37e649c",
@@ -262,11 +262,11 @@
       "last_audited": "2026-11-01T19:07:47.841Z"
     },
     "src/context/RouteContext.tsx": {
-      "content_sha256": "3fa0953b7746006d13e4e71dd797f0ecd9aa88ec2869bdf7b8d3ecc4b2473c87",
+      "content_sha256": "eaf66efc2c3701e1239208c5c6a1b0c059036a63c838ea917e133a168b4d8f46",
       "spec_path": "docs/spec/src/context/RouteContext.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.644Z"
+      "last_audited": "2026-11-02T03:07:16.410Z"
     },
     "src/context/ThemeContext.tsx": {
       "content_sha256": "5b11727011b99f7ff4c2285df04baf3fd22e69585fdd909f05feb78813b5a641",
@@ -283,11 +283,11 @@
       "last_audited": "2026-10-31T07:21:21.502Z"
     },
     "src/hooks/useBestSailing.ts": {
-      "content_sha256": "759f395b912d19f1b8a8ab181a7485feaf09b3068432a172671773a55f666690",
+      "content_sha256": "dfa1c916fed42e04eb62052634097554cf5b9b67d8d7b8158b0f776c8312fba7",
       "spec_path": "docs/spec/src/hooks/useBestSailing.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T02:40:10.668Z"
+      "last_audited": "2026-11-02T03:07:16.423Z"
     },
     "src/hooks/useCarWait.ts": {
       "content_sha256": "0fe3be7259552ee8d06a9e7263b616664b2977f430b35d908e5d6928c19ef08f",
@@ -311,11 +311,11 @@
       "last_audited": "2026-08-02T05:28:25.677Z"
     },
     "src/hooks/useLatestDeparture.ts": {
-      "content_sha256": "97080a7523a501617448d82cd925cbf01e3c38db35fc8499cd49eb92fb249a2d",
+      "content_sha256": "5d205e35a8d0c1ed8fb96636785351fc585c37c533361f7fdb24ccf84a950054",
       "spec_path": "docs/spec/src/hooks/useLatestDeparture.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-06-23T02:13:37.662Z"
+      "last_audited": "2026-11-02T03:07:16.435Z"
     },
     "src/hooks/useLiveActivity.ts": {
       "content_sha256": "4bad820b2913f70e42425a21896f1317e8cb7337507306b086e46d533d7ecb5d",
@@ -325,11 +325,11 @@
       "last_audited": "2026-11-01T19:07:47.864Z"
     },
     "src/hooks/useNextDepartures.ts": {
-      "content_sha256": "6ce156cb2a26c900941a758c8df14a63a6c1e08f50064c11fa9f0b93f45af69e",
+      "content_sha256": "aa38e8a4de701355c062df10d0f26aa16bd4d0f6c3f729c91b4bda8dbef7b90d",
       "spec_path": "docs/spec/src/hooks/useNextDepartures.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T02:40:10.686Z"
+      "last_audited": "2026-11-02T03:07:16.444Z"
     },
     "src/hooks/useRecommendation.ts": {
       "content_sha256": "589718d0b7c8134af4ceff131243277407e44d3d2809508e6132e853c68a50d3",
@@ -465,18 +465,18 @@
       "last_audited": "2026-08-01T19:39:26.650Z"
     },
     "src/utils/composeDepartures.ts": {
-      "content_sha256": "9eb877fcc72a139a62069d4380ea3e27b32cd3f0c418b1c7d5b7e66f63794c6e",
+      "content_sha256": "9fea9c979c43a0b9d80aa194c73d8d6de4039a820c3afe84c46b19ef9eea7f81",
       "spec_path": "docs/spec/src/utils/composeDepartures.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T02:40:10.720Z"
+      "last_audited": "2026-11-02T03:07:16.477Z"
     },
     "src/utils/constants.ts": {
-      "content_sha256": "3b9d25a6ae4ed42b485dbe18b5b0301fd1c3a747b97202c0df9a025b5f150b52",
+      "content_sha256": "f9b38fc95883b8690d1a293238974a07c4c553b6cdf01d4288e2c570982b89fd",
       "spec_path": "docs/spec/src/utils/constants.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.344Z"
+      "last_audited": "2026-11-02T03:07:16.478Z"
     },
     "src/utils/dateHelpers.ts": {
       "content_sha256": "766eaf5e5d027c1648f9e1b1c98ad07071eaadb8e9dd7b3017b833b34cafa9ed",
@@ -507,11 +507,11 @@
       "last_audited": "2026-08-01T19:39:26.652Z"
     },
     "src/utils/locations.ts": {
-      "content_sha256": "1aab46510f4188ad83ceea6a7ab525154a0d3372c227aef8f41e1dd47c6337bd",
+      "content_sha256": "28e51c83cecac1f6a00094075c88d46351ccb7974b5756e3f01f5c96e35a7e25",
       "spec_path": "docs/spec/src/utils/locations.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T02:40:10.722Z"
+      "last_audited": "2026-11-02T03:07:16.480Z"
     },
     "src/utils/planEstimate.ts": {
       "content_sha256": "c8f28089718d9d30aa47337a5883b596ec4eccabcf9040a8c222cc80c8cbe9b3",
@@ -526,6 +526,13 @@
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
       "last_audited": "2026-09-14T02:10:09.346Z"
+    },
+    "src/utils/routeGroups.ts": {
+      "content_sha256": "0818c6fd9167cf465d08912548cc4bb1893c296d01065d4aacd014830afd1a54",
+      "spec_path": "docs/spec/src/utils/routeGroups.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-02T03:07:16.483Z"
     },
     "src/utils/sailingStats.ts": {
       "content_sha256": "1f2e8ab2eb0e709956b59a24df83442ca34f123aa0a808f3d95759659ab27faa",
@@ -563,11 +570,11 @@
       "last_audited": "2026-11-01T06:16:16.512Z"
     },
     "src/utils/transitConfig.ts": {
-      "content_sha256": "afcf06fa3b02e39b8e0586e752db20b96288d60dcfef6d0e41944f047ab7e2c5",
+      "content_sha256": "77a99b6959b48d2a5c8c32f1102325581661c084513774c78401eb23523d40dc",
       "spec_path": "docs/spec/src/utils/transitConfig.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-08-02T05:28:25.722Z"
+      "last_audited": "2026-11-02T03:07:16.484Z"
     },
     "src/utils/transitStats.ts": {
       "content_sha256": "dfe39c08ee55de1d011a7ad7c43965c81972928c56e1ed3bb108b30aa25ad9c1",
@@ -593,18 +600,18 @@
   },
   "modules": {
     "app": {
-      "input_hashes_sha256": "8ffcfa98f3fd99c1eafa84a4f619c453cbdc73a3aca8eb3b87e4ecc360ab58dc",
+      "input_hashes_sha256": "5cdeb43decb725f5720757b3a0b1f7fcba550634ad05aba23aa3c966ad8d6bbb",
       "spec_path": "docs/spec/app/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.899Z"
+      "last_audited": "2026-11-02T03:07:16.486Z"
     },
     "app/(tabs)": {
-      "input_hashes_sha256": "2f70a24c7a37462d3787bd1619d6c2f1d0f6e9b81915fd8873d87d42435fe31a",
+      "input_hashes_sha256": "30410dc1be1264d9ac5ac5fce8e02c6711ff422c4efdfa40fc8c3ac5721c6256",
       "spec_path": "docs/spec/app/(tabs)/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.899Z"
+      "last_audited": "2026-11-02T03:07:16.487Z"
     },
     "infra/bin": {
       "input_hashes_sha256": "9c0e8b95a35bd301b1e81f9f1860b91a9fd467c03c07ff682546e0613def3df9",
@@ -621,18 +628,18 @@
       "last_audited": "2026-10-31T07:21:21.594Z"
     },
     "infra/lambda/collector": {
-      "input_hashes_sha256": "f1a2c6fa8707e6d153c495b58c4d1b77150139bea22c84621c2a9fd2c6ac47ec",
+      "input_hashes_sha256": "4d41e6e642499c982ca9c064c38f0f11e7b02d1d8ef55c2ef81802c297cfc1b9",
       "spec_path": "docs/spec/infra/lambda/collector/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-31T07:21:21.594Z"
+      "last_audited": "2026-11-02T03:07:16.487Z"
     },
     "infra/lambda/plan": {
-      "input_hashes_sha256": "f26349bc665f7dbbe62264d84c708c9ed18d028b9cb8ea0229cfb3c7d15713f7",
+      "input_hashes_sha256": "038b831d39ac34fef411616b6b4544d7c1561e916ca89172d5dbf6a30bf58354",
       "spec_path": "docs/spec/infra/lambda/plan/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T02:50:49.488Z"
+      "last_audited": "2026-11-02T03:07:16.487Z"
     },
     "infra/lambda/proxy": {
       "input_hashes_sha256": "4bc09694c1db9ed87072fdb74de1c287ffd90ce7e238d78e58a455cd9d557485",
@@ -670,25 +677,25 @@
       "last_audited": "2026-08-02T05:28:25.726Z"
     },
     "src/components": {
-      "input_hashes_sha256": "ca2bb1b804fa6fec32c8c08332a5db3729b64ff1e6663109b0458deee0580e40",
+      "input_hashes_sha256": "ac48243eb0f8bef333ea54d6ff504f8e7eddbdc5d26479456fecd83b8da71326",
       "spec_path": "docs/spec/src/components/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.900Z"
+      "last_audited": "2026-11-02T03:07:16.488Z"
     },
     "src/context": {
-      "input_hashes_sha256": "c039776dc52466d3bab32a3e3fae1abb9dcddc7bb3ba09a1faa5b9e0f3a092b8",
+      "input_hashes_sha256": "e70737b5552ee69e60e6e28c1e22efb5603c8a2255a4c902265d18638894381e",
       "spec_path": "docs/spec/src/context/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.900Z"
+      "last_audited": "2026-11-02T03:07:16.488Z"
     },
     "src/hooks": {
-      "input_hashes_sha256": "dbafdeffc5671807bdd0a538ac648dcf7275b8cf8abc08c0ce53e1be305fc7a4",
+      "input_hashes_sha256": "22476a0141ef6e9ce7527bd50275e14a3989b94ecaacc19395dffbf0fbc10446",
       "spec_path": "docs/spec/src/hooks/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T02:40:10.725Z"
+      "last_audited": "2026-11-02T03:07:16.488Z"
     },
     "src/store": {
       "input_hashes_sha256": "2541a62f0ac13a8540d75945de52964e20d1a73448c4e4957bfe9cc5520f7a2c",
@@ -705,27 +712,27 @@
       "last_audited": "2026-09-14T02:10:09.350Z"
     },
     "src/utils": {
-      "input_hashes_sha256": "6dcd4545df50cd6603463057fb0646a89107b7f6c8902b2aa3b03acc68ad5bee",
+      "input_hashes_sha256": "8bb5667a5e4d798ca2a7d0b12be0cc34e808d78fe0264daaf4f0edfa2e3cc6e7",
       "spec_path": "docs/spec/src/utils/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T02:40:10.726Z"
+      "last_audited": "2026-11-02T03:07:16.488Z"
     }
   },
   "systems": {
     "architecture": {
-      "input_sha256": "9ea313bf5b9f7a764bdbad5e42a09f5d469838b17f34156e4a8b15aa5c59a3d6",
+      "input_sha256": "184c5639a7fe734a2b7c21908f70100f3f7d2f4e9ca0231dc42d789114346b0f",
       "spec_path": "docs/spec/_systems/architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-11-02T02:40:10.731Z"
+      "last_audited": "2026-11-02T03:07:16.492Z"
     },
     "frontend-architecture": {
-      "input_sha256": "53703befc907fb14ab7208e1b9b2d96d0f47937ee7be59ab12ec797d831b1a72",
+      "input_sha256": "af7244e7bbf4046616e2b20352a2084e790b5c7deeb1d4a5544e7f08481a217d",
       "spec_path": "docs/spec/_systems/frontend-architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-11-02T02:40:10.730Z"
+      "last_audited": "2026-11-02T03:07:16.492Z"
     },
     "tech-stack": {
       "input_sha256": "bce6f1ea890db91effb906a0173bc357fac85d1527914d8f62d064850094fb13",

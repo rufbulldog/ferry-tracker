@@ -8,6 +8,7 @@ import {
   TextInput,
   Alert,
   Platform,
+  Switch,
 } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +18,8 @@ import * as Updates from 'expo-updates';
 import * as Location from 'expo-location';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../src/context/ThemeContext';
+import { useRoute } from '../../src/context/RouteContext';
+import { ALL_ROUTE_GROUPS, ROUTE_GROUPS } from '../../src/utils/routeGroups';
 import { themes, ThemeName, Theme, themeNames } from '../../src/utils/themes';
 import {
   getPersonalCoords,
@@ -211,6 +214,41 @@ function PersonalLocationsSection({ theme }: { theme: Theme }) {
   );
 }
 
+function RoutesSection({ theme }: { theme: Theme }) {
+  const { enabledGroups, setGroupEnabled } = useRoute();
+
+  return (
+    <View style={[styles.section, { backgroundColor: theme.colors.cardBg }]}>
+      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+        Routes
+      </Text>
+      <Text style={[styles.infoText, { color: theme.colors.textMuted, marginBottom: 8 }]}>
+        The routes the app shows and plans with ("Best from here", Lock Screen, GPS defaults).
+        History for Trends is recorded for every route either way.
+      </Text>
+      {ALL_ROUTE_GROUPS.map((group) => {
+        const on = enabledGroups.includes(group);
+        const isLast = on && enabledGroups.length === 1;
+        return (
+          <View key={group} style={[styles.routeRow, { borderBottomColor: theme.colors.border }]}>
+            <Text style={[styles.routeLabel, { color: theme.colors.text }]}>
+              {ROUTE_GROUPS[group].label}
+            </Text>
+            <Switch
+              value={on}
+              onValueChange={(value) => setGroupEnabled(group, value)}
+              disabled={isLast}
+              trackColor={{ true: theme.colors.primary }}
+              accessibilityLabel={`Use ${ROUTE_GROUPS[group].label}`}
+              accessibilityHint={isLast ? 'At least one route must stay on' : undefined}
+            />
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
 function CheckInContactSection({ theme }: { theme: Theme }) {
   const [contactNumber, setContactNumber] = useState(
     getPersonalCoords().contactNumber ?? ''
@@ -303,6 +341,8 @@ export default function SettingsScreen() {
         </View>
       </View>
 
+      <RoutesSection theme={theme} />
+
       <PersonalLocationsSection theme={theme} />
 
       <CheckInContactSection theme={theme} />
@@ -376,6 +416,16 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 14,
+  },
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  routeLabel: {
+    fontSize: 16,
   },
   locRow: {
     marginBottom: 16,

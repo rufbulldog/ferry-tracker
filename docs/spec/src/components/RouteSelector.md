@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/RouteSelector.tsx
-content_sha: 250536d3f4298b98e22b325ae562f5d67d133a78547fdc48046c97be8acfc4bf
+content_sha: f17c0aa24e2e9a9d66382e1a22f445692c826e8e7718f48dd564b0e6c29350e7
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-02T05:28:25.658Z
+last_audited: 2026-11-02T03:07:16.409Z
 ---
 
 # RouteSelector.tsx
 
 **Path:** `src/components/RouteSelector.tsx`
-**Lines:** 215
+**Lines:** 209
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -25,6 +25,7 @@ last_audited: 2026-08-02T05:28:25.658Z
 **Internal:**
 - `../context/RouteContext` (`useRoute`, `ROUTE_GROUP_LABELS`)
 - `../context/ThemeContext` (`useTheme`)
+- `../utils/routeGroups` (`RouteGroup`)
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)

@@ -70,14 +70,21 @@ const query = (over: Partial<PlanQuery> = {}): PlanQuery => ({
 });
 
 describe("parsePlanQuery", () => {
-  it("defaults to every route, three sailings, no location", () => {
+  it("defaults to the app's default routes, three sailings, no location", () => {
     const r = parsePlanQuery(null);
     expect(r.ok && r.query).toMatchObject({
       location: null,
       sailings: 3,
       bufferMinutes: null,
     });
-    expect(r.ok && r.query.routes).toContain("seattle-bremerton");
+    expect(r.ok && r.query.routes).toEqual([
+      "bainbridge-seattle", "seattle-bainbridge", "kingston-edmonds", "edmonds-kingston",
+    ]);
+  });
+
+  it("plans Bremerton only when asked", () => {
+    const r = parsePlanQuery({ routes: "seattle-bremerton" });
+    expect(r.ok && r.query.routes).toEqual(["seattle-bremerton"]);
   });
 
   it("parses location, routes and overrides", () => {

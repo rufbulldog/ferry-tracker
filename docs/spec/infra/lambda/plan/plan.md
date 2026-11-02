@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: infra/lambda/plan/plan.ts
-content_sha: 5b33a354a6665c5ec6d98011617f6277decb943b21950de4920d54d360cdd2db
+content_sha: 4e684e3c2cdfe0b2b94a4ee73f9574c16996ff2ad9fa9f204f7208bde8b49eec
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T02:50:49.414Z
+last_audited: 2026-11-02T03:07:16.399Z
 ---
 
 # plan.ts
 
 **Path:** `infra/lambda/plan/plan.ts`
-**Lines:** 509
+**Lines:** 454
 **Language:** TypeScript
 
 ## Exports
@@ -29,6 +29,7 @@ last_audited: 2026-11-02T02:50:49.414Z
 >` |
 | `PlanRoute` | interface |  |
 | `PLAN_ROUTES` | const | `Record<string, PlanRoute>` |
+| `DEFAULT_PLAN_ROUTES` | const | `string[]` |
 | `PlanQuery` | interface |  |
 | `ParseResult` | type |  |
 | `PlanInputs` | interface |  |
@@ -55,10 +56,11 @@ last_audited: 2026-11-02T02:50:49.414Z
 - `../../../src/utils/bestSailing` (`pickBestSailing`, `SailingCandidate`, `SailingPick`)
 - `../../../src/utils/bulletins` (`processBulletins`, `pickActiveAlert`)
 - `../../../src/utils/carWait` (`estimateCarWait`, `CarWaitEstimate`)
-- `../../../src/utils/composeDepartures` (`composeDepartures`, `DepartureInfo`)
+- `../../../src/utils/composeDepartures` (`composeRouteDepartures`, `DepartureInfo`, `hasRouteSailingSpace`, `ScheduledSailing`)
 - `../../../src/utils/constants` (`ROUTES`, `Route`, `crossingMinutesForRoute`)
 - `../../../src/utils/ferryDeparture` (`deriveSailingIntervalMinutes`, `effectiveFerryDeparture`)
 - `../../../src/utils/geo` (`haversineDistance`)
+- `../../../src/utils/routeGroups` (`DEFAULT_ENABLED_ROUTE_GROUPS`, `ROUTE_GROUPS`)
 - `../../../src/utils/time` (`parseDate`, `addMinutes`)
 - `../../../src/utils/transitConfig` (`TRAVEL_TIMES`)
 - `../../../src/utils/typicalConditions` (`computeTypicalForSlot`)

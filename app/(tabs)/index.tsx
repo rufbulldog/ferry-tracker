@@ -55,6 +55,7 @@ const TERMINAL_NAMES: Record<number, string> = {
   [TERMINALS.BAINBRIDGE]: "Bainbridge",
   [TERMINALS.KINGSTON]: "Kingston",
   [TERMINALS.EDMONDS]: "Edmonds",
+  [TERMINALS.BREMERTON]: "Bremerton",
 };
 
 export default function DepartScreen() {

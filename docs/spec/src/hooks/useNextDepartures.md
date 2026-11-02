@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useNextDepartures.ts
-content_sha: 6ce156cb2a26c900941a758c8df14a63a6c1e08f50064c11fa9f0b93f45af69e
+content_sha: aa38e8a4de701355c062df10d0f26aa16bd4d0f6c3f729c91b4bda8dbef7b90d
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T02:40:10.686Z
+last_audited: 2026-11-02T03:07:16.444Z
 ---
 
 # useNextDepartures.ts
 
 **Path:** `src/hooks/useNextDepartures.ts`
-**Lines:** 26
+**Lines:** 52
 **Language:** TypeScript
 
 ## Exports
@@ -24,10 +24,12 @@ last_audited: 2026-11-02T02:40:10.686Z
 ## Imports
 
 **Internal:**
-- `../utils/composeDepartures` (`composeDepartures`)
+- `../api/schedule` (`fetchScheduleForDate`)
+- `../utils/composeDepartures` (`composeRouteDepartures`, `hasRouteSailingSpace`)
 - `../utils/constants` (`ROUTES`, `Route`)
 - `./useTerminalConditions` (`useTerminalSailingSpace`)
 - `./useVesselLocations` (`useVesselLocations`)
 
 **External:**
+- `@tanstack/react-query` (`useQuery`)
 - `react` (`useMemo`)

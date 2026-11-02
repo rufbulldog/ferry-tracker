@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: infra/lambda/collector/index.ts
-content_sha: dc839b123162677bd1c5ceb136a94ab3e8975d6abf7cb99fbc9760e170d17a05
+content_sha: 3eb88de2fa4e2663cccbfcefcbd62a9252347c50c217cdabd79e0a7a9fc6eec1
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-09-14T02:10:09.281Z
+last_audited: 2026-11-02T03:07:16.391Z
 ---
 
 # index.ts
 
 **Path:** `infra/lambda/collector/index.ts`
-**Lines:** 400
+**Lines:** 405
 **Language:** TypeScript
 
 ## Exports

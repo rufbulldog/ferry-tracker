@@ -87,6 +87,14 @@ There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK dep
 
 ## Best sailing, Live Activity & CarPlay
 
+- **Route groups** (`src/utils/routeGroups.ts`): Bainbridge - Seattle, Kingston - Edmonds, Bremerton - Seattle.
+  Settings → Routes toggles which the app uses (AsyncStorage `@ferry/enabled-route-groups`, default
+  Bainbridge + Kingston, at least one stays on). Disabled groups drop out of the route picker, GPS
+  defaults and "Best from here". The collector records **every** route regardless, so Trends has history
+  once a group is turned on. WSF's sailing-space feed often omits Seattle/Bremerton, so
+  `composeRouteDepartures` falls back to the timetable for those routes (live delays from vessels, no
+  drive-up space).
+
 - **Best from here** (`src/utils/bestSailing.ts`, `useBestSailing`, `BestSailingContext`): picks the
   terminal + sailing you can make by car from your live location across both route groups. Drive time
   is a straight-line heuristic for now (no native routing).

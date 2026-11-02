@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useBestSailing.ts
-content_sha: 759f395b912d19f1b8a8ab181a7485feaf09b3068432a172671773a55f666690
+content_sha: dfa1c916fed42e04eb62052634097554cf5b9b67d8d7b8158b0f776c8312fba7
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T02:40:10.668Z
+last_audited: 2026-11-02T03:07:16.423Z
 ---
 
 # useBestSailing.ts
 
 **Path:** `src/hooks/useBestSailing.ts`
-**Lines:** 138
+**Lines:** 140
 **Language:** TypeScript
 
 ## Exports
@@ -28,9 +28,11 @@ last_audited: 2026-11-02T02:40:10.668Z
 ## Imports
 
 **Internal:**
+- `../context/RouteContext` (`useRoute`)
 - `../utils/bestSailing` (`pickBestSailing`, `BestSailingResult`, `SailingCandidate`)
 - `../utils/constants` (`Route`, `crossingMinutesForRoute`)
 - `../utils/locations` (`getTerminalLocation`, `haversineDistance`)
+- `../utils/routeGroups` (`ALL_ROUTE_GROUPS`, `ROUTE_GROUPS`, `RouteGroup`)
 - `../utils/transitConfig` (`TRAVEL_TIMES`)
 - `./useCarWait` (`useCarWait`)
 - `./useNextDepartures` (`useNextDepartures`, `DepartureInfo`)

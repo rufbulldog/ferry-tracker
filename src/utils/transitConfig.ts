@@ -32,6 +32,15 @@ export const TRAVEL_TIMES: Record<Route, {
     bike: null,
     car: null,
   },
+  // Bremerton ⇄ Seattle — optional route group, no personal leg configured
+  'seattle-bremerton': {
+    bike: null,
+    car: null,
+  },
+  'bremerton-seattle': {
+    bike: null,
+    car: null,
+  },
 };
 
 // Map (ferry route, vehicle) → TransitRoute for looking up recorded averages.

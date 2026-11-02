@@ -2,17 +2,17 @@
 type: l2-module
 spec_version: 1
 path: src/utils
-file_count: 24
-total_lines: 2910
+file_count: 25
+total_lines: 3120
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T02:40:10.726Z
+last_audited: 2026-11-02T03:07:16.488Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 24 · **Lines:** 2910
+**Files:** 25 · **Lines:** 3120
 
 ## File inventory
 
@@ -24,21 +24,22 @@ last_audited: 2026-11-02T02:40:10.726Z
 | [`bulletins.ts`](./bulletins.md) | 156 | Route-relevant bulletins, alerts first then newest. `route` is matched by the |
 | [`capacityMeter.ts`](./capacityMeter.md) | 42 | Percent of drive-up space taken, 0–100, or null when space data is missing. |
 | [`carWait.ts`](./carWait.md) | 220 | Parse a WSF terminalwaittimes note (vehicle wait). |
-| [`composeDepartures.ts`](./composeDepartures.md) | 367 |  |
-| [`constants.ts`](./constants.md) | 67 |  |
+| [`composeDepartures.ts`](./composeDepartures.md) | 453 | True when WSF's sailing-space feed lists departures from → to. |
+| [`constants.ts`](./constants.md) | 75 |  |
 | [`dateHelpers.ts`](./dateHelpers.md) | 43 | Local YYYY-MM-DD (the format WSF's schedule endpoint expects as TripDate). |
 | [`ferryDeparture.ts`](./ferryDeparture.md) | 80 | Resolve the effective departure for a sailing. Preference order: |
 | [`geo.ts`](./geo.md) | 19 | Haversine distance in meters between two lat/lon points. |
 | [`kingstonBoardingPass.ts`](./kingstonBoardingPass.md) | 145 | Resolve the Kingston boarding-pass status for a given instant. |
-| [`locations.ts`](./locations.md) | 104 | A public ferry terminal by its location id (e.g. 'kingston-terminal'). |
+| [`locations.ts`](./locations.md) | 125 | A public ferry terminal by its location id (e.g. 'kingston-terminal'). |
 | [`planEstimate.ts`](./planEstimate.md) | 101 |  |
 | [`predictedDelay.ts`](./predictedDelay.md) | 98 |  |
+| [`routeGroups.ts`](./routeGroups.md) | 86 | The group + direction a route belongs to. |
 | [`sailingStats.ts`](./sailingStats.md) | 177 | Minutes after local midnight of a snapshot's scheduled departure. |
 | [`tabBarColors.ts`](./tabBarColors.md) | 76 |  |
 | [`themes.ts`](./themes.md) | 426 |  |
 | [`time.ts`](./time.md) | 56 |  |
 | [`timerLegs.ts`](./timerLegs.md) | 127 | Label for a saved record. Car home→ferry is shared by Bainbridge and Kingston. |
-| [`transitConfig.ts`](./transitConfig.md) | 50 |  |
+| [`transitConfig.ts`](./transitConfig.md) | 59 |  |
 | [`transitStats.ts`](./transitStats.md) | 37 |  |
 | [`typicalConditions.ts`](./typicalConditions.md) | 68 |  |
 | [`typicalCrossing.ts`](./typicalCrossing.md) | 47 |  |
@@ -110,6 +111,14 @@ Files in this folder imported from elsewhere:
   - `src/hooks/useBestSailing.ts`
 - `planEstimate.ts` — used by 1 file
   - `app/planner.tsx`
+- `routeGroups.ts` — used by 7 files
+  - `app/(tabs)/settings.tsx`
+  - `infra/lambda/plan/plan.ts`
+  - `src/components/BestSailingCard.tsx`
+  - `src/components/RouteSelector.tsx`
+  - `src/context/RouteContext.tsx`
+  - `src/hooks/useBestSailing.ts`
+  - `src/hooks/useLatestDeparture.ts`
 - `sailingStats.ts` — used by 1 file
   - `app/(tabs)/trends.tsx`
 - `tabBarColors.ts` — used by 1 file

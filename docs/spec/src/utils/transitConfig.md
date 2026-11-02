@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/utils/transitConfig.ts
-content_sha: afcf06fa3b02e39b8e0586e752db20b96288d60dcfef6d0e41944f047ab7e2c5
+content_sha: 77a99b6959b48d2a5c8c32f1102325581661c084513774c78401eb23523d40dc
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-02T05:28:25.722Z
+last_audited: 2026-11-02T03:07:16.484Z
 ---
 
 # transitConfig.ts
 
 **Path:** `src/utils/transitConfig.ts`
-**Lines:** 50
+**Lines:** 59
 **Language:** TypeScript
 
 ## Exports

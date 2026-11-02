@@ -5,18 +5,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../context/ThemeContext";
 import { useRoute } from "../context/RouteContext";
 import { useBestSailingContext } from "../context/BestSailingContext";
-import { Route, ROUTES } from "../utils/constants";
+import { ROUTES } from "../utils/constants";
+import { selectionFor } from "../utils/routeGroups";
 import { formatTime } from "../utils/time";
-
-const ROUTE_SELECTION: Record<
-  Route,
-  { group: "bainbridge" | "kingston"; direction: "outbound" | "inbound" }
-> = {
-  "bainbridge-seattle": { group: "bainbridge", direction: "outbound" },
-  "seattle-bainbridge": { group: "bainbridge", direction: "inbound" },
-  "kingston-edmonds": { group: "kingston", direction: "outbound" },
-  "edmonds-kingston": { group: "kingston", direction: "inbound" },
-};
 
 /**
  * "Best from here" — which terminal to drive to and which sailing you can make,
@@ -42,7 +33,7 @@ export function BestSailingCard() {
   const urgent = best.driveMinutes > 0 && best.slackMinutes <= 5;
 
   const select = () => {
-    const sel = ROUTE_SELECTION[best.route];
+    const sel = selectionFor(best.route);
     setRouteGroup(sel.group);
     setDirection(sel.direction);
   };

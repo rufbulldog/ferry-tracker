@@ -2,10 +2,10 @@
 type: l1-file
 spec_version: 1
 source: app/_layout.tsx
-content_sha: c72c28787818000a2001b95232feabe6de659d2b25145b0e5b4785b1300d403d
+content_sha: 13e08d5ecdb069a6739e850bd392dcb500d58f64e84dac8e674d0c5a88b3a751
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:44.337Z
+last_audited: 2026-11-02T03:07:13.242Z
 ---
 
 # _layout.tsx

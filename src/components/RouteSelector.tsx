@@ -6,13 +6,12 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, ROUTE_GROUP_LABELS } from '../context/RouteContext';
 import { useTheme } from '../context/ThemeContext';
-
-type RouteGroup = 'bainbridge' | 'kingston';
+import type { RouteGroup } from '../utils/routeGroups';
 
 export function RouteSelector() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { routeGroup, setRouteGroup, direction, setDirection, directionLabels } = useRoute();
+  const { routeGroup, setRouteGroup, direction, setDirection, directionLabels, enabledGroups } = useRoute();
   const [modalVisible, setModalVisible] = useState(false);
   const { theme } = useTheme();
 
@@ -27,11 +26,14 @@ export function RouteSelector() {
       <TouchableOpacity
         style={[styles.dropdown, { backgroundColor: theme.colors.cardBg }]}
         onPress={() => setModalVisible(true)}
+        disabled={enabledGroups.length < 2}
         activeOpacity={0.7}
       >
         <Ionicons name="boat-outline" size={18} color={theme.colors.primary} />
         <Text style={[styles.dropdownText, { color: theme.colors.text }]}>{ROUTE_GROUP_LABELS[routeGroup]}</Text>
-        <Ionicons name="chevron-down" size={16} color={theme.colors.textMuted} />
+        {enabledGroups.length > 1 && (
+          <Ionicons name="chevron-down" size={16} color={theme.colors.textMuted} />
+        )}
       </TouchableOpacity>
 
       {/* Schedule planner — future-day schedules + leave-by estimates */}
@@ -95,28 +97,20 @@ export function RouteSelector() {
         <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
           <View style={[styles.modalContent, { backgroundColor: theme.colors.cardBg }]}>
             <Text style={[styles.modalTitle, { color: theme.colors.text, borderBottomColor: theme.colors.border }]}>Select Route</Text>
-            <TouchableOpacity
-              style={[styles.option, { borderBottomColor: theme.colors.border }, routeGroup === 'bainbridge' && { backgroundColor: theme.colors.inputBg }]}
-              onPress={() => handleSelectRoute('bainbridge')}
-            >
-              <Text style={[styles.optionText, { color: theme.colors.text }, routeGroup === 'bainbridge' && { color: theme.colors.primary }]}>
-                Bainbridge - Seattle
-              </Text>
-              {routeGroup === 'bainbridge' && (
-                <Ionicons name="checkmark" size={20} color={theme.colors.primary} />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.option, { borderBottomColor: theme.colors.border }, routeGroup === 'kingston' && { backgroundColor: theme.colors.inputBg }]}
-              onPress={() => handleSelectRoute('kingston')}
-            >
-              <Text style={[styles.optionText, { color: theme.colors.text }, routeGroup === 'kingston' && { color: theme.colors.primary }]}>
-                Kingston - Edmonds
-              </Text>
-              {routeGroup === 'kingston' && (
-                <Ionicons name="checkmark" size={20} color={theme.colors.primary} />
-              )}
-            </TouchableOpacity>
+            {enabledGroups.map((group) => (
+              <TouchableOpacity
+                key={group}
+                style={[styles.option, { borderBottomColor: theme.colors.border }, routeGroup === group && { backgroundColor: theme.colors.inputBg }]}
+                onPress={() => handleSelectRoute(group)}
+              >
+                <Text style={[styles.optionText, { color: theme.colors.text }, routeGroup === group && { color: theme.colors.primary }]}>
+                  {ROUTE_GROUP_LABELS[group]}
+                </Text>
+                {routeGroup === group && (
+                  <Ionicons name="checkmark" size={20} color={theme.colors.primary} />
+                )}
+              </TouchableOpacity>
+            ))}
           </View>
         </Pressable>
       </Modal>

@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useLatestDeparture.ts
-content_sha: 97080a7523a501617448d82cd925cbf01e3c38db35fc8499cd49eb92fb249a2d
+content_sha: 5d205e35a8d0c1ed8fb96636785351fc585c37c533361f7fdb24ccf84a950054
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.662Z
+last_audited: 2026-11-02T03:07:16.435Z
 ---
 
 # useLatestDeparture.ts
 
 **Path:** `src/hooks/useLatestDeparture.ts`
-**Lines:** 61
+**Lines:** 50
 **Language:** TypeScript
 
 ## Exports
@@ -27,6 +27,7 @@ last_audited: 2026-06-23T02:13:37.662Z
 - `../api/backend` (`getLatestDepartures`)
 - `../types/storage` (`DepartureSnapshot`)
 - `../utils/constants` (`Route`)
+- `../utils/routeGroups` (`oppositeRoute as routeOtherWay`)
 
 **External:**
 - `@tanstack/react-query` (`useQuery`)

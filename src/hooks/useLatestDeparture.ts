@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getLatestDepartures } from '../api/backend';
 import { DepartureSnapshot } from '../types/storage';
 import { Route } from '../utils/constants';
+import { oppositeRoute as routeOtherWay } from '../utils/routeGroups';
 
 // Hook to get the most recent departure for a route (from backend)
 // This provides capacity data even if WSF API no longer has it
@@ -19,7 +20,7 @@ export function useLatestDeparture(route: Route) {
 // Useful for showing incoming vessel capacity (departed from opposite terminal)
 export function useLatestDeparturePair(route: Route) {
   // Get the opposite route
-  const oppositeRoute = getOppositeRoute(route);
+  const oppositeRoute = routeOtherWay(route);
 
   const currentRoute = useQuery({
     queryKey: ['latestDeparture', route],
@@ -46,15 +47,3 @@ export function useLatestDeparturePair(route: Route) {
   };
 }
 
-function getOppositeRoute(route: Route): Route {
-  switch (route) {
-    case 'seattle-bainbridge':
-      return 'bainbridge-seattle';
-    case 'bainbridge-seattle':
-      return 'seattle-bainbridge';
-    case 'kingston-edmonds':
-      return 'edmonds-kingston';
-    case 'edmonds-kingston':
-      return 'kingston-edmonds';
-  }
-}

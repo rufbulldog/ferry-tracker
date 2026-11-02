@@ -3,23 +3,23 @@ type: l2-module
 spec_version: 1
 path: src/components
 file_count: 13
-total_lines: 2387
+total_lines: 2372
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:47.900Z
+last_audited: 2026-11-02T03:07:16.488Z
 ---
 
 # src/components — Module Spec
 
 **Folder:** `src/components`
-**Files:** 13 · **Lines:** 2387
+**Files:** 13 · **Lines:** 2372
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`AlertBanner.tsx`](./AlertBanner.md) | 122 |  |
-| [`BestSailingCard.tsx`](./BestSailingCard.md) | 177 | "Best from here" — which terminal to drive to and which sailing you can make, |
+| [`BestSailingCard.tsx`](./BestSailingCard.md) | 168 | "Best from here" — which terminal to drive to and which sailing you can make, |
 | [`CapacityBar.tsx`](./CapacityBar.md) | 130 |  |
 | [`CarMeter.tsx`](./CarMeter.md) | 50 |  |
 | [`CarWaitChip.tsx`](./CarWaitChip.md) | 54 | Compact "cars may wait" notice for the Time screen. Renders nothing unless |
@@ -30,7 +30,7 @@ last_audited: 2026-11-01T19:07:47.900Z
 | [`LastDepartureCard.tsx`](./LastDepartureCard.md) | 163 |  |
 | [`MainDepartureCard.tsx`](./MainDepartureCard.md) | 694 | The leave-by plan for this sailing (formerly the Leave tab). |
 | [`MonthCalendar.tsx`](./MonthCalendar.md) | 151 | Lightweight month-grid date picker (pure JS/RN — no native date-picker dep). |
-| [`RouteSelector.tsx`](./RouteSelector.md) | 215 |  |
+| [`RouteSelector.tsx`](./RouteSelector.md) | 209 |  |
 
 ## Public surface
 

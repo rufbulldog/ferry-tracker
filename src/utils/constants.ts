@@ -3,6 +3,7 @@ export const TERMINALS = {
   BAINBRIDGE: 3,     // Bainbridge Island
   KINGSTON: 12,      // Kingston
   EDMONDS: 8,        // Edmonds
+  BREMERTON: 4,      // Bremerton
 } as const;
 
 // WSDOT terminal camera URLs - images refresh every ~5 minutes
@@ -42,7 +43,10 @@ export const FERRY_TO_HOME_FALLBACK_MINUTES = 15;
 // (delay or crossing) enough to act on it. Matches carWait's threshold.
 export const HISTORY_MIN_SAMPLES = 3;
 
-export type Route = 'seattle-bainbridge' | 'bainbridge-seattle' | 'kingston-edmonds' | 'edmonds-kingston';
+export type Route =
+  | 'seattle-bainbridge' | 'bainbridge-seattle'
+  | 'kingston-edmonds' | 'edmonds-kingston'
+  | 'seattle-bremerton' | 'bremerton-seattle';
 
 // Per-route nominal crossing time — the fallback used only when there's no live
 // vessel Eta and not enough recorded crossings yet. Measured history (see
@@ -52,6 +56,8 @@ export const CROSSING_MINUTES_BY_ROUTE: Record<Route, number> = {
   'bainbridge-seattle': 35,
   'kingston-edmonds': 30,
   'edmonds-kingston': 30,
+  'seattle-bremerton': 60,
+  'bremerton-seattle': 60,
 };
 
 export function crossingMinutesForRoute(route: Route): number {
@@ -63,4 +69,6 @@ export const ROUTES: Record<Route, { from: number; to: number; label: string }> 
   'bainbridge-seattle': { from: TERMINALS.BAINBRIDGE, to: TERMINALS.SEATTLE, label: 'BI → Seattle' },
   'kingston-edmonds': { from: TERMINALS.KINGSTON, to: TERMINALS.EDMONDS, label: 'Kingston → Edmonds' },
   'edmonds-kingston': { from: TERMINALS.EDMONDS, to: TERMINALS.KINGSTON, label: 'Edmonds → Kingston' },
+  'seattle-bremerton': { from: TERMINALS.SEATTLE, to: TERMINALS.BREMERTON, label: 'Seattle → Bremerton' },
+  'bremerton-seattle': { from: TERMINALS.BREMERTON, to: TERMINALS.SEATTLE, label: 'Bremerton → Seattle' },
 };

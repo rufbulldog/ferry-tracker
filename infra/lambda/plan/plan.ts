@@ -8,8 +8,10 @@
  * backend and the app can't drift apart.
  */
 import {
-  composeDepartures,
+  composeRouteDepartures,
   DepartureInfo,
+  hasRouteSailingSpace,
+  ScheduledSailing,
 } from "../../../src/utils/composeDepartures";
 import {
   processBulletins,
@@ -33,6 +35,7 @@ import {
   crossingMinutesForRoute,
 } from "../../../src/utils/constants";
 import { TRAVEL_TIMES } from "../../../src/utils/transitConfig";
+import { DEFAULT_ENABLED_ROUTE_GROUPS, ROUTE_GROUPS } from "../../../src/utils/routeGroups";
 import { parseDate, addMinutes } from "../../../src/utils/time";
 import type {
   TerminalBulletin,
@@ -79,30 +82,18 @@ const appRoute = (id: Route): PlanRoute => ({
   hasHistory: true,
 });
 
-// The app's four routes, plus Seattle ⇄ Bremerton (kamilche-trip's other
-// option), which the app doesn't show and the collector doesn't record.
-export const PLAN_ROUTES: Record<string, PlanRoute> = {
-  "bainbridge-seattle": appRoute("bainbridge-seattle"),
-  "seattle-bainbridge": appRoute("seattle-bainbridge"),
-  "kingston-edmonds": appRoute("kingston-edmonds"),
-  "edmonds-kingston": appRoute("edmonds-kingston"),
-  "seattle-bremerton": {
-    from: 7,
-    to: 4,
-    label: "Seattle → Bremerton",
-    crossingMinutes: 60,
-    carBufferMinutes: DEFAULT_CAR_BUFFER_MINUTES,
-    hasHistory: false,
-  },
-  "bremerton-seattle": {
-    from: 4,
-    to: 7,
-    label: "Bremerton → Seattle",
-    crossingMinutes: 60,
-    carBufferMinutes: DEFAULT_CAR_BUFFER_MINUTES,
-    hasHistory: false,
-  },
-};
+// Every app route, including the optional Bremerton group (the app's Settings
+// decide what it shows; /plan callers pick with `routes=`). The collector
+// records them all, so each has history for car overflow.
+export const PLAN_ROUTES: Record<string, PlanRoute> = Object.fromEntries(
+  (Object.keys(ROUTES) as Route[]).map((id) => [id, appRoute(id)]),
+);
+
+// Without `routes=`, plan what a fresh app install shows (Bremerton is opt-in).
+export const DEFAULT_PLAN_ROUTES: string[] = DEFAULT_ENABLED_ROUTE_GROUPS.flatMap((g) => [
+  ROUTE_GROUPS[g].outbound,
+  ROUTE_GROUPS[g].inbound,
+]);
 
 export interface PlanQuery {
   location: { lat: number; lon: number } | null;
@@ -148,7 +139,7 @@ export function parsePlanQuery(
             .filter(Boolean),
         ),
       ]
-    : Object.keys(PLAN_ROUTES);
+    : DEFAULT_PLAN_ROUTES;
   const unknown = routes.filter((r) => !PLAN_ROUTES[r]);
   if (unknown.length > 0) {
     return {
@@ -220,42 +211,12 @@ export interface PlanInputs {
   schedules?: Record<string, ScheduledSailing[] | undefined>;
 }
 
-/** One row of WSF's schedule `Times` (the fields we use). */
-export interface ScheduledSailing {
-  DepartingTime: string; // "/Date(1234567890000-0800)/"
-  VesselID: number;
-  VesselName: string;
-}
+export type { ScheduledSailing };
 
 /** True when WSF's sailing-space feed lists departures for this route. */
 export function hasSailingSpace(terminals: TerminalSailingSpace[] | undefined, routeId: string): boolean {
   const r = PLAN_ROUTES[routeId];
-  const t = terminals?.find((x) => x.TerminalID === r.from);
-  return !!t?.DepartingSpaces.some((d) => d.SpaceForArrivalTerminals.some((a) => a.TerminalID === r.to));
-}
-
-/**
- * WSF only publishes sailing space for terminals that track drive-up space
- * (Seattle and Bremerton are often absent). For those routes, stand in the
- * timetable as space-less departures so composeDepartures still matches live
- * vessels for delays; car overflow then reads as unknown.
- */
-function sailingSpaceFor(routeId: string, inputs: PlanInputs): TerminalSailingSpace[] | undefined {
-  const times = inputs.schedules?.[routeId];
-  if (hasSailingSpace(inputs.terminals, routeId) || !times?.length) return inputs.terminals;
-  const r = PLAN_ROUTES[routeId];
-  const timetable = {
-    TerminalID: r.from,
-    DepartingSpaces: times.map((t) => ({
-      Departure: t.DepartingTime,
-      IsCancelled: false,
-      VesselID: t.VesselID,
-      VesselName: t.VesselName,
-      MaxSpaceCount: 0,
-      SpaceForArrivalTerminals: [{ TerminalID: r.to, DriveUpSpaceCount: null }],
-    })),
-  } as unknown as TerminalSailingSpace;
-  return [timetable, ...(inputs.terminals ?? []).filter((t) => t.TerminalID !== r.from)];
+  return hasRouteSailingSpace(terminals, r.from, r.to);
 }
 
 export interface SailingOut {
@@ -403,21 +364,6 @@ function pickOut(p: SailingPick<DepartureInfo, string>): PickOut {
   };
 }
 
-/**
- * A vessel is on at most one departed sailing. The timetable fallback lists the
- * whole day, so every earlier sailing of the boat now on the water matches it
- * as "departed"; keep only the latest (the one it's actually running).
- */
-function oneDepartedPerVessel(deps: DepartureInfo[]): DepartureInfo[] {
-  const latest = new Map<number, DepartureInfo>();
-  for (const d of deps) {
-    if (d.status !== "departed") continue;
-    const kept = latest.get(d.vesselId);
-    if (!kept || d.scheduledDeparture > kept.scheduledDeparture) latest.set(d.vesselId, d);
-  }
-  return deps.filter((d) => d.status !== "departed" || latest.get(d.vesselId) === d);
-}
-
 export function buildPlan(
   query: PlanQuery,
   inputs: PlanInputs,
@@ -427,14 +373,13 @@ export function buildPlan(
   const carWaitByRoute = new Map<string, CarWaitEstimate>();
   for (const id of query.routes) {
     const r = PLAN_ROUTES[id];
-    const deps = oneDepartedPerVessel(
-      composeDepartures(
-        r.from,
-        r.to,
-        inputs.vessels,
-        sailingSpaceFor(id, inputs),
-        now.getTime(),
-      ),
+    const deps = composeRouteDepartures(
+      r.from,
+      r.to,
+      inputs.vessels,
+      inputs.terminals,
+      inputs.schedules?.[id],
+      now.getTime(),
     );
     departuresByRoute.set(id, deps);
     carWaitByRoute.set(id, carWaitFor(id, deps, inputs));

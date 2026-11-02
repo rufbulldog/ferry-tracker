@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/index.tsx
-content_sha: 469e483d314e6b21d9549ae57b34bd12e1e441ed1d4ce4f205a4f621b4c002c6
+content_sha: 57585efe51115104ff346da773fd89b2d0dcd8713888a2a711788868b2dc6712
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:47.818Z
+last_audited: 2026-11-02T03:07:16.380Z
 ---
 
 # index.tsx
 
 **Path:** `app/(tabs)/index.tsx`
-**Lines:** 652
+**Lines:** 653
 **Language:** TypeScript (TSX)
 
 ## Exports

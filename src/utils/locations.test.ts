@@ -87,6 +87,31 @@ describe('getRouteDefaults', () => {
       direction: 'outbound',
     });
   });
+  test('Seattle falls through to Bremerton when Bainbridge is off', () => {
+    expect(getRouteDefaults('seattle-terminal', ['kingston', 'bremerton'])).toEqual({
+      routeGroup: 'bremerton',
+      direction: 'inbound',
+    });
+  });
+
+  test('maps the Bremerton terminal only when Bremerton is on', () => {
+    expect(getRouteDefaults('bremerton-terminal')).toBeNull();
+    expect(getRouteDefaults('bremerton-terminal', ['bremerton'])).toEqual({
+      routeGroup: 'bremerton',
+      direction: 'outbound',
+    });
+  });
+
+  test('leaves the selection alone when a location only fits disabled groups', () => {
+    expect(getRouteDefaults('home', ['kingston'])).toBeNull();
+  });
+
+  test('an unknown id gets the first enabled group', () => {
+    expect(getRouteDefaults('some-unknown-id', ['kingston', 'bremerton'])).toEqual({
+      routeGroup: 'kingston',
+      direction: 'outbound',
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------

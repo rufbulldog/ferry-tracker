@@ -31,7 +31,7 @@ GET /plan?lat=47.7568&lon=-122.2806&routes=seattle-bremerton,edmonds-kingston&sa
 | Param | Default | Notes |
 |---|---|---|
 | `lat`, `lon` | none | Both or neither. Without them you get `routes[]` only (`best: null`). |
-| `routes` | all six | Comma list of `bainbridge-seattle`, `seattle-bainbridge`, `kingston-edmonds`, `edmonds-kingston`, `seattle-bremerton`, `bremerton-seattle`. |
+| `routes` | Bainbridge + Kingston (4) | Comma list of `bainbridge-seattle`, `seattle-bainbridge`, `kingston-edmonds`, `edmonds-kingston`, `seattle-bremerton`, `bremerton-seattle`. Bremerton is opt-in, matching the app's default route groups. |
 | `sailings` | `3` | 1–10 upcoming sailings listed per route (boats on the water are listed too). |
 | `buffer` | per route | Minutes to arrive before a sailing (0–120). Overrides the app's car buffers (default 10). |
 

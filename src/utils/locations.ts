@@ -1,6 +1,11 @@
 import { getPersonalLocations } from "../store/personalLocations";
 import type { KnownLocation } from "../types/location";
 import { haversineDistance } from "./geo";
+import {
+  DEFAULT_ENABLED_ROUTE_GROUPS,
+  Direction,
+  RouteGroup,
+} from "./routeGroups";
 
 export { haversineDistance };
 
@@ -31,6 +36,12 @@ const PUBLIC_TERMINALS: KnownLocation[] = [
     label: "Edmonds Ferry Terminal",
     lat: 47.8106,
     lon: -122.3844,
+  },
+  {
+    id: "bremerton-terminal",
+    label: "Bremerton Ferry Terminal",
+    lat: 47.5622,
+    lon: -122.6247,
   },
 ];
 
@@ -65,25 +76,35 @@ export function findNearestLocation(
   return nearest;
 }
 
-// Map nearest location to route group + direction defaults
-export function getRouteDefaults(locationId: string): {
-  routeGroup: "bainbridge" | "kingston";
-  direction: "outbound" | "inbound";
-} {
-  switch (locationId) {
-    case "home":
-    case "bi-terminal":
-      return { routeGroup: "bainbridge", direction: "outbound" };
-    case "work":
-    case "seattle-terminal":
-      return { routeGroup: "bainbridge", direction: "inbound" };
-    case "kingston-terminal":
-      return { routeGroup: "kingston", direction: "outbound" };
-    case "edmonds-terminal":
-      return { routeGroup: "kingston", direction: "inbound" };
-    default:
-      return { routeGroup: "bainbridge", direction: "outbound" };
+// Where each known location puts you, best match first. Seattle's terminal
+// serves two groups, so it falls through to Bremerton when Bainbridge is off.
+const LOCATION_ROUTES: Record<string, { routeGroup: RouteGroup; direction: Direction }[]> = {
+  home: [{ routeGroup: "bainbridge", direction: "outbound" }],
+  "bi-terminal": [{ routeGroup: "bainbridge", direction: "outbound" }],
+  work: [{ routeGroup: "bainbridge", direction: "inbound" }],
+  "seattle-terminal": [
+    { routeGroup: "bainbridge", direction: "inbound" },
+    { routeGroup: "bremerton", direction: "inbound" },
+  ],
+  "kingston-terminal": [{ routeGroup: "kingston", direction: "outbound" }],
+  "edmonds-terminal": [{ routeGroup: "kingston", direction: "inbound" }],
+  "bremerton-terminal": [{ routeGroup: "bremerton", direction: "outbound" }],
+};
+
+/**
+ * Map nearest location to route group + direction defaults, among the groups
+ * the user has enabled. Null when that location's only groups are switched off
+ * (leave the selection alone); an unknown location gets the first enabled group.
+ */
+export function getRouteDefaults(
+  locationId: string,
+  enabledGroups: readonly RouteGroup[] = DEFAULT_ENABLED_ROUTE_GROUPS,
+): { routeGroup: RouteGroup; direction: Direction } | null {
+  const options = LOCATION_ROUTES[locationId];
+  if (!options) {
+    return { routeGroup: enabledGroups[0] ?? "bainbridge", direction: "outbound" };
   }
+  return options.find((o) => enabledGroups.includes(o.routeGroup)) ?? null;
 }
 
 // Map nearest location to a timer route default

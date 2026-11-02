@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/context/RouteContext.tsx
-content_sha: 3fa0953b7746006d13e4e71dd797f0ecd9aa88ec2869bdf7b8d3ecc4b2473c87
+content_sha: eaf66efc2c3701e1239208c5c6a1b0c059036a63c838ea917e133a168b4d8f46
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-06-23T02:13:37.644Z
+last_audited: 2026-11-02T03:07:16.410Z
 ---
 
 # RouteContext.tsx
 
 **Path:** `src/context/RouteContext.tsx`
-**Lines:** 92
+**Lines:** 126
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -26,6 +26,8 @@ last_audited: 2026-06-23T02:13:37.644Z
 
 **Internal:**
 - `../utils/constants` (`Route`)
+- `../utils/routeGroups` (`ROUTE_GROUPS`, `RouteGroup`, `Direction`, `DEFAULT_ENABLED_ROUTE_GROUPS`, `normalizeEnabledGroups`, `routeFor`)
 
 **External:**
-- `react` (`default as React`, `createContext`, `useContext`, `useState`, `useCallback`, `useRef`, `ReactNode`)
+- `@react-native-async-storage/async-storage` (`default as AsyncStorage`)
+- `react` (`default as React`, `createContext`, `useContext`, `useState`, `useCallback`, `useEffect`, `useRef`, `ReactNode`)
