@@ -15,6 +15,11 @@ export interface FerryLiveState {
   arrivalMs: number;
   driveMinutes: number;
   note: string | null;
+  /** On the way by car (leave-by passed): show drive-up spaces, not the countdown. */
+  enRoute?: boolean;
+  spaces?: number | null;
+  startSpaces?: number | null;
+  vesselName?: string | null;
 }
 
 interface FerryLiveNative {
@@ -24,6 +29,14 @@ interface FerryLiveNative {
   end(): Promise<void>;
   /** Absent on builds that predate the CarPlay screen. */
   setCarPlaySnapshot?(json: string): void;
+  /**
+   * Apple Maps road drive time (seconds, with traffic) from one point to each
+   * `[lat, lon]`; -1 where unknown. Absent on builds before 1.10.
+   */
+  /** Background location keep-alive for car Live Activities. Absent before 1.10. */
+  startKeepAlive?(): void;
+  stopKeepAlive?(): void;
+  driveTimes?(fromLat: number, fromLon: number, destinations: [number, number][]): Promise<number[]>;
 }
 
 // Optional so JS still runs on builds without the native module (older

@@ -30,7 +30,10 @@ import { KingstonBoardingPassPill } from "../../src/components/KingstonBoardingP
 import { CarWaitChip } from "../../src/components/CarWaitChip";
 import { BestSailingCard } from "../../src/components/BestSailingCard";
 import { LiveActivityPill } from "../../src/components/LiveActivityPill";
-import { useBestSailingContext } from "../../src/context/BestSailingContext";
+import {
+  useBestSailingContext,
+  type LiveSource,
+} from "../../src/context/BestSailingContext";
 import type { FerryLiveState } from "../../modules/ferry-live";
 import { useRecommendation } from "../../src/hooks/useRecommendation";
 import { usePlannedArrival } from "../../src/hooks/useArrivalEta";
@@ -248,21 +251,23 @@ export default function DepartScreen() {
   // "Best from here" is for driving from somewhere unusual (Car mode, or away
   // from home/work/terminals). On the bike commute the card below already
   // answers "when do I leave", so the Live Activity mirrors that instead.
-  const { awayFromCommute, setCommuteLive, best } = useBestSailingContext();
+  const { awayFromCommute, setCommuteLive, best, driveAround } = useBestSailingContext();
   // The card renders nothing without a plan (no fix yet, nothing reachable);
   // then the Next Sailing leave-by keeps the Lock Screen pill.
-  const showBestFromHere = (vehicle === "car" || awayFromCommute) && !!best;
+  const showBestFromHere = (vehicle === "car" || awayFromCommute) && (!!best || !!driveAround);
   const commuteLeaveByMs =
     planIsForCard && recommendation.leaveByTime
       ? recommendation.leaveByTime.getTime()
       : null;
   const commuteDepartureMs = recommendation.ferryDepartureTime?.getTime() ?? null;
-  const commuteLive = useMemo<FerryLiveState | null>(() => {
+  const commuteSpaces = recommendation.nextDeparture?.driveUpSpaces ?? null;
+  const commuteVessel = recommendation.nextDeparture?.vesselName ?? null;
+  const commuteLive = useMemo<LiveSource | null>(() => {
     if (showBestFromHere || commuteLeaveByMs == null || commuteDepartureMs == null) {
       return null;
     }
     const from = ROUTES[route].from;
-    return {
+    const state: FerryLiveState = {
       routeLabel: ROUTES[route].label,
       terminal: TERMINAL_NAMES[from] ?? "Terminal",
       departureMs: commuteDepartureMs,
@@ -271,8 +276,13 @@ export default function DepartScreen() {
       // Non-zero keeps the widget on its countdown (0 reads "At terminal").
       driveMinutes: Math.max(1, recommendation.transitMinutes),
       note: planVehicle === "bike" ? "By bike" : "By car",
+      spaces: commuteSpaces,
+      vesselName: commuteVessel,
     };
+    return { state, car: planVehicle === "car" };
   }, [
+    commuteSpaces,
+    commuteVessel,
     showBestFromHere,
     commuteLeaveByMs,
     commuteDepartureMs,

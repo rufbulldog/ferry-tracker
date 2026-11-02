@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/index.tsx
-content_sha: 1e854f805f6543d344eaf0a4503931458759b6144b741104681210d32985bf23
+content_sha: a55ed17cfff72f1db9b6329a4bfac62bedcce2c4777226d44a5ec052f382eb12
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:42:53.929Z
+last_audited: 2026-11-02T04:30:53.381Z
 ---
 
 # index.tsx
 
 **Path:** `app/(tabs)/index.tsx`
-**Lines:** 702
+**Lines:** 712
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -33,7 +33,7 @@ last_audited: 2026-11-02T03:42:53.929Z
 - `../../src/components/LastDepartureCard` (`LastDepartureCard`)
 - `../../src/components/LiveActivityPill` (`LiveActivityPill`)
 - `../../src/components/MainDepartureCard` (`MainDepartureCard`, `DeparturePlan`)
-- `../../src/context/BestSailingContext` (`useBestSailingContext`)
+- `../../src/context/BestSailingContext` (`useBestSailingContext`, `LiveSource`)
 - `../../src/context/RouteContext` (`useRoute`)
 - `../../src/context/ThemeContext` (`useTheme`)
 - `../../src/hooks/useArrivalEta` (`usePlannedArrival`)

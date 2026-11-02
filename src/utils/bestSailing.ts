@@ -37,6 +37,10 @@ export interface SailingCandidate<T extends SailingLike, R extends string = Rout
   carExtraSailings: number;
   /** Crossing time, for when the target sailing lands. */
   crossingMinutes: number;
+  /** Apple Maps road minutes to the terminal; replaces the estimate when set. */
+  roadDriveMinutes?: number | null;
+  /** Road minutes from the far terminal home; set to plan for getting home. */
+  homeDriveMinutes?: number | null;
 }
 
 export interface SailingPick<T extends SailingLike, R extends string = Route> {
@@ -52,6 +56,8 @@ export interface SailingPick<T extends SailingLike, R extends string = Route> {
   slackMinutes: number;
   /** When the target sailing lands on the far side. */
   arrivalTime: Date;
+  /** When you'd get home (far-side drive included), if planning for home. */
+  homeArrival: Date | null;
   /** True when the first catchable boat is full for cars and we skipped it. */
   bumpedByOverflow: boolean;
   /** The sailing after the target — the fallback if you miss it. */
@@ -94,7 +100,14 @@ export function planCandidate<T extends SailingLike, R extends string = Route>(
   c: SailingCandidate<T, R>,
   now: Date,
 ): SailingPick<T, R> | null {
-  const driveMinutes = estimateDriveMinutes(c.distanceMeters);
+  const road = c.roadDriveMinutes ?? null;
+  // Road time includes parking-lot overhead already; the estimate adds its own.
+  const driveMinutes =
+    c.distanceMeters <= AT_TERMINAL_METERS
+      ? 0
+      : road != null
+        ? road
+        : estimateDriveMinutes(c.distanceMeters);
   if (driveMinutes > MAX_DRIVE_MINUTES) return null;
 
   const upcoming = c.departures.filter(
@@ -112,7 +125,9 @@ export function planCandidate<T extends SailingLike, R extends string = Route>(
   const reasoning = [
     driveMinutes === 0
       ? `At ${c.terminalLabel} terminal`
-      : `~${driveMinutes} min drive to ${c.terminalLabel} + ${c.bufferMinutes} min buffer`,
+      : road != null
+        ? `${driveMinutes} min drive to ${c.terminalLabel} (Apple Maps, with traffic) + ${c.bufferMinutes} min buffer`
+        : `~${driveMinutes} min drive to ${c.terminalLabel} + ${c.bufferMinutes} min buffer`,
   ];
 
   // Overflow is only known for the next boat; if that's the one we'd catch and
@@ -148,24 +163,64 @@ export function planCandidate<T extends SailingLike, R extends string = Route>(
     leaveBy,
     slackMinutes,
     arrivalTime: addMinutes(targetTime, c.crossingMinutes),
+    homeArrival:
+      c.homeDriveMinutes != null
+        ? addMinutes(targetTime, c.crossingMinutes + c.homeDriveMinutes)
+        : null,
     bumpedByOverflow,
     following: upcoming[index + 1] ?? null,
     reasoning,
   };
 }
 
-/** Rank candidates by landing time on the far side; shorter drive breaks ties. */
+/**
+ * Rank candidates by when you get home when every pick knows that, else by
+ * landing time on the far side; shorter drive breaks ties.
+ */
 export function pickBestSailing<T extends SailingLike, R extends string = Route>(
   candidates: SailingCandidate<T, R>[],
   now: Date,
 ): BestSailingResult<T, R> {
   const picks = candidates
     .map((c) => planCandidate(c, now))
-    .filter((p): p is SailingPick<T, R> => p !== null)
-    .sort(
-      (a, b) =>
-        a.arrivalTime.getTime() - b.arrivalTime.getTime() ||
-        a.driveMinutes - b.driveMinutes,
-    );
+    .filter((p): p is SailingPick<T, R> => p !== null);
+  const byHome = picks.length > 0 && picks.every((p) => p.homeArrival);
+  const end = (p: SailingPick<T, R>) =>
+    (byHome ? p.homeArrival! : p.arrivalTime).getTime();
+  picks.sort((a, b) => end(a) - end(b) || a.driveMinutes - b.driveMinutes);
   return { best: picks[0] ?? null, alternatives: picks.slice(1) };
+}
+
+export interface DriveAround {
+  /** Road minutes straight home from here (Apple Maps, with traffic). */
+  minutes: number;
+  homeArrival: Date;
+  /** Minutes sooner than the best ferry gets you home (negative = later). */
+  fasterByMinutes: number | null;
+}
+
+// Only call driving faster when it wins by at least this much.
+export const DRIVE_AROUND_MARGIN_MINUTES = 5;
+
+/** Skip the ferry and drive home around the Sound — compared with the best ferry. */
+export function planDriveAround<T extends SailingLike, R extends string>(
+  directMinutes: number | null | undefined,
+  best: SailingPick<T, R> | null,
+  now: Date,
+): DriveAround | null {
+  if (directMinutes == null) return null;
+  const homeArrival = addMinutes(now, directMinutes);
+  const ferryHome = best?.homeArrival ?? null;
+  return {
+    minutes: directMinutes,
+    homeArrival,
+    fasterByMinutes: ferryHome
+      ? Math.round((ferryHome.getTime() - homeArrival.getTime()) / 60_000)
+      : null,
+  };
+}
+
+/** True when driving around beats every ferry home by a clear margin. */
+export function driveAroundWins(d: DriveAround | null): boolean {
+  return d != null && (d.fasterByMinutes == null || d.fasterByMinutes >= DRIVE_AROUND_MARGIN_MINUTES);
 }

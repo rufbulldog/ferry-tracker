@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useLiveActivity.ts
-content_sha: b3cb6e16b6558a8fc899f9033e6a1c4254e8c3a09da2bf2af00b2e3da7f8fb32
+content_sha: 1fec22aecc3969e852cb2e379791405682135fd6025fa20f5c0a542dd5c8db72
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:33:00.968Z
+last_audited: 2026-11-02T04:30:53.428Z
 ---
 
 # useLiveActivity.ts
 
 **Path:** `src/hooks/useLiveActivity.ts`
-**Lines:** 100
+**Lines:** 116
 **Language:** TypeScript
 
 ## Exports
@@ -19,7 +19,7 @@ last_audited: 2026-11-02T03:33:00.968Z
 | Name | Kind | Signature |
 |---|---|---|
 | `toLiveState` | function | `(best: SailingPick<DepartureInfo>, alt: SailingPick<DepartureInfo> \| undefined): FerryLiveState` |
-| `useLiveActivity` | function | `(state: FerryLiveState \| null): { supported: boolean; active: boolean; toggle: () => void; }` |
+| `useLiveActivity` | function | `(source: { state: FerryLiveState; car: boolean } \| null, nowMs: number): { supported: boolean; active: boolean; toggle: () => void; }` |
 | `toCarPlaySnapshot` | function | `(hasLocation: boolean, { best, alternatives }: BestSailingResult<DepartureInfo>): CarPlaySnapshot` |
 | `useCarPlaySnapshot` | function | `(hasLocation: boolean, result: BestSailingResult<DepartureInfo>): void` |
 
@@ -34,6 +34,7 @@ last_audited: 2026-11-02T03:33:00.968Z
 - `../../modules/ferry-live` (`CarPlaySnapshot`, `FerryLive`, `FerryLiveState`)
 - `../utils/bestSailing` (`BestSailingResult`, `SailingPick`)
 - `../utils/constants` (`ROUTES`)
+- `../utils/liveSpots` (`withEnRoute`)
 - `../utils/time` (`formatTime`)
 - `./useNextDepartures` (`DepartureInfo`)
 

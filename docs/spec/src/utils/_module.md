@@ -2,17 +2,17 @@
 type: l2-module
 spec_version: 1
 path: src/utils
-file_count: 26
-total_lines: 3149
+file_count: 27
+total_lines: 3238
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:33:01.007Z
+last_audited: 2026-11-02T04:30:53.465Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 26 · **Lines:** 3149
+**Files:** 27 · **Lines:** 3238
 
 ## File inventory
 
@@ -20,7 +20,7 @@ last_audited: 2026-11-02T03:33:01.007Z
 |---|---|---|
 | [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 117 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
 | [`arrivalPlan.ts`](./arrivalPlan.md) | 115 | Arrival for a sailing leaving at `departureTime`. `liveEta` is the vessel's |
-| [`bestSailing.ts`](./bestSailing.md) | 172 | Rank candidates by landing time on the far side; shorter drive breaks ties. |
+| [`bestSailing.ts`](./bestSailing.md) | 227 | Rank candidates by when you get home when every pick knows that, else by |
 | [`bulletins.ts`](./bulletins.md) | 156 | Route-relevant bulletins, alerts first then newest. `route` is matched by the |
 | [`capacityMeter.ts`](./capacityMeter.md) | 42 | Percent of drive-up space taken, 0–100, or null when space data is missing. |
 | [`carWait.ts`](./carWait.md) | 220 | Parse a WSF terminalwaittimes note (vehicle wait). |
@@ -31,6 +31,7 @@ last_audited: 2026-11-02T03:33:01.007Z
 | [`ferryDeparture.ts`](./ferryDeparture.md) | 80 | Resolve the effective departure for a sailing. Preference order: |
 | [`geo.ts`](./geo.md) | 19 | Haversine distance in meters between two lat/lon points. |
 | [`kingstonBoardingPass.ts`](./kingstonBoardingPass.md) | 145 | Resolve the Kingston boarding-pass status for a given instant. |
+| [`liveSpots.ts`](./liveSpots.md) | 34 |  |
 | [`locations.ts`](./locations.md) | 130 | The public ferry terminals (published by WSDOT). |
 | [`planEstimate.ts`](./planEstimate.md) | 101 |  |
 | [`predictedDelay.ts`](./predictedDelay.md) | 98 |  |
@@ -54,8 +55,10 @@ Files in this folder imported from elsewhere:
 - `arrivalPlan.ts` — used by 2 files
   - `src/components/MainDepartureCard.tsx`
   - `src/hooks/useArrivalEta.ts`
-- `bestSailing.ts` — used by 3 files
+- `bestSailing.ts` — used by 5 files
   - `infra/lambda/plan/plan.ts`
+  - `src/components/BestSailingCard.tsx`
+  - `src/context/BestSailingContext.tsx`
   - `src/hooks/useBestSailing.ts`
   - `src/hooks/useLiveActivity.ts`
 - `bulletins.ts` — used by 2 files
@@ -108,6 +111,8 @@ Files in this folder imported from elsewhere:
   - `infra/lambda/plan/plan.ts`
 - `kingstonBoardingPass.ts` — used by 1 file
   - `src/components/KingstonBoardingPassPill.tsx`
+- `liveSpots.ts` — used by 1 file
+  - `src/hooks/useLiveActivity.ts`
 - `locations.ts` — used by 3 files
   - `app/(tabs)/timer.tsx`
   - `app/_layout.tsx`
@@ -130,7 +135,7 @@ Files in this folder imported from elsewhere:
   - `app/(tabs)/settings.tsx`
   - `app/(tabs)/trends.tsx`
   - `src/context/ThemeContext.tsx`
-- `time.ts` — used by 13 files
+- `time.ts` — used by 14 files
   - `app/(tabs)/index.tsx`
   - `app/(tabs)/timer.tsx`
   - `app/planner.tsx`
@@ -140,6 +145,7 @@ Files in this folder imported from elsewhere:
   - `src/components/FerryCard.tsx`
   - `src/components/LastDepartureCard.tsx`
   - `src/components/MainDepartureCard.tsx`
+  - `src/context/BestSailingContext.tsx`
   - `src/hooks/useArrivalEta.ts`
   - `src/hooks/useFutureSchedule.ts`
   - `src/hooks/useLiveActivity.ts`

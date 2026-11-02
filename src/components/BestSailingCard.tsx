@@ -8,6 +8,7 @@ import { useBestSailingContext } from "../context/BestSailingContext";
 import { ROUTES } from "../utils/constants";
 import { selectionFor } from "../utils/routeGroups";
 import { LiveActivityPill } from "./LiveActivityPill";
+import { driveAroundWins } from "../utils/bestSailing";
 import { formatTime } from "../utils/time";
 
 /**
@@ -19,21 +20,28 @@ import { formatTime } from "../utils/time";
 export function BestSailingCard() {
   const { theme } = useTheme();
   const { route, setRouteGroup, setDirection } = useRoute();
-  const { best, alternatives } = useBestSailingContext();
+  const { best, alternatives, driveAround } = useBestSailingContext();
+  const driveWins = driveAroundWins(driveAround);
   const alt = alternatives[0];
 
-  if (!best) return null;
+  if (!best && !driveAround) return null;
 
-  const isCurrent = best.route === route;
-  const leaveLabel =
-    best.driveMinutes === 0
+  // Tapping a ferry plan switches the Ferry tab to it; a drive has no route.
+  const isCurrent = !best || driveWins || best.route === route;
+  const leaveLabel = !best
+    ? ""
+    : best.driveMinutes === 0
       ? "You're at the terminal"
       : best.slackMinutes === 0
         ? "Leave now"
         : `Leave by ${formatTime(best.leaveBy)} (${best.slackMinutes} min)`;
-  const urgent = best.driveMinutes > 0 && best.slackMinutes <= 5;
+  const urgent = !!best && best.driveMinutes > 0 && best.slackMinutes <= 5;
+  // "home by" once we're planning for home, else when the boat lands.
+  const ends = (p: { homeArrival: Date | null; arrivalTime: Date }) =>
+    p.homeArrival ? `home by ${formatTime(p.homeArrival)}` : `lands ${formatTime(p.arrivalTime)}`;
 
   const select = () => {
+    if (!best) return;
     const sel = selectionFor(best.route);
     setRouteGroup(sel.group);
     setDirection(sel.direction);
@@ -45,7 +53,7 @@ export function BestSailingCard() {
       onPress={isCurrent ? undefined : select}
       accessibilityRole={isCurrent ? undefined : "button"}
       accessibilityHint={
-        isCurrent ? undefined : `Switches to ${ROUTES[best.route].label}`
+        isCurrent || !best ? undefined : `Switches to ${ROUTES[best.route].label}`
       }
       style={[
         styles.container,
@@ -65,31 +73,57 @@ export function BestSailingCard() {
         <Text style={[styles.label, { color: theme.colors.textMuted }]}>
           BEST FROM HERE
         </Text>
-        <Text style={[styles.headline, { color: theme.colors.text }]}>
-          {ROUTES[best.route].label} · {formatTime(best.targetTime)}
-        </Text>
-        <Text
-          style={[
-            styles.detail,
-            { color: urgent ? theme.colors.warning : theme.colors.text },
-          ]}
-        >
-          {leaveLabel}
-          {best.driveMinutes > 0 ? ` · ~${best.driveMinutes} min drive` : ""}
-          {` · lands ${formatTime(best.arrivalTime)}`}
-        </Text>
-        {best.bumpedByOverflow && (
-          <Text style={[styles.detail, { color: theme.colors.textMuted }]}>
-            Next boat likely full for cars
-          </Text>
-        )}
-        {alt && (
-          <Text style={[styles.detail, { color: theme.colors.textMuted }]}>
-            Or {ROUTES[alt.route].label} {formatTime(alt.targetTime)} · lands{" "}
-            {formatTime(alt.arrivalTime)}
-          </Text>
-        )}
-        <LiveActivityPill />
+        {driveWins && driveAround ? (
+          <>
+            <Text style={[styles.headline, { color: theme.colors.text }]}>
+              Drive around · home by {formatTime(driveAround.homeArrival)}
+            </Text>
+            <Text style={[styles.detail, { color: theme.colors.text }]}>
+              {driveAround.minutes} min with traffic (Apple Maps)
+              {driveAround.fasterByMinutes != null
+                ? ` · ${driveAround.fasterByMinutes} min sooner than the ferry`
+                : " · no ferry gets you there sooner"}
+            </Text>
+            {best && (
+              <Text style={[styles.detail, { color: theme.colors.textMuted }]}>
+                Or {ROUTES[best.route].label} {formatTime(best.targetTime)} · {ends(best)}
+              </Text>
+            )}
+          </>
+        ) : best ? (
+          <>
+            <Text style={[styles.headline, { color: theme.colors.text }]}>
+              {ROUTES[best.route].label} · {formatTime(best.targetTime)}
+            </Text>
+            <Text
+              style={[
+                styles.detail,
+                { color: urgent ? theme.colors.warning : theme.colors.text },
+              ]}
+            >
+              {leaveLabel}
+              {best.driveMinutes > 0 ? ` · ~${best.driveMinutes} min drive` : ""}
+              {` · ${ends(best)}`}
+            </Text>
+            {best.bumpedByOverflow && (
+              <Text style={[styles.detail, { color: theme.colors.textMuted }]}>
+                Next boat likely full for cars
+              </Text>
+            )}
+            {alt && (
+              <Text style={[styles.detail, { color: theme.colors.textMuted }]}>
+                Or {ROUTES[alt.route].label} {formatTime(alt.targetTime)} · {ends(alt)}
+              </Text>
+            )}
+            {driveAround && (
+              <Text style={[styles.detail, { color: theme.colors.textMuted }]}>
+                Drive around: home by {formatTime(driveAround.homeArrival)} (
+                {driveAround.minutes} min)
+              </Text>
+            )}
+          </>
+        ) : null}
+        {best && <LiveActivityPill />}
       </View>
       {!isCurrent && (
         <Ionicons

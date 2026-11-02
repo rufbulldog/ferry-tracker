@@ -1,5 +1,7 @@
 import {
+  driveAroundWins,
   estimateDriveMinutes,
+  planDriveAround,
   planCandidate,
   pickBestSailing,
   SailingCandidate,
@@ -158,5 +160,58 @@ describe("pickBestSailing", () => {
       best: null,
       alternatives: [],
     });
+  });
+});
+
+describe("road drive times", () => {
+  test("Apple Maps minutes replace the estimate", () => {
+    const pick = planCandidate(candidate({ distanceMeters: 15_000, roadDriveMinutes: 9 }), NOW)!;
+    expect(pick.driveMinutes).toBe(9);
+    // 9 + 10 buffer → +19 still catches +20
+    expect(pick.targetTime).toEqual(at(20));
+    expect(pick.reasoning[0]).toMatch(/Apple Maps/);
+  });
+
+  test("at the terminal stays zero even with a road time", () => {
+    expect(planCandidate(candidate({ distanceMeters: 100, roadDriveMinutes: 3 }), NOW)!.driveMinutes).toBe(0);
+  });
+});
+
+describe("planning for home", () => {
+  test("home arrival adds crossing and the far-side drive", () => {
+    const pick = planCandidate(candidate({ distanceMeters: 100, homeDriveMinutes: 25 }), NOW)!;
+    expect(pick.homeArrival).toEqual(at(20 + 35 + 25));
+  });
+
+  test("ranks by home arrival when every pick has one", () => {
+    // Lands first but a long drive home…
+    const near = candidate({ distanceMeters: 100, departures: [sailing(20)], homeDriveMinutes: 60 });
+    // …vs lands later, home sooner.
+    const far = candidate({
+      route: "kingston-edmonds", distanceMeters: 100, departures: [sailing(30)],
+      crossingMinutes: 30, homeDriveMinutes: 10,
+    });
+    const { best } = pickBestSailing([near, far], NOW);
+    expect(best?.route).toBe("kingston-edmonds");
+  });
+});
+
+describe("planDriveAround", () => {
+  const best = planCandidate(candidate({ distanceMeters: 100, homeDriveMinutes: 25 }), NOW)!; // home at +80
+
+  test("driving wins by a clear margin", () => {
+    const d = planDriveAround(60, best, NOW)!;
+    expect(d.homeArrival).toEqual(at(60));
+    expect(d.fasterByMinutes).toBe(20);
+    expect(driveAroundWins(d)).toBe(true);
+  });
+
+  test("a near tie stays with the ferry", () => {
+    expect(driveAroundWins(planDriveAround(78, best, NOW))).toBe(false);
+  });
+
+  test("no ferry option means driving wins; no road time means no option", () => {
+    expect(driveAroundWins(planDriveAround(90, null, NOW))).toBe(true);
+    expect(planDriveAround(null, best, NOW)).toBeNull();
   });
 });

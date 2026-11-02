@@ -57,24 +57,36 @@ export function LastDepartureCard({ departure, backendCapacityPercent }: LastDep
     inputRange: [0, 100],
     outputRange: ['5%', '90%'],
   });
+  // The wake fills up to the boat (its centre sits ~3% past its left edge),
+  // so the bar grows with the crossing instead of showing a static amount.
+  const wakeWidth = animatedProgress.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['8%', '93%'],
+  });
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.cardBg, borderLeftColor: theme.colors.primary }]}>
       {/* Ferry tracker with capacity fill inside */}
-      <View style={styles.ferryTracker}>
+      <View
+        style={styles.ferryTracker}
+        accessible
+        accessibilityLabel={`${Math.round(vesselProgressPercent)}% of the way across${
+          capacityPercent !== null ? `, left ${capacityPercent}% full` : ''
+        }`}
+      >
         <View style={[styles.trackLine, { backgroundColor: `${theme.colors.primary}30` }]}>
-          {/* Capacity fill inside track - shows how full ferry was when it departed */}
-          {capacityPercent !== null && (
-            <View
-              style={[
-                styles.trackCapacityFill,
-                {
-                  width: `${capacityPercent}%`,
-                  backgroundColor: getCapacityColor(capacityPercent),
-                },
-              ]}
-            />
-          )}
+          {/* Wake behind the boat: length = how far across it is; colour = how
+              full it left (same scale as the main card; theme colour if unknown). */}
+          <Animated.View
+            style={[
+              styles.trackCapacityFill,
+              {
+                width: wakeWidth,
+                backgroundColor:
+                  capacityPercent !== null ? getCapacityColor(capacityPercent) : theme.colors.primary,
+              },
+            ]}
+          />
           <View style={[styles.dock, styles.leftDock, { backgroundColor: theme.colors.primary }]} />
           <View style={[styles.dock, styles.rightDock, { backgroundColor: theme.colors.primary }]} />
           <Animated.View

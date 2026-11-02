@@ -14,5 +14,10 @@ struct FerryActivityAttributes: ActivityAttributes {
     var arrival: Date        // lands on the far side
     var driveMinutes: Int
     var note: String?        // overflow warning or the alternative route
+    // On the way (car, leave-by passed): drive-up spaces instead of the countdown.
+    var enRoute: Bool?
+    var spaces: Int?         // drive-up spaces left now (nil = WSF has none)
+    var startSpaces: Int?    // spaces when you set off, for "was N"
+    var vesselName: String?
   }
 }

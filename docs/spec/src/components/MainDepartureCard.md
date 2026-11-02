@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/MainDepartureCard.tsx
-content_sha: fb760caed84c3182af2bb7211cbbcc81e6f59db6a069fe3f40da4c09f3844ff2
+content_sha: a706007d049ed9261464f0d53fdbc4a2d861a529f654ea2893d35a7cf9cf5a53
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-10-31T07:21:21.475Z
+last_audited: 2026-11-02T04:57:17.744Z
 ---
 
 # MainDepartureCard.tsx
 
 **Path:** `src/components/MainDepartureCard.tsx`
-**Lines:** 694
+**Lines:** 703
 **Language:** TypeScript (TSX)
 
 ## Exports

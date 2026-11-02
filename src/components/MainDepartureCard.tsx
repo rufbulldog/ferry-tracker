@@ -212,7 +212,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
     boatText = 'Now loading';
   } else if ((status === 'arriving' || status === 'returning') && vesselArrivalEta) {
     const m = getMinutesUntil(vesselArrivalEta);
-    boatText = m > 0 ? `Boat docks ${formatTime(vesselArrivalEta)} · in ${m}m` : `Boat docks ${formatTime(vesselArrivalEta)}`;
+    const inText = m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`;
+    boatText = m > 0 ? `Boat docks ${formatTime(vesselArrivalEta)} · in ${inText}` : `Boat docks ${formatTime(vesselArrivalEta)}`;
   }
 
   const currentCamera = cameras[selectedCamera];
@@ -345,7 +346,7 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
                 </Text>
               ) : <View />}
               {boatText && (
-                <Text style={[styles.footerText, { color: theme.colors.textMuted }]}>{boatText}</Text>
+                <Text style={[styles.footerText, styles.footerBoat, { color: theme.colors.textMuted }]}>{boatText}</Text>
               )}
             </View>
           )}
@@ -577,15 +578,23 @@ const styles = StyleSheet.create({
   },
   footerRow: {
     flexDirection: 'row',
+    // Wrap rather than clip: the boat text drops to its own line when both
+    // don't fit beside each other.
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 8,
+    columnGap: 8,
+    rowGap: 4,
   },
   footerText: {
     fontSize: 14,
   },
   footerStrong: {
     fontWeight: '700',
+  },
+  footerBoat: {
+    marginLeft: 'auto',
+    textAlign: 'right',
   },
   meterStrip: {
     paddingHorizontal: 18,

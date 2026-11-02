@@ -3,22 +3,22 @@ type: l2-module
 spec_version: 1
 path: src/context
 file_count: 3
-total_lines: 238
+total_lines: 287
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:33:01.007Z
+last_audited: 2026-11-02T04:30:53.465Z
 ---
 
 # src/context — Module Spec
 
 **Folder:** `src/context`
-**Files:** 3 · **Lines:** 238
+**Files:** 3 · **Lines:** 287
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`BestSailingContext.tsx`](./BestSailingContext.md) | 61 |  |
+| [`BestSailingContext.tsx`](./BestSailingContext.md) | 110 | A plan for the Live Activity, and whether it's a drive (spots once under way). |
 | [`RouteContext.tsx`](./RouteContext.md) | 126 |  |
 | [`ThemeContext.tsx`](./ThemeContext.md) | 51 |  |
 

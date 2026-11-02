@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/LastDepartureCard.tsx
-content_sha: a6b2f74ff2811fa47c1f83055bba793cfa8916bbdf6b72f842b53342135dae9b
+content_sha: 0cd252a943123cda82784e1b5f455f135be77dabab382246fb9fcbd83ee36fd7
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-08-01T19:39:26.586Z
+last_audited: 2026-11-02T04:57:17.742Z
 ---
 
 # LastDepartureCard.tsx
 
 **Path:** `src/components/LastDepartureCard.tsx`
-**Lines:** 163
+**Lines:** 175
 **Language:** TypeScript (TSX)
 
 ## Exports

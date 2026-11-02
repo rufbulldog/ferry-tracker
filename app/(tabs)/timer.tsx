@@ -84,14 +84,14 @@ export default function TimerScreen() {
   }, [location]);
 
   const handleDelete = (record: TransitRecord) => {
-    Alert.alert('Delete ride', `Delete this ${recordLabel(record.route, record.vehicle)} ride (${formatClock(record.durationSeconds)})?`, [
+    Alert.alert('Delete trip', `Delete this ${recordLabel(record.route, record.vehicle)} trip (${formatClock(record.durationSeconds)})?`, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: () => deleteRecord.mutate(record.id) },
     ]);
   };
 
   const handleDiscard = () => {
-    Alert.alert('Discard this ride?', 'The time won\'t be saved.', [
+    Alert.alert('Discard this trip?', 'The time won\'t be saved.', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Discard', style: 'destructive', onPress: timer.reset },
     ]);
@@ -182,7 +182,7 @@ export default function TimerScreen() {
                   {typical !== null && <Text style={[styles.bigUnit, { color: theme.colors.textMuted }]}> min</Text>}
                 </Text>
                 <Text style={[styles.numberSub, { color: theme.colors.textMuted }]}>
-                  {stats.rides > 0 ? `from ${stats.rides} ride${stats.rides !== 1 ? 's' : ''}` : 'No rides yet'}
+                  {stats.rides > 0 ? `from ${stats.rides} trip${stats.rides !== 1 ? 's' : ''}` : 'No trips yet'}
                 </Text>
               </View>
               <View style={styles.numberCol}>
@@ -350,13 +350,13 @@ export default function TimerScreen() {
 
       {/* Recent rides */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent rides</Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent trips</Text>
         <View style={[styles.listCard, { backgroundColor: theme.colors.cardBg }]}>
           {recordsLoading ? (
             <Text style={[styles.placeholderText, { color: theme.colors.textMuted }]}>Loading…</Text>
           ) : recentRecords.length === 0 ? (
             <Text style={[styles.placeholderText, { color: theme.colors.textMuted }]}>
-              Time a ride to set your typical for each leg.
+              Time a trip to set your typical for each leg.
             </Text>
           ) : (
             <>
@@ -379,7 +379,7 @@ export default function TimerScreen() {
                 </TouchableOpacity>
               ))}
               <Text style={[styles.hint, { color: theme.colors.textMuted, borderTopColor: theme.colors.hoverBg }]}>
-                Hold a ride to delete it
+                Hold a trip to delete it
               </Text>
             </>
           )}

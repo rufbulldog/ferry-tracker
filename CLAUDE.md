@@ -97,14 +97,22 @@ There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK dep
 
 - **Best from here** (`src/utils/bestSailing.ts`, `useBestSailing`, `BestSailingContext`): picks the
   terminal + sailing you can make by car from your live location across the enabled route groups. Drive
-  time is a straight-line heuristic for now (no native routing; drive-around via MapKit is next, see
-  TECH_DEBT). The card only shows in **Car mode or away from the commute** (`src/utils/commute.ts`: more
+  times come from Apple Maps with traffic (`driveTimes` in `modules/ferry-live/ios/FerryDriveTimes.swift`,
+  via `useDriveTimes`), falling back to a straight-line estimate on older binaries or when MapKit has no
+  answer. **Away from the commute with home saved** it plans for getting home: ferries rank by home
+  arrival (far terminal → home drive included) and a **drive-around** option (straight home around the
+  Sound) headlines when it wins by 5+ min (`planDriveAround` / `driveAroundWins`). The card only shows in **Car mode or away from the commute** (`src/utils/commute.ts`: more
   than 1 km from saved home/work and not at a terminal). On the bike commute it hides, and the Live
   Activity mirrors the Ferry tab's own leave-by instead (`setCommuteLive`; pill under Next Sailing).
 - **Live Activity** (Lock Screen, Dynamic Island, CarPlay dashboard on iOS 26+ via the `.small`
   supplemental family): widget extension in `targets/widgets/` (built by `@bacons/apple-targets`),
   started/updated through the local Expo module `modules/ferry-live/`. `FerryActivityAttributes.swift`
   exists in both places and must stay identical. Native → full `eas build`, not OTA.
+  For a **car**, at "Leave now" (within a minute of leave-by) it switches — sticky for the session — to
+  **drive-up spots left** on the target boat ("was N when you left"; `src/utils/liveSpots.ts`). While a
+  car activity is on, `FerryKeepAlive.swift` runs background location (`UIBackgroundModes: location`,
+  When-In-Use, blue indicator) so JS stays alive and `BestSailingProvider` refetches WSF space every
+  minute (react-query's own polling pauses when unfocused). Seattle/Bremerton have no WSF space → "—".
 - **CarPlay app** (Driving Task list screen, `modules/ferry-live/ios/FerryCarPlay.swift`): **off by
   default**. `plugins/withCarPlay.js` only adds the scene manifest + `carplay-driving-task` entitlement
   when `FERRY_CARPLAY=1` is set at prebuild. The entitlement is Apple-managed — until Apple grants it,

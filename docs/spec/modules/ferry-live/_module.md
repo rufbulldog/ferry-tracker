@@ -3,29 +3,33 @@ type: l2-module
 spec_version: 1
 path: modules/ferry-live
 file_count: 1
-total_lines: 33
+total_lines: 46
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:47.900Z
+last_audited: 2026-11-02T04:30:53.464Z
 ---
 
 # modules/ferry-live — Module Spec
 
 **Folder:** `modules/ferry-live`
-**Files:** 1 · **Lines:** 33
+**Files:** 1 · **Lines:** 46
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`index.ts`](./index.md) | 33 |  |
+| [`index.ts`](./index.md) | 46 |  |
 
 ## Public surface
 
 Files in this folder imported from elsewhere:
 
-- `index.ts` — used by 1 file
+- `index.ts` — used by 5 files
+  - `app/(tabs)/index.tsx`
+  - `src/context/BestSailingContext.tsx`
+  - `src/hooks/useDriveTimes.ts`
   - `src/hooks/useLiveActivity.ts`
+  - `src/utils/liveSpots.ts`
 
 ## Cross-refs
 

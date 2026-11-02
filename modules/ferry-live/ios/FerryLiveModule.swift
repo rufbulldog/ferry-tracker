@@ -9,6 +9,10 @@ struct FerryLiveState: Record {
   @Field var arrivalMs: Double = 0
   @Field var driveMinutes: Int = 0
   @Field var note: String? = nil
+  @Field var enRoute: Bool? = nil
+  @Field var spaces: Int? = nil
+  @Field var startSpaces: Int? = nil
+  @Field var vesselName: String? = nil
 
   var contentState: FerryActivityAttributes.ContentState {
     .init(
@@ -18,7 +22,11 @@ struct FerryLiveState: Record {
       leaveBy: Date(timeIntervalSince1970: leaveByMs / 1000),
       arrival: Date(timeIntervalSince1970: arrivalMs / 1000),
       driveMinutes: driveMinutes,
-      note: note
+      note: note,
+      enRoute: enRoute,
+      spaces: spaces,
+      startSpaces: startSpaces,
+      vesselName: vesselName
     )
   }
 }
@@ -51,6 +59,22 @@ public class FerryLiveModule: Module {
     // CarPlay screen data (JSON of FerryCarPlaySnapshot); see FerryCarPlay.swift.
     Function("setCarPlaySnapshot") { (json: String) in
       try FerryCarPlayStore.update(json: json)
+    }
+
+    // Road drive times (seconds, -1 = unknown) from one origin to each [lat, lon].
+    AsyncFunction("driveTimes") { (fromLat: Double, fromLon: Double, destinations: [[Double]]) async -> [Double] in
+      await FerryDriveTimes.eta(fromLat: fromLat, fromLon: fromLon, destinations: destinations)
+    }
+
+    // Keep the app running in the background while you drive to a sailing, so
+    // the Live Activity's spots count stays fresh. Uses When-In-Use location
+    // with the background mode (blue indicator); start it while foregrounded.
+    Function("startKeepAlive") {
+      FerryKeepAlive.shared.start()
+    }
+
+    Function("stopKeepAlive") {
+      FerryKeepAlive.shared.stop()
     }
 
     AsyncFunction("end") {

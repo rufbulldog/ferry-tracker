@@ -12,9 +12,12 @@ import {
 } from "../utils/locations";
 import { getPersonalLocations } from "../store/personalLocations";
 import { isAwayFromCommute } from "../utils/commute";
+import { DrivePoint, useDriveTimes, useDriveTimesTo } from "./useDriveTimes";
 import { TRAVEL_TIMES } from "../utils/transitConfig";
 import {
+  DriveAround,
   pickBestSailing,
+  planDriveAround,
   BestSailingResult,
   SailingCandidate,
 } from "../utils/bestSailing";
@@ -63,6 +66,8 @@ export interface BestSailingState extends BestSailingResult<DepartureInfo> {
   hasLocation: boolean;
   /** Away from saved home/work and terminals — likely driving, not commuting. */
   awayFromCommute: boolean;
+  /** Skip the ferry and drive home (away from the commute, home saved, road time known). */
+  driveAround: DriveAround | null;
 }
 
 /**
@@ -101,23 +106,65 @@ export function useBestSailing(): BestSailingState {
   const isOn = (i: number) => enabledGroups.includes(GROUPS[i].group);
   const sharedRoute = sides[GROUPS.findIndex((_, i) => isOn(i))]?.side.route ?? sides[0].side.route;
   const hookRoute = (i: number) => (isOn(i) ? sides[i].side.route : sharedRoute);
-  const { data: bainbridgeDepartures } = useNextDepartures(hookRoute(0));
-  const { data: kingstonDepartures } = useNextDepartures(hookRoute(1));
-  const { data: bremertonDepartures } = useNextDepartures(hookRoute(2));
+  const { data: bainbridgeDepartures, isLoading: bainbridgeLoading } = useNextDepartures(hookRoute(0));
+  const { data: kingstonDepartures, isLoading: kingstonLoading } = useNextDepartures(hookRoute(1));
+  const { data: bremertonDepartures, isLoading: bremertonLoading } = useNextDepartures(hookRoute(2));
+  // "No ferry gets you there sooner" needs the ferries loaded first.
+  const ferriesLoaded = !bainbridgeLoading && !kingstonLoading && !bremertonLoading;
   const bainbridgeCarWait = useCarWait(hookRoute(0));
   const kingstonCarWait = useCarWait(hookRoute(1));
   const bremertonCarWait = useCarWait(hookRoute(2));
 
-  return useMemo(() => {
-    if (!location) {
-      return { best: null, alternatives: [], hasLocation: false, awayFromCommute: false };
-    }
-    const awayFromCommute = isAwayFromCommute(
+  // Off the commute with home saved, plan for getting home: real road times
+  // (Apple Maps) to each terminal, from each far terminal home, and straight
+  // home around the Sound. On older builds these come back empty and the
+  // straight-line estimate stands.
+  const awayFromCommute =
+    !!location &&
+    isAwayFromCommute(
       location.latitude,
       location.longitude,
       getPersonalLocations(),
       getPublicTerminals(),
     );
+  const home = getPersonalLocations().find((l) => l.id === "home") ?? null;
+  // Only when home is across the water: on home's own side no ferry gets you
+  // there, so "home by" rankings and drive-around would be nonsense.
+  const homeAcross =
+    !!home &&
+    GROUPS.some(
+      (g, i) =>
+        isOn(i) &&
+        nearerSide(g.sides, home.lat, home.lon).side.route !== sides[i].side.route,
+    );
+  const planHome = awayFromCommute && homeAcross;
+  const onRoutes = sides.filter((_, i) => isOn(i));
+  const terminalPoints: DrivePoint[] = onRoutes.map(({ side }) => {
+    const t = getTerminalLocation(side.terminalId)!;
+    return { id: side.route, lat: t.lat, lon: t.lon };
+  });
+  const roadMinutes = useDriveTimes(
+    location ? { lat: location.latitude, lon: location.longitude } : null,
+    planHome ? [...terminalPoints, { id: "home", lat: home!.lat, lon: home!.lon }] : terminalPoints,
+  );
+  const farTerminals: DrivePoint[] = onRoutes.map(({ side }) => {
+    const group = GROUPS.find((g) => g.sides.includes(side))!;
+    const far = group.sides.find((x) => x !== side)!;
+    const t = getTerminalLocation(far.terminalId)!;
+    return { id: side.route, lat: t.lat, lon: t.lon };
+  });
+  const farToHome = useDriveTimesTo(
+    planHome ? farTerminals : [],
+    planHome ? { lat: home!.lat, lon: home!.lon } : null,
+  );
+
+  return useMemo(() => {
+    if (!location) {
+      return {
+        best: null, alternatives: [], hasLocation: false,
+        awayFromCommute: false, driveAround: null,
+      };
+    }
 
     const data = [
       { departures: bainbridgeDepartures, carWait: bainbridgeCarWait },
@@ -136,10 +183,16 @@ export function useBestSailing(): BestSailingState {
           TRAVEL_TIMES[side.route].car?.buffer ?? DEFAULT_CAR_BUFFER_MINUTES,
         carExtraSailings: data[i].carWait.estimate.extraSailings,
         crossingMinutes: crossingMinutesForRoute(side.route),
+        roadDriveMinutes: roadMinutes[side.route] ?? null,
+        homeDriveMinutes: planHome ? (farToHome[side.route] ?? null) : null,
       }),
     );
 
-    return { ...pickBestSailing(candidates, now), hasLocation: true, awayFromCommute };
+    const result = pickBestSailing(candidates, now);
+    const driveAround = planHome && ferriesLoaded
+      ? planDriveAround(roadMinutes.home, result.best, now)
+      : null;
+    return { ...result, hasLocation: true, awayFromCommute, driveAround };
   }, [
     location,
     sides,
@@ -150,6 +203,11 @@ export function useBestSailing(): BestSailingState {
     bremertonDepartures,
     bremertonCarWait,
     enabledGroups,
+    awayFromCommute,
+    planHome,
+    roadMinutes,
+    farToHome,
+    ferriesLoaded,
     now,
   ]);
 }

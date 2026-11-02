@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/BestSailingCard.tsx
-content_sha: dadece1bbbb8cf77fea8ef48cc6837688fcb32366b067ee1abe7918ae3faf65d
+content_sha: 098adf560c8579ca28a67644e1da5d4f2d2c3e6549d5ba22b82716c0649b1b31
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:33:00.940Z
+last_audited: 2026-11-02T03:53:15.226Z
 ---
 
 # BestSailingCard.tsx
 
 **Path:** `src/components/BestSailingCard.tsx`
-**Lines:** 121
+**Lines:** 155
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -30,6 +30,7 @@ last_audited: 2026-11-02T03:33:00.940Z
 - `../context/BestSailingContext` (`useBestSailingContext`)
 - `../context/RouteContext` (`useRoute`)
 - `../context/ThemeContext` (`useTheme`)
+- `../utils/bestSailing` (`driveAroundWins`)
 - `../utils/constants` (`ROUTES`)
 - `../utils/routeGroups` (`selectionFor`)
 - `../utils/time` (`formatTime`)
