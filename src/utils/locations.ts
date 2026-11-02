@@ -45,6 +45,11 @@ const PUBLIC_TERMINALS: KnownLocation[] = [
   },
 ];
 
+/** The public ferry terminals (published by WSDOT). */
+export function getPublicTerminals(): KnownLocation[] {
+  return PUBLIC_TERMINALS;
+}
+
 /** A public ferry terminal by its location id (e.g. 'kingston-terminal'). */
 export function getTerminalLocation(id: string): KnownLocation | null {
   return PUBLIC_TERMINALS.find((t) => t.id === id) ?? null;

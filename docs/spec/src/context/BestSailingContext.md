@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/context/BestSailingContext.tsx
-content_sha: cd79e29ef7e2899133bfe260cdc5b87fac40ee86bd4d9b775965a46af37e649c
+content_sha: 35069009e7d18149d53ad4e16d37763397ade032034f3c7bb51b3886c0d6c48e
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:47.841Z
+last_audited: 2026-11-02T03:33:00.944Z
 ---
 
 # BestSailingContext.tsx
 
 **Path:** `src/context/BestSailingContext.tsx`
-**Lines:** 33
+**Lines:** 61
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -25,8 +25,9 @@ last_audited: 2026-11-01T19:07:47.841Z
 ## Imports
 
 **Internal:**
+- `../../modules/ferry-live` (`FerryLiveState`)
 - `../hooks/useBestSailing` (`useBestSailing`, `BestSailingState`)
-- `../hooks/useLiveActivity` (`useCarPlaySnapshot`, `useLiveActivity`)
+- `../hooks/useLiveActivity` (`toLiveState`, `useCarPlaySnapshot`, `useLiveActivity`)
 
 **External:**
-- `react` (`default as React`, `createContext`, `useContext`, `ReactNode`)
+- `react` (`default as React`, `createContext`, `useCallback`, `useContext`, `useMemo`, `useState`, `ReactNode`)

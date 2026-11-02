@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useLiveActivity.ts
-content_sha: 4bad820b2913f70e42425a21896f1317e8cb7337507306b086e46d533d7ecb5d
+content_sha: b3cb6e16b6558a8fc899f9033e6a1c4254e8c3a09da2bf2af00b2e3da7f8fb32
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:47.864Z
+last_audited: 2026-11-02T03:33:00.968Z
 ---
 
 # useLiveActivity.ts
 
 **Path:** `src/hooks/useLiveActivity.ts`
-**Lines:** 107
+**Lines:** 100
 **Language:** TypeScript
 
 ## Exports
@@ -19,13 +19,13 @@ last_audited: 2026-11-01T19:07:47.864Z
 | Name | Kind | Signature |
 |---|---|---|
 | `toLiveState` | function | `(best: SailingPick<DepartureInfo>, alt: SailingPick<DepartureInfo> \| undefined): FerryLiveState` |
-| `useLiveActivity` | function | `(best: SailingPick<DepartureInfo> \| null, alt: SailingPick<DepartureInfo> \| undefined): { supported: boolean; active: boolean; toggle: () => void; }` |
+| `useLiveActivity` | function | `(state: FerryLiveState \| null): { supported: boolean; active: boolean; toggle: () => void; }` |
 | `toCarPlaySnapshot` | function | `(hasLocation: boolean, { best, alternatives }: BestSailingResult<DepartureInfo>): CarPlaySnapshot` |
 | `useCarPlaySnapshot` | function | `(hasLocation: boolean, result: BestSailingResult<DepartureInfo>): void` |
 
 ### Documented exports
 
-- **`useLiveActivity`** — Mirror the best-sailing plan into a Live Activity (Lock Screen, Dynamic
+- **`useLiveActivity`** — Mirror a plan into a Live Activity (Lock Screen, Dynamic Island, and the
 - **`useCarPlaySnapshot`** — Keep the CarPlay screen's snapshot current. Always on (it's in-process and
 
 ## Imports

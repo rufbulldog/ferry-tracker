@@ -3,28 +3,28 @@ type: l2-module
 spec_version: 1
 path: src/hooks
 file_count: 17
-total_lines: 1504
+total_lines: 1513
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:07:16.488Z
+last_audited: 2026-11-02T03:33:01.007Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 17 · **Lines:** 1504
+**Files:** 17 · **Lines:** 1513
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`useArrivalEta.ts`](./useArrivalEta.md) | 98 | Arrival for the sailing the leave-by plan targets (not the boat currently |
-| [`useBestSailing.ts`](./useBestSailing.md) | 140 | Best sailing to drive to from your current position, across both route |
+| [`useBestSailing.ts`](./useBestSailing.md) | 156 | Best sailing to drive to from your current position, across both route |
 | [`useCarWait.ts`](./useCarWait.md) | 76 | Combine live capacity, WSF wait-time notes, WSF alerts, and recorded history |
 | [`useDailyTrends.ts`](./useDailyTrends.md) | 124 |  |
 | [`useFutureSchedule.ts`](./useFutureSchedule.md) | 49 | Full sailing list for a route on a given date (YYYY-MM-DD). Schedules are |
 | [`useLatestDeparture.ts`](./useLatestDeparture.md) | 50 |  |
-| [`useLiveActivity.ts`](./useLiveActivity.md) | 107 | Mirror the best-sailing plan into a Live Activity (Lock Screen, Dynamic |
+| [`useLiveActivity.ts`](./useLiveActivity.md) | 100 | Mirror a plan into a Live Activity (Lock Screen, Dynamic Island, and the |
 | [`useNextDepartures.ts`](./useNextDepartures.md) | 52 |  |
 | [`useRecommendation.ts`](./useRecommendation.md) | 240 |  |
 | [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 30 |  |

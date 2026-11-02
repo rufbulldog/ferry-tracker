@@ -2,6 +2,16 @@
 
 Tracks remaining work for ferry-app. Completed items are removed — the history lives in commit messages.
 
+## Next up
+
+- **Drive around vs. take the ferry** (agreed 2026-11-01, after the 1.8.x Lock Screen check in the car).
+  From somewhere off the commute (a tournament in Renton, Northgate), "Best from here" should also offer
+  driving all the way home around the Sound and say which gets you home sooner. Needs a destination (saved
+  home) and a real road ETA for both legs, so it's native: an Expo module over MapKit `MKDirections`
+  (`expectedTravelTime`, ideally with traffic) to replace the straight-line drive heuristic in
+  `src/utils/bestSailing.ts`, then a full `eas build`. Ferry option = drive to terminal + wait + crossing +
+  drive from the far terminal home.
+
 ## Medium Priority
 
 - **Validate the CarPlay screen in the simulator** — built but not yet seen (2026-11-01). Prebuild with

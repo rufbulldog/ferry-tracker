@@ -26,23 +26,16 @@ export function toLiveState(
 }
 
 /**
- * Mirror the best-sailing plan into a Live Activity (Lock Screen, Dynamic
- * Island, and the CarPlay dashboard on iOS 26+). Opt-in via `toggle`; once on,
- * re-pushes only when the plan's content actually changes — the countdown
- * itself ticks natively. Updates stop while the app is backgrounded.
+ * Mirror a plan into a Live Activity (Lock Screen, Dynamic Island, and the
+ * CarPlay dashboard on iOS 26+): the best sailing from here, or the bike/commute
+ * leave-by from the Ferry tab. Opt-in via `toggle`; once on, re-pushes only when
+ * the content actually changes — the countdown itself ticks natively. Updates
+ * stop while the app is backgrounded.
  */
-export function useLiveActivity(
-  best: SailingPick<DepartureInfo> | null,
-  alt: SailingPick<DepartureInfo> | undefined,
-) {
+export function useLiveActivity(state: FerryLiveState | null) {
   const supported = !!FerryLive?.areActivitiesEnabled();
   const [active, setActive] = useState(() => !!FerryLive?.isActive());
   const lastPushed = useRef<string | null>(null);
-
-  const state = useMemo(
-    () => (best ? toLiveState(best, alt) : null),
-    [best, alt],
-  );
   const key = state ? JSON.stringify(state) : null;
 
   useEffect(() => {

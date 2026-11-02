@@ -6,7 +6,7 @@ discovered_from: code-graph + repo config
 resource_count: 20
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-11-02T03:07:16.489Z
+last_audited: 2026-11-02T03:33:01.008Z
 ---
 
 # Frontend architecture — System Spec
@@ -18,9 +18,9 @@ Cross-cutting view of how the app is wired: which contexts exist, which files co
 ```mermaid
 flowchart TD
   App["App (screens + components)"]
-  App --> ctx_BestSailingContext["BestSailingContext — 2 consumers"]
+  App --> ctx_BestSailingContext["BestSailingContext — 4 consumers"]
   App --> ctx_RouteContext["RouteContext — 9 consumers"]
-  App --> ctx_ThemeContext["ThemeContext — 15 consumers"]
+  App --> ctx_ThemeContext["ThemeContext — 16 consumers"]
   App -.-> hook_useArrivalEta["useArrivalEta — 2 consumers"]
   App -.-> hook_useBestSailing["useBestSailing — 1 consumer"]
   App -.-> hook_useCarWait["useCarWait — 3 consumers"]
@@ -44,9 +44,9 @@ flowchart TD
 
 | Context | Exports | Consumers |
 |---|---|---|
-| [`BestSailingContext.tsx`](../src/context/BestSailingContext.md) | `BestSailingProvider`, `useBestSailingContext`, `BestSailingContextValue` | 2 files |
+| [`BestSailingContext.tsx`](../src/context/BestSailingContext.md) | `BestSailingProvider`, `useBestSailingContext`, `BestSailingContextValue` | 4 files |
 | [`RouteContext.tsx`](../src/context/RouteContext.md) | `RouteProvider`, `useRoute`, `ROUTE_GROUP_LABELS` | 9 files |
-| [`ThemeContext.tsx`](../src/context/ThemeContext.md) | `ThemeProvider`, `useTheme` | 15 files |
+| [`ThemeContext.tsx`](../src/context/ThemeContext.md) | `ThemeProvider`, `useTheme` | 16 files |
 
 ## Custom hooks (17)
 

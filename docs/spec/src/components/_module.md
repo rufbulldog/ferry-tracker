@@ -2,24 +2,24 @@
 type: l2-module
 spec_version: 1
 path: src/components
-file_count: 13
-total_lines: 2372
+file_count: 14
+total_lines: 2391
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:07:16.488Z
+last_audited: 2026-11-02T03:33:01.006Z
 ---
 
 # src/components — Module Spec
 
 **Folder:** `src/components`
-**Files:** 13 · **Lines:** 2372
+**Files:** 14 · **Lines:** 2391
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`AlertBanner.tsx`](./AlertBanner.md) | 122 |  |
-| [`BestSailingCard.tsx`](./BestSailingCard.md) | 168 | "Best from here" — which terminal to drive to and which sailing you can make, |
+| [`BestSailingCard.tsx`](./BestSailingCard.md) | 121 | "Best from here" — which terminal to drive to and which sailing you can make, |
 | [`CapacityBar.tsx`](./CapacityBar.md) | 130 |  |
 | [`CarMeter.tsx`](./CarMeter.md) | 50 |  |
 | [`CarWaitChip.tsx`](./CarWaitChip.md) | 54 | Compact "cars may wait" notice for the Time screen. Renders nothing unless |
@@ -28,6 +28,7 @@ last_audited: 2026-11-02T03:07:16.488Z
 | [`FerryProgressIndicator.tsx`](./FerryProgressIndicator.md) | 121 |  |
 | [`KingstonBoardingPassPill.tsx`](./KingstonBoardingPassPill.md) | 75 | Compact notice for the Kingston terminal's vehicle boarding-pass requirement. |
 | [`LastDepartureCard.tsx`](./LastDepartureCard.md) | 163 |  |
+| [`LiveActivityPill.tsx`](./LiveActivityPill.md) | 66 | Toggle for the Live Activity (Lock Screen, Dynamic Island, CarPlay |
 | [`MainDepartureCard.tsx`](./MainDepartureCard.md) | 694 | The leave-by plan for this sailing (formerly the Leave tab). |
 | [`MonthCalendar.tsx`](./MonthCalendar.md) | 151 | Lightweight month-grid date picker (pure JS/RN — no native date-picker dep). |
 | [`RouteSelector.tsx`](./RouteSelector.md) | 209 |  |
@@ -53,6 +54,8 @@ Files in this folder imported from elsewhere:
 - `KingstonBoardingPassPill.tsx` — used by 1 file
   - `app/(tabs)/index.tsx`
 - `LastDepartureCard.tsx` — used by 1 file
+  - `app/(tabs)/index.tsx`
+- `LiveActivityPill.tsx` — used by 1 file
   - `app/(tabs)/index.tsx`
 - `MainDepartureCard.tsx` — used by 1 file
   - `app/(tabs)/index.tsx`

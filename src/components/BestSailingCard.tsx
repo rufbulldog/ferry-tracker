@@ -7,6 +7,7 @@ import { useRoute } from "../context/RouteContext";
 import { useBestSailingContext } from "../context/BestSailingContext";
 import { ROUTES } from "../utils/constants";
 import { selectionFor } from "../utils/routeGroups";
+import { LiveActivityPill } from "./LiveActivityPill";
 import { formatTime } from "../utils/time";
 
 /**
@@ -18,7 +19,7 @@ import { formatTime } from "../utils/time";
 export function BestSailingCard() {
   const { theme } = useTheme();
   const { route, setRouteGroup, setDirection } = useRoute();
-  const { best, alternatives, live } = useBestSailingContext();
+  const { best, alternatives } = useBestSailingContext();
   const alt = alternatives[0];
 
   if (!best) return null;
@@ -88,43 +89,7 @@ export function BestSailingCard() {
             {formatTime(alt.arrivalTime)}
           </Text>
         )}
-        {live.supported && (
-          <TouchableOpacity
-            onPress={live.toggle}
-            activeOpacity={0.7}
-            accessibilityRole="switch"
-            accessibilityState={{ checked: live.active }}
-            style={[
-              styles.livePill,
-              {
-                borderColor: theme.colors.primary,
-                backgroundColor: live.active
-                  ? theme.colors.primary
-                  : "transparent",
-              },
-            ]}
-          >
-            <Ionicons
-              name={live.active ? "radio" : "radio-outline"}
-              size={13}
-              color={live.active ? theme.colors.cardBg : theme.colors.primary}
-            />
-            <Text
-              style={[
-                styles.livePillText,
-                {
-                  color: live.active
-                    ? theme.colors.cardBg
-                    : theme.colors.primary,
-                },
-              ]}
-            >
-              {live.active
-                ? "Live on Lock Screen & CarPlay"
-                : "Show on Lock Screen & CarPlay"}
-            </Text>
-          </TouchableOpacity>
-        )}
+        <LiveActivityPill />
       </View>
       {!isCurrent && (
         <Ionicons
@@ -152,16 +117,4 @@ const styles = StyleSheet.create({
   label: { fontSize: 11, fontWeight: "600", letterSpacing: 1 },
   headline: { fontWeight: "700", fontSize: 15, marginTop: 2 },
   detail: { fontSize: 12, lineHeight: 16, marginTop: 2 },
-  livePill: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    gap: 5,
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingVertical: 3,
-    paddingHorizontal: 9,
-    marginTop: 8,
-  },
-  livePillText: { fontSize: 11, fontWeight: "600" },
 });

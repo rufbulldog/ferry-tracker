@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/index.tsx
-content_sha: 57585efe51115104ff346da773fd89b2d0dcd8713888a2a711788868b2dc6712
+content_sha: fb9dfc6d71e69cff28a9c42776c7891668856edb316948b71d452b0ea5914cee
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:07:16.380Z
+last_audited: 2026-11-02T03:33:00.921Z
 ---
 
 # index.tsx
 
 **Path:** `app/(tabs)/index.tsx`
-**Lines:** 653
+**Lines:** 700
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -23,6 +23,7 @@ last_audited: 2026-11-02T03:07:16.380Z
 ## Imports
 
 **Internal:**
+- `../../modules/ferry-live` (`FerryLiveState`)
 - `../../src/components/AlertBanner` (`AlertBanner`)
 - `../../src/components/BestSailingCard` (`BestSailingCard`)
 - `../../src/components/CarWaitChip` (`CarWaitChip`)
@@ -30,7 +31,9 @@ last_audited: 2026-11-02T03:07:16.380Z
 - `../../src/components/FerryCard` (`FerryCard`)
 - `../../src/components/KingstonBoardingPassPill` (`KingstonBoardingPassPill`)
 - `../../src/components/LastDepartureCard` (`LastDepartureCard`)
+- `../../src/components/LiveActivityPill` (`LiveActivityPill`)
 - `../../src/components/MainDepartureCard` (`MainDepartureCard`, `DeparturePlan`)
+- `../../src/context/BestSailingContext` (`useBestSailingContext`)
 - `../../src/context/RouteContext` (`useRoute`)
 - `../../src/context/ThemeContext` (`useTheme`)
 - `../../src/hooks/useArrivalEta` (`usePlannedArrival`)
@@ -39,7 +42,7 @@ last_audited: 2026-11-02T03:07:16.380Z
 - `../../src/hooks/useRecommendation` (`useRecommendation`)
 - `../../src/hooks/useTerminalBulletins` (`useTerminalBulletins`)
 - `../../src/types/storage` (`Vehicle`)
-- `../../src/utils/constants` (`ROUTES`, `TERMINALS`)
+- `../../src/utils/constants` (`ROUTES`, `TERMINALS`, `crossingMinutesForRoute`)
 - `../../src/utils/time` (`formatTime`)
 - `../../src/utils/transitConfig` (`TRAVEL_TIMES`)
 

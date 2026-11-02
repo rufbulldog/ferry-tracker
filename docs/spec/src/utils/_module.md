@@ -2,17 +2,17 @@
 type: l2-module
 spec_version: 1
 path: src/utils
-file_count: 25
-total_lines: 3120
+file_count: 26
+total_lines: 3149
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:07:16.488Z
+last_audited: 2026-11-02T03:33:01.007Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 25 · **Lines:** 3120
+**Files:** 26 · **Lines:** 3149
 
 ## File inventory
 
@@ -24,13 +24,14 @@ last_audited: 2026-11-02T03:07:16.488Z
 | [`bulletins.ts`](./bulletins.md) | 156 | Route-relevant bulletins, alerts first then newest. `route` is matched by the |
 | [`capacityMeter.ts`](./capacityMeter.md) | 42 | Percent of drive-up space taken, 0–100, or null when space data is missing. |
 | [`carWait.ts`](./carWait.md) | 220 | Parse a WSF terminalwaittimes note (vehicle wait). |
+| [`commute.ts`](./commute.md) | 24 |  |
 | [`composeDepartures.ts`](./composeDepartures.md) | 453 | True when WSF's sailing-space feed lists departures from → to. |
 | [`constants.ts`](./constants.md) | 75 |  |
 | [`dateHelpers.ts`](./dateHelpers.md) | 43 | Local YYYY-MM-DD (the format WSF's schedule endpoint expects as TripDate). |
 | [`ferryDeparture.ts`](./ferryDeparture.md) | 80 | Resolve the effective departure for a sailing. Preference order: |
 | [`geo.ts`](./geo.md) | 19 | Haversine distance in meters between two lat/lon points. |
 | [`kingstonBoardingPass.ts`](./kingstonBoardingPass.md) | 145 | Resolve the Kingston boarding-pass status for a given instant. |
-| [`locations.ts`](./locations.md) | 125 | A public ferry terminal by its location id (e.g. 'kingston-terminal'). |
+| [`locations.ts`](./locations.md) | 130 | The public ferry terminals (published by WSDOT). |
 | [`planEstimate.ts`](./planEstimate.md) | 101 |  |
 | [`predictedDelay.ts`](./predictedDelay.md) | 98 |  |
 | [`routeGroups.ts`](./routeGroups.md) | 86 | The group + direction a route belongs to. |
@@ -68,6 +69,8 @@ Files in this folder imported from elsewhere:
   - `infra/lambda/plan/plan.ts`
   - `src/hooks/useCarWait.ts`
   - `src/hooks/useRecommendation.ts`
+- `commute.ts` — used by 1 file
+  - `src/hooks/useBestSailing.ts`
 - `composeDepartures.ts` — used by 2 files
   - `infra/lambda/plan/plan.ts`
   - `src/hooks/useNextDepartures.ts`

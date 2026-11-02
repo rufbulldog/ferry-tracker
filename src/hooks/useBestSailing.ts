@@ -5,7 +5,13 @@ import { useWatchedLocation } from "./useWatchedLocation";
 import { Route, crossingMinutesForRoute } from "../utils/constants";
 import { ALL_ROUTE_GROUPS, ROUTE_GROUPS, RouteGroup } from "../utils/routeGroups";
 import { useRoute } from "../context/RouteContext";
-import { getTerminalLocation, haversineDistance } from "../utils/locations";
+import {
+  getPublicTerminals,
+  getTerminalLocation,
+  haversineDistance,
+} from "../utils/locations";
+import { getPersonalLocations } from "../store/personalLocations";
+import { isAwayFromCommute } from "../utils/commute";
 import { TRAVEL_TIMES } from "../utils/transitConfig";
 import {
   pickBestSailing,
@@ -55,6 +61,8 @@ function nearerSide(
 
 export interface BestSailingState extends BestSailingResult<DepartureInfo> {
   hasLocation: boolean;
+  /** Away from saved home/work and terminals — likely driving, not commuting. */
+  awayFromCommute: boolean;
 }
 
 /**
@@ -101,7 +109,15 @@ export function useBestSailing(): BestSailingState {
   const bremertonCarWait = useCarWait(hookRoute(2));
 
   return useMemo(() => {
-    if (!location) return { best: null, alternatives: [], hasLocation: false };
+    if (!location) {
+      return { best: null, alternatives: [], hasLocation: false, awayFromCommute: false };
+    }
+    const awayFromCommute = isAwayFromCommute(
+      location.latitude,
+      location.longitude,
+      getPersonalLocations(),
+      getPublicTerminals(),
+    );
 
     const data = [
       { departures: bainbridgeDepartures, carWait: bainbridgeCarWait },
@@ -123,7 +139,7 @@ export function useBestSailing(): BestSailingState {
       }),
     );
 
-    return { ...pickBestSailing(candidates, now), hasLocation: true };
+    return { ...pickBestSailing(candidates, now), hasLocation: true, awayFromCommute };
   }, [
     location,
     sides,

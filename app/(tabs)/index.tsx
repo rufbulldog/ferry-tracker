@@ -29,11 +29,18 @@ import { AlertBanner } from "../../src/components/AlertBanner";
 import { KingstonBoardingPassPill } from "../../src/components/KingstonBoardingPassPill";
 import { CarWaitChip } from "../../src/components/CarWaitChip";
 import { BestSailingCard } from "../../src/components/BestSailingCard";
+import { LiveActivityPill } from "../../src/components/LiveActivityPill";
+import { useBestSailingContext } from "../../src/context/BestSailingContext";
+import type { FerryLiveState } from "../../modules/ferry-live";
 import { useRecommendation } from "../../src/hooks/useRecommendation";
 import { usePlannedArrival } from "../../src/hooks/useArrivalEta";
 import { useRoute } from "../../src/context/RouteContext";
 import { useTheme } from "../../src/context/ThemeContext";
-import { ROUTES, TERMINALS } from "../../src/utils/constants";
+import {
+  ROUTES,
+  TERMINALS,
+  crossingMinutesForRoute,
+} from "../../src/utils/constants";
 import { formatTime } from "../../src/utils/time";
 import { TRAVEL_TIMES } from "../../src/utils/transitConfig";
 import { Vehicle } from "../../src/types/storage";
@@ -238,6 +245,44 @@ export default function DepartScreen() {
       }
     : undefined;
 
+  // "Best from here" is for driving from somewhere unusual (Car mode, or away
+  // from home/work/terminals). On the bike commute the card below already
+  // answers "when do I leave", so the Live Activity mirrors that instead.
+  const { awayFromCommute, setCommuteLive } = useBestSailingContext();
+  const showBestFromHere = vehicle === "car" || awayFromCommute;
+  const commuteLeaveByMs =
+    planIsForCard && recommendation.leaveByTime
+      ? recommendation.leaveByTime.getTime()
+      : null;
+  const commuteDepartureMs = recommendation.ferryDepartureTime?.getTime() ?? null;
+  const commuteLive = useMemo<FerryLiveState | null>(() => {
+    if (showBestFromHere || commuteLeaveByMs == null || commuteDepartureMs == null) {
+      return null;
+    }
+    const from = ROUTES[route].from;
+    return {
+      routeLabel: ROUTES[route].label,
+      terminal: TERMINAL_NAMES[from] ?? "Terminal",
+      departureMs: commuteDepartureMs,
+      leaveByMs: commuteLeaveByMs,
+      arrivalMs: commuteDepartureMs + crossingMinutesForRoute(route) * 60_000,
+      // Non-zero keeps the widget on its countdown (0 reads "At terminal").
+      driveMinutes: Math.max(1, recommendation.transitMinutes),
+      note: planVehicle === "bike" ? "By bike" : "By car",
+    };
+  }, [
+    showBestFromHere,
+    commuteLeaveByMs,
+    commuteDepartureMs,
+    route,
+    recommendation.transitMinutes,
+    planVehicle,
+  ]);
+  useEffect(() => {
+    setCommuteLive(commuteLive);
+  }, [commuteLive, setCommuteLive]);
+  useEffect(() => () => setCommuteLive(null), [setCommuteLive]);
+
   const hasDeparted = !!lastDeparture;
 
   const mainCardHeight = mainCardH || MAIN_CARD_FALLBACK_H;
@@ -394,7 +439,7 @@ export default function DepartScreen() {
       {/* Notices */}
       <View>
         {/* Best terminal + sailing to drive to from your live position */}
-        <BestSailingCard />
+        {showBestFromHere && <BestSailingCard />}
 
         {/* Kingston vehicle boarding-pass notice — only when departing Kingston */}
         {ROUTES[route].from === TERMINALS.KINGSTON && (
@@ -510,6 +555,7 @@ export default function DepartScreen() {
                 plan={plan}
               />
             </View>
+            {commuteLive && <LiveActivityPill style={styles.commutePill} />}
             <CheckInFAB inline />
           </>
         )}
@@ -585,6 +631,7 @@ export default function DepartScreen() {
 }
 
 const styles = StyleSheet.create({
+  commutePill: { alignSelf: "center", marginTop: 12, marginBottom: 12 },
   container: {
     flex: 1,
   },

@@ -96,8 +96,11 @@ There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK dep
   drive-up space).
 
 - **Best from here** (`src/utils/bestSailing.ts`, `useBestSailing`, `BestSailingContext`): picks the
-  terminal + sailing you can make by car from your live location across both route groups. Drive time
-  is a straight-line heuristic for now (no native routing).
+  terminal + sailing you can make by car from your live location across the enabled route groups. Drive
+  time is a straight-line heuristic for now (no native routing; drive-around via MapKit is next, see
+  TECH_DEBT). The card only shows in **Car mode or away from the commute** (`src/utils/commute.ts`: more
+  than 1 km from saved home/work and not at a terminal). On the bike commute it hides, and the Live
+  Activity mirrors the Ferry tab's own leave-by instead (`setCommuteLive`; pill under Next Sailing).
 - **Live Activity** (Lock Screen, Dynamic Island, CarPlay dashboard on iOS 26+ via the `.small`
   supplemental family): widget extension in `targets/widgets/` (built by `@bacons/apple-targets`),
   started/updated through the local Expo module `modules/ferry-live/`. `FerryActivityAttributes.swift`

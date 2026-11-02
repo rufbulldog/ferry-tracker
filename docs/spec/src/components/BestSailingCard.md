@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/BestSailingCard.tsx
-content_sha: 7ae71cca65c755dd374e0db710f7d7859de97dfebc63875f1815cf8d1370a433
+content_sha: dadece1bbbb8cf77fea8ef48cc6837688fcb32366b067ee1abe7918ae3faf65d
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:07:16.405Z
+last_audited: 2026-11-02T03:33:00.940Z
 ---
 
 # BestSailingCard.tsx
 
 **Path:** `src/components/BestSailingCard.tsx`
-**Lines:** 168
+**Lines:** 121
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -33,6 +33,7 @@ last_audited: 2026-11-02T03:07:16.405Z
 - `../utils/constants` (`ROUTES`)
 - `../utils/routeGroups` (`selectionFor`)
 - `../utils/time` (`formatTime`)
+- `./LiveActivityPill` (`LiveActivityPill`)
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
