@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNextDepartures, DepartureInfo } from "./useNextDepartures";
 import { useCarWait } from "./useCarWait";
 import { useWatchedLocation } from "./useWatchedLocation";
-import { Route } from "../utils/constants";
+import { Route, crossingMinutesForRoute } from "../utils/constants";
 import { getTerminalLocation, haversineDistance } from "../utils/locations";
 import { TRAVEL_TIMES } from "../utils/transitConfig";
 import {
@@ -120,6 +120,7 @@ export function useBestSailing(): BestSailingState {
         bufferMinutes:
           TRAVEL_TIMES[side.route].car?.buffer ?? DEFAULT_CAR_BUFFER_MINUTES,
         carExtraSailings: data[i].carWait.estimate.extraSailings,
+        crossingMinutes: crossingMinutesForRoute(side.route),
       }),
     );
 

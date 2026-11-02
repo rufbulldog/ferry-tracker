@@ -8,8 +8,9 @@ Status (2026-11-01): **CarPlay path partly built, differently from this plan** â
 stayed in TypeScript (`src/utils/bestSailing.ts`, in-process), surfaced as a Live Activity
 (`targets/widgets/`, shows on the CarPlay dashboard on iOS 26+, no entitlement) and a native Swift
 CarPlay list screen fed by JS (`modules/ferry-live/`, gated behind `FERRY_CARPLAY=1` until Apple grants
-the entitlement). See CLAUDE.md "Best sailing, Live Activity & CarPlay". The Watch app and the `/plan`
-endpoint below are still unbuilt. Original status: Decisions locked so far:
+the entitlement). See CLAUDE.md "Best sailing, Live Activity & CarPlay". The backend `/plan`
+endpoint is built (2026-11-01, live-fetch variant; see [plan-endpoint-spec.md](plan-endpoint-spec.md) "As built").
+The Watch app is still unbuilt. Original status: Decisions locked so far:
 - Scope: capture the architecture; pick a build order later.
 - Leave-by "brain": **backend `/plan` endpoint** (shared by both surfaces).
 

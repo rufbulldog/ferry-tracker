@@ -30,6 +30,7 @@ const candidate = (
   departures: [sailing(20), sailing(70), sailing(120)],
   bufferMinutes: 10,
   carExtraSailings: 0,
+  crossingMinutes: 35,
   ...over,
 });
 
@@ -142,6 +143,7 @@ describe("pickBestSailing", () => {
       distanceMeters: 8000,
       departures: [sailing(40), sailing(80)],
       bufferMinutes: 20,
+      crossingMinutes: 30,
     });
     // Bainbridge: 23 min drive + 10 → +33 misses +30 → +90 sailing, lands +125
     // Kingston: 16 min drive + 20 → +36 catches +40, lands +70

@@ -1,5 +1,81 @@
 # `/plan` Endpoint Spec
 
+## As built (2026-11-01) — the contract clients use
+
+Built to serve kamilche-trip (Mike's Seattle → Bremerton vs Edmonds → Kingston leg) and, later,
+a Watch app. It **differs from the original design below** on these points:
+- **Live fetch, not a collector snapshot.** This is Option A, with a 30 s warm-container cache
+  and an API Gateway throttle on `GET /plan` (5 rps, burst 10).
+- **Multi-route.** It returns every requested route plus a ranked best pick.
+- **Car only, with car overflow.** Car overflow and bulletins are included. There's no `vehicle`
+  or bike mode, and no `transit-records` personalization (still deferred).
+- **Seattle ⇄ Bremerton included.** WSF's `terminalsailingspace` often omits Seattle and
+  Bremerton, so those routes fall back to the timetable (`schedule/{date}/{from}/{to}`, today +
+  tomorrow). Vessel tracking still gives live delays, but drive-up space and car overflow read as
+  unknown.
+
+**Code:**
+- **Handler (I/O):** `infra/lambda/plan/index.ts`.
+- **Pure builder:** `infra/lambda/plan/plan.ts`, tested in `infra/test/plan.test.ts`.
+- **Shared app modules:** it bundles the app's own `src/utils` (`composeDepartures`, `carWait`,
+  `bulletins`, `bestSailing`, `typicalConditions`, `geo`), so phone and backend can't drift.
+  Those modules must stay free of RN/Expo/AsyncStorage imports. `infra` typechecks them, and
+  `tsc` output goes to `infra/build/`.
+- **Time zone:** the Lambda runs in `America/Los_Angeles` (set in code), because "typical for this
+  hour" history buckets by local hour.
+
+```
+GET /plan?lat=47.7568&lon=-122.2806&routes=seattle-bremerton,edmonds-kingston&sailings=3&buffer=10
+```
+
+| Param | Default | Notes |
+|---|---|---|
+| `lat`, `lon` | none | Both or neither. Without them you get `routes[]` only (`best: null`). |
+| `routes` | all six | Comma list of `bainbridge-seattle`, `seattle-bainbridge`, `kingston-edmonds`, `edmonds-kingston`, `seattle-bremerton`, `bremerton-seattle`. |
+| `sailings` | `3` | 1–10 upcoming sailings listed per route (boats on the water are listed too). |
+| `buffer` | per route | Minutes to arrive before a sailing (0–120). Overrides the app's car buffers (default 10). |
+
+With a location, each crossing is planned only from **your side of the water** (the nearer
+terminal of the pair). The drive is estimated as straight-line × 1.4 at 50 km/h, + 2 min (0 within
+400 m, ignored past 90 min). Picks are ranked by landing time. Bad params → `400 {error}`.
+WSF down → `502`.
+
+```jsonc
+{
+  "generatedAt": "2026-11-02T02:40:00.000Z",          // all times ISO 8601 UTC
+  "location": { "lat": 47.7568, "lon": -122.2806 },  // or null
+  "best": {                                           // null without location / nothing catchable
+    "route": "edmonds-kingston", "label": "Edmonds → Kingston", "terminal": "Edmonds",
+    "driveMinutes": 19, "leaveBy": "…", "slackMinutes": 22,
+    "departure": "…",            // the time the plan is built against
+    "arrival": "…",              // departure + crossing
+    "bumpedByOverflow": false,   // skipped a boat full for cars
+    "sailing": Sailing, "following": Sailing | null,
+    "reasoning": ["~19 min drive to Edmonds + 10 min buffer"]
+  },
+  "alternatives": [ /* same shape, other crossings, ranked */ ],
+  "routes": [{
+    "route": "seattle-bremerton", "label": "Seattle → Bremerton",
+    "from": { "id": 7, "name": "Seattle" }, "to": { "id": 4, "name": "Bremerton" },
+    "crossingMinutes": 60,
+    "carWait": { "extraSailings": 0, "extraMinutes": 0, "atRisk": false,
+                 "reason": "none", "confidence": "low", "note": null },
+    "sailings": [Sailing]
+  }]
+}
+// Sailing:
+{ "scheduledDeparture": "…", "departure": "…",  // departure = best live estimate (or actual)
+  "delayMinutes": 0, "arrival": "…",            // live vessel ETA once under way
+  "status": "scheduled",                        // scheduled|loading|departed|arriving|returning
+  "vesselName": "Kitsap", "driveUpSpaces": 120, // null when unknown
+  "maxSpaces": 200, "isCancelled": false }
+```
+
+The original design follows, kept for the reasoning and the deferred items (bike mode, recorded
+transit times, the collector snapshot if latency or WSF load ever matter).
+
+---
+
 Backend spec for the shared leave-by "brain" that powers the Watch + CarPlay companions
 (see [companion-apps-plan.md](companion-apps-plan.md)). Backend is AWS CDK (`infra/`).
 

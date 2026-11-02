@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-11-01T19:07:47.907Z",
+  "generated_at": "2026-11-02T02:40:10.731Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "e8b792519402426409612a64360ac107d69390dfa3ff87298f73a832c304427f",
@@ -72,6 +72,20 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-09-14T02:10:09.281Z"
     },
+    "infra/lambda/plan/index.ts": {
+      "content_sha256": "49e8caccc3238b97ca4208b7e5a4333d92f9c8e30e831799ea206748a6647d28",
+      "spec_path": "docs/spec/infra/lambda/plan/index.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-02T02:40:10.648Z"
+    },
+    "infra/lambda/plan/plan.ts": {
+      "content_sha256": "9c5a720406edd4b9603c0e9ac1420552ab9ecf32d1d4e89f7f1f4fa27a2ce6dc",
+      "spec_path": "docs/spec/infra/lambda/plan/plan.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-02T02:40:10.649Z"
+    },
     "infra/lambda/proxy/index.ts": {
       "content_sha256": "ddb2fe3c67aae0a64450585d7cc81c5f14a5dd17bfb463d37e97c56c152f4b01",
       "spec_path": "docs/spec/infra/lambda/proxy/index.md",
@@ -80,11 +94,11 @@
       "last_audited": "2026-08-02T05:28:25.650Z"
     },
     "infra/lib/infra-stack.ts": {
-      "content_sha256": "3e108667c04c042ffc30d354a88cf60068cfcc0d771c7e06e263514933e8f4b2",
+      "content_sha256": "75c6ba746467532d245cb6913c4650c0f22565825a4033bdcc40879516a52e22",
       "spec_path": "docs/spec/infra/lib/infra-stack.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.288Z"
+      "last_audited": "2026-11-02T02:40:10.651Z"
     },
     "modules/ferry-live/index.ts": {
       "content_sha256": "09682eec543b8acff7dfa83a6da2fd265d8ae1b1d0403413b0f439287d3c669b",
@@ -269,11 +283,11 @@
       "last_audited": "2026-10-31T07:21:21.502Z"
     },
     "src/hooks/useBestSailing.ts": {
-      "content_sha256": "7707a2a0d6afebce1df594c024f0c48a7d94ca382a1543f05d6ae182f2a012d4",
+      "content_sha256": "759f395b912d19f1b8a8ab181a7485feaf09b3068432a172671773a55f666690",
       "spec_path": "docs/spec/src/hooks/useBestSailing.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.851Z"
+      "last_audited": "2026-11-02T02:40:10.668Z"
     },
     "src/hooks/useCarWait.ts": {
       "content_sha256": "0fe3be7259552ee8d06a9e7263b616664b2977f430b35d908e5d6928c19ef08f",
@@ -311,11 +325,11 @@
       "last_audited": "2026-11-01T19:07:47.864Z"
     },
     "src/hooks/useNextDepartures.ts": {
-      "content_sha256": "3fd61d93565876d4516761b73ce2e37d6c6b05c6d6390750a326aa3173a8faaf",
+      "content_sha256": "6ce156cb2a26c900941a758c8df14a63a6c1e08f50064c11fa9f0b93f45af69e",
       "spec_path": "docs/spec/src/hooks/useNextDepartures.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-09-14T02:10:09.316Z"
+      "last_audited": "2026-11-02T02:40:10.686Z"
     },
     "src/hooks/useRecommendation.ts": {
       "content_sha256": "589718d0b7c8134af4ceff131243277407e44d3d2809508e6132e853c68a50d3",
@@ -325,11 +339,11 @@
       "last_audited": "2026-10-31T07:21:21.536Z"
     },
     "src/hooks/useTerminalBulletins.ts": {
-      "content_sha256": "32a109ddb6ef53b9263f0b3904a71c4ff8ce305c94d0e397568d894129c0a057",
+      "content_sha256": "f646cb214661ab07bcbca8abbf575f2e6d2e3956929e6b58dc65a15f8b8dfdbe",
       "spec_path": "docs/spec/src/hooks/useTerminalBulletins.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-07-31T23:25:27.501Z"
+      "last_audited": "2026-11-02T02:40:10.690Z"
     },
     "src/hooks/useTerminalConditions.ts": {
       "content_sha256": "b5cf70eeec1aa19ea77453b1203c7a4526f1fec8ce6fdc5a80c22b0705f26c03",
@@ -423,11 +437,18 @@
       "last_audited": "2026-10-31T07:21:21.585Z"
     },
     "src/utils/bestSailing.ts": {
-      "content_sha256": "c3fe0c4234934ac0f0e069d22ab424723f43dbc8463a7cd57aa976a8f3e727c5",
+      "content_sha256": "dcfbf7e516d1444877881113f672c954ed28462ca5fab10dcd329994374d70b7",
       "spec_path": "docs/spec/src/utils/bestSailing.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.894Z"
+      "last_audited": "2026-11-02T02:40:10.719Z"
+    },
+    "src/utils/bulletins.ts": {
+      "content_sha256": "5bb77764c57dc36ef512ab12b1f137289299acd6476e3d2ac55167eff537823f",
+      "spec_path": "docs/spec/src/utils/bulletins.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-02T02:40:10.719Z"
     },
     "src/utils/capacityMeter.ts": {
       "content_sha256": "02f06879ee5e3f491b13ccfb5702542fac95d2a17fc2a4f1e1abd2696f1e7c34",
@@ -442,6 +463,13 @@
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
       "last_audited": "2026-08-01T19:39:26.650Z"
+    },
+    "src/utils/composeDepartures.ts": {
+      "content_sha256": "9eb877fcc72a139a62069d4380ea3e27b32cd3f0c418b1c7d5b7e66f63794c6e",
+      "spec_path": "docs/spec/src/utils/composeDepartures.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-02T02:40:10.720Z"
     },
     "src/utils/constants.ts": {
       "content_sha256": "3b9d25a6ae4ed42b485dbe18b5b0301fd1c3a747b97202c0df9a025b5f150b52",
@@ -464,6 +492,13 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-08-01T19:39:26.651Z"
     },
+    "src/utils/geo.ts": {
+      "content_sha256": "533f8b8783592bb443aa6408eac5573d3ea11881230fde8d8a8d4b663710b164",
+      "spec_path": "docs/spec/src/utils/geo.md",
+      "extractor_version": "1.1.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-02T02:40:10.721Z"
+    },
     "src/utils/kingstonBoardingPass.ts": {
       "content_sha256": "1512baab61efb81823fdb86ea58002b31aff71cc0fceb27890fef11eaedac548",
       "spec_path": "docs/spec/src/utils/kingstonBoardingPass.md",
@@ -472,11 +507,11 @@
       "last_audited": "2026-08-01T19:39:26.652Z"
     },
     "src/utils/locations.ts": {
-      "content_sha256": "1b437815bc68578927f944248f1de77d4e8cbae59dd5bac3a6180a5078b139ac",
+      "content_sha256": "1aab46510f4188ad83ceea6a7ab525154a0d3372c227aef8f41e1dd47c6337bd",
       "spec_path": "docs/spec/src/utils/locations.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.895Z"
+      "last_audited": "2026-11-02T02:40:10.722Z"
     },
     "src/utils/planEstimate.ts": {
       "content_sha256": "c8f28089718d9d30aa47337a5883b596ec4eccabcf9040a8c222cc80c8cbe9b3",
@@ -592,6 +627,13 @@
       "renderer_version": "1.0.0",
       "last_audited": "2026-10-31T07:21:21.594Z"
     },
+    "infra/lambda/plan": {
+      "input_hashes_sha256": "978ea56ce61044796519c654ea4d4acd35698d20e06f0663437ef6980de23918",
+      "spec_path": "docs/spec/infra/lambda/plan/_module.md",
+      "extractor_version": "1.0.0",
+      "renderer_version": "1.0.0",
+      "last_audited": "2026-11-02T02:40:10.725Z"
+    },
     "infra/lambda/proxy": {
       "input_hashes_sha256": "4bc09694c1db9ed87072fdb74de1c287ffd90ce7e238d78e58a455cd9d557485",
       "spec_path": "docs/spec/infra/lambda/proxy/_module.md",
@@ -600,11 +642,11 @@
       "last_audited": "2026-10-31T07:21:21.594Z"
     },
     "infra/lib": {
-      "input_hashes_sha256": "83c68928fcbb84ade5fb56799401c2c835a0240324112f18d6afce86b5d95141",
+      "input_hashes_sha256": "df45902a4e1c27f4e02803346bf785191ff898a50462643cec548fd5540c581f",
       "spec_path": "docs/spec/infra/lib/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-10-31T07:21:21.594Z"
+      "last_audited": "2026-11-02T02:40:10.725Z"
     },
     "modules/ferry-live": {
       "input_hashes_sha256": "6a4babd367cb7e1c25697d0b3583ed64f145a065851b52c3276042ec25bc79e5",
@@ -642,11 +684,11 @@
       "last_audited": "2026-11-01T19:07:47.900Z"
     },
     "src/hooks": {
-      "input_hashes_sha256": "c9ca3e1ec0b849644904e81475bc82ec6900ce4925fda480102b85c5fa133c59",
+      "input_hashes_sha256": "dbafdeffc5671807bdd0a538ac648dcf7275b8cf8abc08c0ce53e1be305fc7a4",
       "spec_path": "docs/spec/src/hooks/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.901Z"
+      "last_audited": "2026-11-02T02:40:10.725Z"
     },
     "src/store": {
       "input_hashes_sha256": "2541a62f0ac13a8540d75945de52964e20d1a73448c4e4957bfe9cc5520f7a2c",
@@ -663,27 +705,27 @@
       "last_audited": "2026-09-14T02:10:09.350Z"
     },
     "src/utils": {
-      "input_hashes_sha256": "e90a911f12011ac0b21b25c95440e3f1b5e64fb49de2b90749f73580647bde00",
+      "input_hashes_sha256": "6dcd4545df50cd6603463057fb0646a89107b7f6c8902b2aa3b03acc68ad5bee",
       "spec_path": "docs/spec/src/utils/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.901Z"
+      "last_audited": "2026-11-02T02:40:10.726Z"
     }
   },
   "systems": {
     "architecture": {
-      "input_sha256": "e6e9e91e2e986f65195b7c727ffdf8decb965c1e41671ef264d997a40c4b1829",
+      "input_sha256": "9ea313bf5b9f7a764bdbad5e42a09f5d469838b17f34156e4a8b15aa5c59a3d6",
       "spec_path": "docs/spec/_systems/architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-11-01T19:07:47.907Z"
+      "last_audited": "2026-11-02T02:40:10.731Z"
     },
     "frontend-architecture": {
-      "input_sha256": "a4148688075e48f711358275f7977a2219a7f995f12009a9bba9216339e27dee",
+      "input_sha256": "53703befc907fb14ab7208e1b9b2d96d0f47937ee7be59ab12ec797d831b1a72",
       "spec_path": "docs/spec/_systems/frontend-architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-11-01T19:07:47.907Z"
+      "last_audited": "2026-11-02T02:40:10.730Z"
     },
     "tech-stack": {
       "input_sha256": "bce6f1ea890db91effb906a0173bc357fac85d1527914d8f62d064850094fb13",

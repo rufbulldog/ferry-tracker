@@ -3,10 +3,10 @@ type: l3-system
 spec_version: 1
 name: architecture
 discovered_from: code-graph + repo config
-resource_count: 16
+resource_count: 17
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-11-01T19:07:47.901Z
+last_audited: 2026-11-02T02:40:10.726Z
 ---
 
 # Architecture overview — System Spec
@@ -15,13 +15,14 @@ Repo-level view of how the source folders depend on each other, aggregated from 
 
 ## Module dependency graph
 
-Folders that import across folder boundaries (12 of 16). Self-contained folders are listed below.
+Folders that import across folder boundaries (13 of 17). Self-contained folders are listed below.
 
 ```mermaid
 flowchart LR
   n_app["app"]
   n_app_tabs["app/(tabs)"]
   n_infra_bin["infra/bin"]
+  n_infra_lambda_plan["infra/lambda/plan"]
   n_infra_lib["infra/lib"]
   n_modules_ferry_live["modules/ferry-live"]
   n_src_api["src/api"]
@@ -44,6 +45,9 @@ flowchart LR
   n_app_tabs --> n_src_types
   n_app_tabs --> n_src_utils
   n_infra_bin --> n_infra_lib
+  n_infra_lambda_plan --> n_src_api
+  n_infra_lambda_plan --> n_src_types
+  n_infra_lambda_plan --> n_src_utils
   n_src_api --> n_src_types
   n_src_components --> n_src_context
   n_src_components --> n_src_hooks
@@ -59,6 +63,7 @@ flowchart LR
   n_src_hooks --> n_src_utils
   n_src_store --> n_src_types
   n_src_store --> n_src_utils
+  n_src_utils --> n_src_api
   n_src_utils --> n_src_store
   n_src_utils --> n_src_types
 ```

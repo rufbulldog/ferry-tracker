@@ -71,6 +71,8 @@ npx cdk deploy
 
 The backend lives in `infra/` and is deployed with AWS CDK, not SAM. `infra/cdk.json` is the entry point. The mobile app currently hits `https://yv8hqe5rgc.execute-api.us-west-2.amazonaws.com/prod` (per `eas.json`). When backend Lambdas or API shape changes, deploy the CDK stack before pushing mobile changes that depend on the new shape.
 
+**`GET /plan`** (`infra/lambda/plan/`, Lambda `ferry-plan`) is the best-sailing brain for other clients (kamilche-trip, a future Watch app). Contract: [docs/plan-endpoint-spec.md](docs/plan-endpoint-spec.md) "As built". It **bundles the app's `src/utils` modules** (`composeDepartures`, `carWait`, `bulletins`, `bestSailing`, `typicalConditions`, `geo`), so keep those free of React Native / Expo / AsyncStorage imports, and remember a change there is a backend change too (run `cd infra && npm test`, redeploy). `infra` `tsc` output goes to `infra/build/` so it never drops `.js` into `src/`.
+
 There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK deploys go via `npx cdk deploy` from `infra/`. There's no `sam-deployer` agent that fits this repo — handle backend deploys manually until that gap is closed.
 
 ## SDK 57 / Xcode 27 notes

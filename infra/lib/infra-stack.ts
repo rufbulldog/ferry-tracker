@@ -92,10 +92,35 @@ export class InfraStack extends cdk.Stack {
       },
     });
 
+    // Plan Lambda - GET /plan, the "best sailing from here" brain for other
+    // clients (kamilche-trip, a future Watch app). Bundles the app's own
+    // src/utils planning modules, so it reads WSF directly plus recorded history.
+    const planFn = new nodejs.NodejsFunction(this, 'PlanFunction', {
+      functionName: 'ferry-plan',
+      entry: path.join(__dirname, '../lambda/plan/index.ts'),
+      handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_22_X,
+      timeout: cdk.Duration.seconds(15),
+      memorySize: 256,
+      environment: {
+        WSF_API_KEY: wsfApiKey.valueAsString,
+        DEPARTURES_TABLE: departuresTable.tableName,
+      },
+    });
+
+    departuresTable.grantReadData(planFn);
+
     // API Gateway
     const api = new apigateway.RestApi(this, 'FerryApi', {
       restApiName: 'Ferry Tracker API',
       description: 'API for ferry trends and transit records',
+      deployOptions: {
+        // /plan is public and does real work per call; keep a polling client
+        // (or anyone else) from running it hot. Other routes keep the defaults.
+        methodOptions: {
+          '/plan/GET': { throttlingRateLimit: 5, throttlingBurstLimit: 10 },
+        },
+      },
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,
@@ -168,6 +193,10 @@ export class InfraStack extends cdk.Stack {
     // /wsf/schedule-validrange
     const wsfScheduleValidRange = wsf.addResource('schedule-validrange');
     wsfScheduleValidRange.addMethod('GET', proxyIntegration);
+
+    // /plan
+    const plan = api.root.addResource('plan');
+    plan.addMethod('GET', new apigateway.LambdaIntegration(planFn));
 
     // Outputs
     new cdk.CfnOutput(this, 'ApiUrl', {

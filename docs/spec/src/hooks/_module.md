@@ -3,31 +3,31 @@ type: l2-module
 spec_version: 1
 path: src/hooks
 file_count: 17
-total_lines: 1975
+total_lines: 1487
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:47.901Z
+last_audited: 2026-11-02T02:40:10.725Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 17 · **Lines:** 1975
+**Files:** 17 · **Lines:** 1487
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`useArrivalEta.ts`](./useArrivalEta.md) | 98 | Arrival for the sailing the leave-by plan targets (not the boat currently |
-| [`useBestSailing.ts`](./useBestSailing.md) | 137 | Best sailing to drive to from your current position, across both route |
+| [`useBestSailing.ts`](./useBestSailing.md) | 138 | Best sailing to drive to from your current position, across both route |
 | [`useCarWait.ts`](./useCarWait.md) | 76 | Combine live capacity, WSF wait-time notes, WSF alerts, and recorded history |
 | [`useDailyTrends.ts`](./useDailyTrends.md) | 124 |  |
 | [`useFutureSchedule.ts`](./useFutureSchedule.md) | 49 | Full sailing list for a route on a given date (YYYY-MM-DD). Schedules are |
 | [`useLatestDeparture.ts`](./useLatestDeparture.md) | 61 |  |
 | [`useLiveActivity.ts`](./useLiveActivity.md) | 107 | Mirror the best-sailing plan into a Live Activity (Lock Screen, Dynamic |
-| [`useNextDepartures.ts`](./useNextDepartures.md) | 381 |  |
+| [`useNextDepartures.ts`](./useNextDepartures.md) | 26 |  |
 | [`useRecommendation.ts`](./useRecommendation.md) | 240 |  |
-| [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 164 |  |
+| [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 30 |  |
 | [`useTerminalConditions.ts`](./useTerminalConditions.md) | 29 |  |
 | [`useTerminalWaitTimes.ts`](./useTerminalWaitTimes.md) | 29 | WSF vehicle wait-time notes for a terminal. The `/wsf/waittimes/{id}` proxy |
 | [`useTimer.ts`](./useTimer.md) | 198 |  |

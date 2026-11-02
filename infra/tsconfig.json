@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+    "outDir": "build",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": [
@@ -27,6 +28,7 @@
   },
   "exclude": [
     "node_modules",
-    "cdk.out"
+    "cdk.out",
+    "build"
   ]
 }

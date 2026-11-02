@@ -10,7 +10,7 @@
  * Pure and dependency-light so it can be unit-tested and later reused as the
  * data source for a CarPlay / Live Activity surface.
  */
-import { Route, crossingMinutesForRoute } from "./constants";
+import { Route } from "./constants";
 import { effectiveFerryDeparture, FerryDepartureLike } from "./ferryDeparture";
 import { addMinutes } from "./time";
 
@@ -24,8 +24,9 @@ export interface LatLon {
   lon: number;
 }
 
-export interface SailingCandidate<T extends SailingLike> {
-  route: Route;
+// `R` is the route id: the app's own Route, or any WSF pair id on the backend.
+export interface SailingCandidate<T extends SailingLike, R extends string = Route> {
+  route: R;
   terminalLabel: string;
   /** Straight-line distance from the user to the departure terminal. */
   distanceMeters: number;
@@ -34,10 +35,12 @@ export interface SailingCandidate<T extends SailingLike> {
   bufferMinutes: number;
   /** Car-overflow wait on the NEXT sailing (from carWait.ts). */
   carExtraSailings: number;
+  /** Crossing time, for when the target sailing lands. */
+  crossingMinutes: number;
 }
 
-export interface SailingPick<T extends SailingLike> {
-  route: Route;
+export interface SailingPick<T extends SailingLike, R extends string = Route> {
+  route: R;
   terminalLabel: string;
   driveMinutes: number;
   target: T;
@@ -56,9 +59,9 @@ export interface SailingPick<T extends SailingLike> {
   reasoning: string[];
 }
 
-export interface BestSailingResult<T extends SailingLike> {
-  best: SailingPick<T> | null;
-  alternatives: SailingPick<T>[];
+export interface BestSailingResult<T extends SailingLike, R extends string = Route> {
+  best: SailingPick<T, R> | null;
+  alternatives: SailingPick<T, R>[];
 }
 
 // Rough driving model until a native routing ETA (MKDirections) is wired in:
@@ -87,10 +90,10 @@ function plannedDepartureTime(d: SailingLike): Date {
   return d.mayRecover ? d.scheduledDeparture : effectiveFerryDeparture(d).time;
 }
 
-export function planCandidate<T extends SailingLike>(
-  c: SailingCandidate<T>,
+export function planCandidate<T extends SailingLike, R extends string = Route>(
+  c: SailingCandidate<T, R>,
   now: Date,
-): SailingPick<T> | null {
+): SailingPick<T, R> | null {
   const driveMinutes = estimateDriveMinutes(c.distanceMeters);
   if (driveMinutes > MAX_DRIVE_MINUTES) return null;
 
@@ -144,7 +147,7 @@ export function planCandidate<T extends SailingLike>(
     targetTime,
     leaveBy,
     slackMinutes,
-    arrivalTime: addMinutes(targetTime, crossingMinutesForRoute(c.route)),
+    arrivalTime: addMinutes(targetTime, c.crossingMinutes),
     bumpedByOverflow,
     following: upcoming[index + 1] ?? null,
     reasoning,
@@ -152,13 +155,13 @@ export function planCandidate<T extends SailingLike>(
 }
 
 /** Rank candidates by landing time on the far side; shorter drive breaks ties. */
-export function pickBestSailing<T extends SailingLike>(
-  candidates: SailingCandidate<T>[],
+export function pickBestSailing<T extends SailingLike, R extends string = Route>(
+  candidates: SailingCandidate<T, R>[],
   now: Date,
-): BestSailingResult<T> {
+): BestSailingResult<T, R> {
   const picks = candidates
     .map((c) => planCandidate(c, now))
-    .filter((p): p is SailingPick<T> => p !== null)
+    .filter((p): p is SailingPick<T, R> => p !== null)
     .sort(
       (a, b) =>
         a.arrivalTime.getTime() - b.arrivalTime.getTime() ||

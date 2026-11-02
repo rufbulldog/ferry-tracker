@@ -2,30 +2,30 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useTerminalBulletins.ts
-content_sha: 32a109ddb6ef53b9263f0b3904a71c4ff8ce305c94d0e397568d894129c0a057
+content_sha: f646cb214661ab07bcbca8abbf575f2e6d2e3956929e6b58dc65a15f8b8dfdbe
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-07-31T23:25:27.501Z
+last_audited: 2026-11-02T02:40:10.690Z
 ---
 
 # useTerminalBulletins.ts
 
 **Path:** `src/hooks/useTerminalBulletins.ts`
-**Lines:** 164
+**Lines:** 30
 **Language:** TypeScript
 
 ## Exports
 
 | Name | Kind | Signature |
 |---|---|---|
-| `useTerminalBulletins` | function | `(route: Route): { bulletins: {}; activeAlert: any; isLoading: false; error: any; }` |
+| `useTerminalBulletins` | function | `(route: Route): { bulletins: {}; activeAlert: import("/Users/brandontaylor/Coding/ferry-app/src/utils/bulletins").ProcessedBulletin; isLoading: false; error: any; }` |
 | `ProcessedBulletin` | interface |  |
 
 ## Imports
 
 **Internal:**
 - `../api/terminals` (`fetchTerminalBulletins`)
-- `../api/types` (`TerminalBulletin`)
+- `../utils/bulletins` (`processBulletins`, `pickActiveAlert`)
 - `../utils/constants` (`ROUTES`, `Route`)
 
 **External:**
