@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: app/(tabs)/index.tsx
-content_sha: a55ed17cfff72f1db9b6329a4bfac62bedcce2c4777226d44a5ec052f382eb12
+content_sha: a41d6ca8b6d89b5b8b5f041a36a71a0262bca0abefbedc8bed543d25b9772cd6
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T04:30:53.381Z
+last_audited: 2026-11-02T08:06:25.397Z
 ---
 
 # index.tsx
 
 **Path:** `app/(tabs)/index.tsx`
-**Lines:** 712
+**Lines:** 593
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -30,7 +30,6 @@ last_audited: 2026-11-02T04:30:53.381Z
 - `../../src/components/CheckInFAB` (`CheckInFAB`)
 - `../../src/components/FerryCard` (`FerryCard`)
 - `../../src/components/KingstonBoardingPassPill` (`KingstonBoardingPassPill`)
-- `../../src/components/LastDepartureCard` (`LastDepartureCard`)
 - `../../src/components/LiveActivityPill` (`LiveActivityPill`)
 - `../../src/components/MainDepartureCard` (`MainDepartureCard`, `DeparturePlan`)
 - `../../src/context/BestSailingContext` (`useBestSailingContext`, `LiveSource`)
@@ -47,9 +46,8 @@ last_audited: 2026-11-02T04:30:53.381Z
 - `../../src/utils/transitConfig` (`TRAVEL_TIMES`)
 
 **External:**
-- `@expo/vector-icons` (`Ionicons`)
 - `@react-native-async-storage/async-storage` (`default as AsyncStorage`)
 - `@tanstack/react-query` (`useQueryClient`)
 - `react` (`useState`, `useCallback`, `useMemo`, `useRef`, `useEffect`)
-- `react-native` (`View`, `StyleSheet`, `ScrollView`, `RefreshControl`, `Animated`, `TouchableOpacity`, `LayoutChangeEvent`)
+- `react-native` (`View`, `StyleSheet`, `ScrollView`, `RefreshControl`, `Animated`)
 - `react-native-paper` (`Text`, `Card`, `ActivityIndicator`)

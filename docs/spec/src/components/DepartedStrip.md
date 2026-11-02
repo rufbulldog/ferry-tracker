@@ -1,24 +1,28 @@
 ---
 type: l1-file
 spec_version: 1
-source: src/components/LastDepartureCard.tsx
-content_sha: 0cd252a943123cda82784e1b5f455f135be77dabab382246fb9fcbd83ee36fd7
+source: src/components/DepartedStrip.tsx
+content_sha: 63607f73c30cf4ee0e9d18e102619f0617fd489205d1d3bad3d47c21b645087f
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T04:57:17.742Z
+last_audited: 2026-11-02T08:06:25.419Z
 ---
 
-# LastDepartureCard.tsx
+# DepartedStrip.tsx
 
-**Path:** `src/components/LastDepartureCard.tsx`
-**Lines:** 175
+**Path:** `src/components/DepartedStrip.tsx`
+**Lines:** 122
 **Language:** TypeScript (TSX)
 
 ## Exports
 
 | Name | Kind | Signature |
 |---|---|---|
-| `LastDepartureCard` | function | `({ departure, backendCapacityPercent }: LastDepartureCardProps): any` |
+| `DepartedStrip` | function | `({ departure, backendCapacityPercent, }: { departure: DepartureInfo; backendCapacityPercent?: number \| null; }): any` |
+
+### Documented exports
+
+- **`DepartedStrip`** — The boat that just left, as one line at the foot of the Next Sailing card:
 
 ## Imports
 

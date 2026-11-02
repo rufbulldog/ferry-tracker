@@ -44,13 +44,14 @@ The old Time and Leave tabs, combined into one Next Sailing card.
 - **Arrival time** - "Home by" / "At office by" in the card footer, computed from the sailing the leave-by plan targets: planned departure + typical crossing + your recorded far-side bike time (Kingston/Edmonds routes not supported)
 - **Inbound boat** - "Boat docks h:mm · in Nm" in the card footer while the assigned vessel is on its way
 - **Send ETA** - inline button under the card (floating on other tabs); its ETA follows the boat you're on, including through the loading→departed transition
-- **How leave-by is worked out** - a collapsible row listing the travel, buffer, delay and arrival inputs
+- **How leave-by is worked out** - tap the ⓘ on the card's Leave label to expand the travel, buffer, delay and arrival inputs
 - **Camera viewer** - flip the card to see terminal webcam feeds (WSDOT cameras)
 - **Estimated departure times** - a unified departure model feeds the same effective time + delay to the card header and the leave-by plan, so they can't disagree
 - **Kingston vehicle boarding-pass notice** - a pill shown only when departing Kingston, during the published hours WSF requires a vehicle boarding pass at that terminal (there's no WSF API field for this, so it's modeled from the published seasonal schedule and renders nothing outside known seasons)
 - **Car-wait chip** - surfaces when drivers are likely to be bumped to a later sailing than walk-ons/bikes
 - **Departure transition animation** - smooth animation when a ferry departs and next one takes its place
-- **Departed block** - a collapsible section (persisted via AsyncStorage) holding the last-departed card
+- **Departed strip** - one line at the foot of the card for the boat that just left, with a bar that fills as it crosses (coloured by how full it left)
+- **Best from here** - a compact banner under the card (when driving or away from the commute) naming the terminal + sailing to make from your live location; tap to expand, broadcast button mirrors it to the Lock Screen
 - **Auto-refresh** - vessel data updates every 5 seconds, terminal data every 10 seconds; countdowns tick every minute
 - **Pull-to-refresh** - manual refresh for all data
 
@@ -246,10 +247,10 @@ ferry-app/
 │   │   ├── CarMeter.tsx          # 40-bar car-deck fill meter on the Ferry tab
 │   │   ├── CarWaitChip.tsx       # Notice when drivers face a later sailing than walk-ons/bikes
 │   │   ├── CheckInFAB.tsx        # Send ETA floating action button
+│   │   ├── DepartedStrip.tsx     # Just-departed boat line at the foot of the main card
 │   │   ├── FerryCard.tsx         # Compact departure card
 │   │   ├── FerryProgressIndicator.tsx  # Vessel position between terminals
 │   │   ├── KingstonBoardingPassPill.tsx  # Vehicle boarding-pass notice for Kingston departures
-│   │   ├── LastDepartureCard.tsx  # Recently departed ferry card
 │   │   ├── MainDepartureCard.tsx  # Large flippable main departure card
 │   │   ├── MonthCalendar.tsx     # JS-only month calendar popup for the Schedule Planner (no native date-picker dep)
 │   │   └── RouteSelector.tsx     # Route/direction picker header + planner entry point

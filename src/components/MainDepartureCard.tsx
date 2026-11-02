@@ -16,6 +16,7 @@ import { formatTime, getMinutesUntil } from '../utils/time';
 import { effectiveFerryDeparture } from '../utils/ferryDeparture';
 import { CAPACITY_TONE_LABEL, capacityTone, carsPerBar, percentFull } from '../utils/capacityMeter';
 import { ArrivalEta } from '../utils/arrivalPlan';
+import { DepartedStrip } from './DepartedStrip';
 import { Vehicle } from '../types/storage';
 import { useTheme } from '../context/ThemeContext';
 import { CarMeter } from './CarMeter';
@@ -46,6 +47,11 @@ interface MainDepartureCardProps {
   terminalName: string;
   isAnimatingOut?: boolean;
   plan?: DeparturePlan;
+  /** The boat that just left this terminal, shown as a strip at the foot. */
+  departed?: DepartureInfo | null;
+  departedCapacityPercent?: number | null;
+  /** How the leave-by was worked out — behind an ⓘ on the Leave label. */
+  reasoning?: string[];
 }
 
 // "11" min, or "1h 35" m once it's an hour or more out.
@@ -54,7 +60,16 @@ function splitDuration(minutes: number): { value: string; unit: string } {
   return { value: `${Math.floor(minutes / 60)}h ${minutes % 60}`, unit: 'm' };
 }
 
-export function MainDepartureCard({ departure, terminalId, terminalName, isAnimatingOut = false, plan }: MainDepartureCardProps) {
+export function MainDepartureCard({
+  departure,
+  terminalId,
+  terminalName,
+  isAnimatingOut = false,
+  plan,
+  departed,
+  departedCapacityPercent,
+  reasoning,
+}: MainDepartureCardProps) {
   const { theme } = useTheme();
   const {
     vesselName,
@@ -71,6 +86,8 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
 
   // Flip card state
   const [isFlipped, setIsFlipped] = useState(false);
+  const [whyOpen, setWhyOpen] = useState(false);
+  const hasWhy = !!plan && !!reasoning && reasoning.length > 0;
   const flipAnim = useState(() => new Animated.Value(0))[0];
   const [selectedCamera, setSelectedCamera] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
@@ -298,8 +315,30 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
           {isUpcoming ? (
             <View style={styles.numbersRow}>
               <View style={styles.numberCol}>
-                <Text style={[styles.numberLabel, { color: theme.colors.textMuted }]}>{leftLabel}</Text>
-                <Text style={[styles.bigNumber, { color: leftColor }]}>
+                {hasWhy ? (
+                  <TouchableOpacity
+                    onPress={() => setWhyOpen((o) => !o)}
+                    style={styles.whyLabel}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityLabel="How leave-by is worked out"
+                    accessibilityState={{ expanded: whyOpen }}
+                  >
+                    <Text style={[styles.numberLabel, { color: theme.colors.textMuted, marginBottom: 0 }]}>{leftLabel}</Text>
+                    <Ionicons
+                      name={whyOpen ? 'information-circle' : 'information-circle-outline'}
+                      size={15}
+                      color={theme.colors.textMuted}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <Text style={[styles.numberLabel, { color: theme.colors.textMuted }]}>{leftLabel}</Text>
+                )}
+                <Text
+                  style={[styles.bigNumber, { color: leftColor }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
                   {leftValue.value}
                   {leftValue.unit !== '' && (
                     <Text style={[styles.bigUnit, { color: theme.colors.textMuted }]}> {leftValue.unit}</Text>
@@ -326,6 +365,16 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
             >
               {isCancelled ? 'Sailing cancelled' : (delayMinutes > 0 ? `Departed ${delayMinutes}m late` : 'Departed on time')}
             </Text>
+          )}
+
+          {isUpcoming && hasWhy && whyOpen && (
+            <View style={[styles.whyBody, { backgroundColor: theme.colors.inputBg }]}>
+              {reasoning!.map((reason, i) => (
+                <Text key={i} style={[styles.whyText, { color: theme.colors.textMuted }]}>
+                  • {reason}
+                </Text>
+              ))}
+            </View>
           )}
 
           {isUpcoming && plan?.carNote && (
@@ -365,6 +414,10 @@ export function MainDepartureCard({ departure, terminalId, terminalName, isAnima
               </Text>
             </View>
           </View>
+        )}
+
+        {isUpcoming && departed && (
+          <DepartedStrip departure={departed} backendCapacityPercent={departedCapacityPercent} />
         )}
       </Animated.View>
 
@@ -541,6 +594,22 @@ const styles = StyleSheet.create({
   },
   numberCol: {
     flex: 1,
+  },
+  whyLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+  },
+  whyBody: {
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 10,
+    gap: 4,
+  },
+  whyText: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   numberLabel: {
     fontSize: 11,

@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/components/BestSailingCard.tsx
-content_sha: 098adf560c8579ca28a67644e1da5d4f2d2c3e6549d5ba22b82716c0649b1b31
+content_sha: 9a4059e5d51028aaf52fe6d3451b6f183c4e569b8b07c0397fa3c770e0fa5158
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T03:53:15.226Z
+last_audited: 2026-11-02T08:06:25.416Z
 ---
 
 # BestSailingCard.tsx
 
 **Path:** `src/components/BestSailingCard.tsx`
-**Lines:** 155
+**Lines:** 220
 **Language:** TypeScript (TSX)
 
 ## Exports
@@ -34,10 +34,9 @@ last_audited: 2026-11-02T03:53:15.226Z
 - `../utils/constants` (`ROUTES`)
 - `../utils/routeGroups` (`selectionFor`)
 - `../utils/time` (`formatTime`)
-- `./LiveActivityPill` (`LiveActivityPill`)
 
 **External:**
 - `@expo/vector-icons` (`Ionicons`)
-- `react` (`default as React`)
+- `react` (`default as React`, `useState`)
 - `react-native` (`View`, `StyleSheet`, `TouchableOpacity`)
 - `react-native-paper` (`Text`)
