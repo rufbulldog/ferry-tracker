@@ -248,8 +248,10 @@ export default function DepartScreen() {
   // "Best from here" is for driving from somewhere unusual (Car mode, or away
   // from home/work/terminals). On the bike commute the card below already
   // answers "when do I leave", so the Live Activity mirrors that instead.
-  const { awayFromCommute, setCommuteLive } = useBestSailingContext();
-  const showBestFromHere = vehicle === "car" || awayFromCommute;
+  const { awayFromCommute, setCommuteLive, best } = useBestSailingContext();
+  // The card renders nothing without a plan (no fix yet, nothing reachable);
+  // then the Next Sailing leave-by keeps the Lock Screen pill.
+  const showBestFromHere = (vehicle === "car" || awayFromCommute) && !!best;
   const commuteLeaveByMs =
     planIsForCard && recommendation.leaveByTime
       ? recommendation.leaveByTime.getTime()

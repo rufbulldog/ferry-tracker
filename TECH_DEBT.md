@@ -19,9 +19,10 @@ Tracks remaining work for ferry-app. Completed items are removed — the history
   display (I/O → External Displays → CarPlay) and check the "Best from here" list
   (`modules/ferry-live/ios/FerryCarPlay.swift`): best sailing + leave-by, "Missed it? Next", other route,
   and the waiting/no-sailing states. Also check the Live Activity's `.small` view on the CarPlay dashboard.
-- **Request the CarPlay Driving Task entitlement** (developer.apple.com/carplay) — needed before any
-  TestFlight build can include the CarPlay screen; then drop the `FERRY_CARPLAY` gate in
-  `plugins/withCarPlay.js`.
+- **CarPlay Driving Task entitlement — requested 2026-11-01, waiting on Apple** (granted to the team as a
+  managed capability; no app-specific form fields). Once granted: enable it on `com.ferrytracker.app`,
+  drop the `FERRY_CARPLAY` gate in `plugins/withCarPlay.js`, regenerate profiles (`eas credentials`) and
+  ship a native build — ideally together with the drive-around build above.
 - **Live Activity re-planning in the background** — the countdown ticks natively, but the target sailing
   only re-plans while the app is open. Needs background location (Always permission) or push updates.
 

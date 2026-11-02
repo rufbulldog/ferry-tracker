@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-11-02T03:33:01.011Z",
+  "generated_at": "2026-11-02T03:42:54.020Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "e8b792519402426409612a64360ac107d69390dfa3ff87298f73a832c304427f",
@@ -10,11 +10,11 @@
       "last_audited": "2026-10-31T07:21:21.431Z"
     },
     "app/(tabs)/index.tsx": {
-      "content_sha256": "fb9dfc6d71e69cff28a9c42776c7891668856edb316948b71d452b0ea5914cee",
+      "content_sha256": "1e854f805f6543d344eaf0a4503931458759b6144b741104681210d32985bf23",
       "spec_path": "docs/spec/app/(tabs)/index.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T03:33:00.921Z"
+      "last_audited": "2026-11-02T03:42:53.929Z"
     },
     "app/(tabs)/settings.tsx": {
       "content_sha256": "57d36578cb6c8697a3625828450bf265bc3b23cea6bf6476c0f131e24af5f33a",
@@ -621,11 +621,11 @@
       "last_audited": "2026-11-02T03:07:16.486Z"
     },
     "app/(tabs)": {
-      "input_hashes_sha256": "b68a6ffc73ba896d6726222cdacc895e2975608654e2c2c1e7ea665384d99c1b",
+      "input_hashes_sha256": "16d3ca88920c9f0c970b88fa398648dad0db4b2297012a6f27a932055483b303",
       "spec_path": "docs/spec/app/(tabs)/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T03:33:01.006Z"
+      "last_audited": "2026-11-02T03:42:54.015Z"
     },
     "infra/bin": {
       "input_hashes_sha256": "9c0e8b95a35bd301b1e81f9f1860b91a9fd467c03c07ff682546e0613def3df9",
