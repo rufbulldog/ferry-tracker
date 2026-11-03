@@ -31,7 +31,8 @@ export interface ArrivalEta {
 }
 
 // Map ferry direction to which arrival we compute and which transit segment to use.
-// The far-side leg is always timed by bike (the Timer only records it that way).
+// `vehicle` is the default far-side mode (Send ETA, bike commute); the leave-by
+// plan passes its own vehicle so Car mode is timed from recorded car trips.
 export const ARRIVAL_CONFIG: Partial<Record<Route, {
   kind: ArrivalKind;
   label: string;
@@ -67,10 +68,13 @@ export function computeArrival(params: {
   liveEta?: Date | null;
   transitRecords: TransitRecord[] | undefined;
   trends: DepartureSnapshot[] | undefined;
+  /** Far-side mode; defaults to the route's (bike). */
+  vehicle?: Vehicle;
 }): ArrivalEta | null {
   const { route, departureTime, liveEta, transitRecords, trends } = params;
   const config = ARRIVAL_CONFIG[route];
   if (!config) return null;
+  const vehicle = params.vehicle ?? config.vehicle;
 
   let ferryArrivalTime: Date;
   if (liveEta && liveEta.getTime() > departureTime.getTime()) {
@@ -90,7 +94,7 @@ export function computeArrival(params: {
 
   if (transitRecords && transitRecords.length > 0) {
     const matching = transitRecords.filter(
-      r => r.route === config.transitRoute && r.vehicle === config.vehicle
+      r => r.route === config.transitRoute && r.vehicle === vehicle
     );
     const typical = computeTypicalTransitSeconds(matching);
     if (typical) {
@@ -108,7 +112,7 @@ export function computeArrival(params: {
     transitMinutes,
     transitMethod,
     sampleSize,
-    vehicle: config.vehicle,
+    vehicle,
     transitRoute: config.transitRoute,
   };
 }

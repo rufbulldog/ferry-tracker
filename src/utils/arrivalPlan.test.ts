@@ -48,6 +48,31 @@ describe('computeArrival', () => {
     expect(a.sampleSize).toBe(1);
   });
 
+  test('times the far-side leg for the given vehicle', () => {
+    const records = [rec('ferry-to-work', 'bike', 17 * 60), rec('ferry-to-work', 'car', 8 * 60)];
+    const crossing = crossingMinutesForRoute('bainbridge-seattle');
+    const bike = computeArrival({ route: 'bainbridge-seattle', departureTime: departure, transitRecords: records, trends: [] })!;
+    const car = computeArrival({ route: 'bainbridge-seattle', departureTime: departure, transitRecords: records, trends: [], vehicle: 'car' })!;
+    expect(bike.vehicle).toBe('bike');
+    expect(bike.transitMinutes).toBe(17);
+    expect(car.vehicle).toBe('car');
+    expect(car.transitMinutes).toBe(8);
+    expect(car.etaTime!.toISOString()).toBe(minutesAfter(departure, crossing + 8));
+  });
+
+  test('car with no recorded car trips falls back to the default, not bike times', () => {
+    const car = computeArrival({
+      route: 'bainbridge-seattle',
+      departureTime: departure,
+      transitRecords: [rec('ferry-to-work', 'bike', 17 * 60)],
+      trends: [],
+      vehicle: 'car',
+    })!;
+    expect(car.transitMinutes).toBe(15);
+    expect(car.transitMethod).toBe('default');
+    expect(car.sampleSize).toBe(0);
+  });
+
   test('uses the live vessel Eta when it is after departure', () => {
     const liveEta = new Date(departure.getTime() + 40 * 60_000);
     const a = computeArrival({

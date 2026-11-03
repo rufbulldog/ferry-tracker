@@ -3,23 +3,23 @@ type: l2-module
 spec_version: 1
 path: src/utils
 file_count: 27
-total_lines: 3238
+total_lines: 3242
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T04:30:53.465Z
+last_audited: 2026-11-03T07:59:21.948Z
 ---
 
 # src/utils — Module Spec
 
 **Folder:** `src/utils`
-**Files:** 27 · **Lines:** 3238
+**Files:** 27 · **Lines:** 3242
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
 | [`arrivalEtaLogic.ts`](./arrivalEtaLogic.md) | 117 | The sailing the ETA is for. Normally the next sailing you'd board — the one |
-| [`arrivalPlan.ts`](./arrivalPlan.md) | 115 | Arrival for a sailing leaving at `departureTime`. `liveEta` is the vessel's |
+| [`arrivalPlan.ts`](./arrivalPlan.md) | 119 | Arrival for a sailing leaving at `departureTime`. `liveEta` is the vessel's |
 | [`bestSailing.ts`](./bestSailing.md) | 227 | Rank candidates by when you get home when every pick knows that, else by |
 | [`bulletins.ts`](./bulletins.md) | 156 | Route-relevant bulletins, alerts first then newest. `route` is matched by the |
 | [`capacityMeter.ts`](./capacityMeter.md) | 42 | Percent of drive-up space taken, 0–100, or null when space data is missing. |
@@ -103,7 +103,7 @@ Files in this folder imported from elsewhere:
 - `ferryDeparture.ts` — used by 6 files
   - `app/(tabs)/timer.tsx`
   - `infra/lambda/plan/plan.ts`
-  - `src/components/LastDepartureCard.tsx`
+  - `src/components/DepartedStrip.tsx`
   - `src/components/MainDepartureCard.tsx`
   - `src/hooks/useCarWait.ts`
   - `src/hooks/useRecommendation.ts`
@@ -142,8 +142,8 @@ Files in this folder imported from elsewhere:
   - `infra/lambda/plan/plan.ts`
   - `src/components/BestSailingCard.tsx`
   - `src/components/CheckInFAB.tsx`
+  - `src/components/DepartedStrip.tsx`
   - `src/components/FerryCard.tsx`
-  - `src/components/LastDepartureCard.tsx`
   - `src/components/MainDepartureCard.tsx`
   - `src/context/BestSailingContext.tsx`
   - `src/hooks/useArrivalEta.ts`

@@ -2,23 +2,23 @@
 type: l1-file
 spec_version: 1
 source: src/utils/arrivalPlan.ts
-content_sha: c274eb5ab506d329fa8928f894231e36646d5a9e662502656abe61403fd76b46
+content_sha: 731105bf964031eebb61e577bbbcb70af6a4d815cf5eb9756c226a21a0e4b15a
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-10-31T07:21:21.585Z
+last_audited: 2026-11-03T07:59:21.942Z
 ---
 
 # arrivalPlan.ts
 
 **Path:** `src/utils/arrivalPlan.ts`
-**Lines:** 115
+**Lines:** 119
 **Language:** TypeScript
 
 ## Exports
 
 | Name | Kind | Signature |
 |---|---|---|
-| `computeArrival` | function | `(params: { route: Route; departureTime: Date; liveEta?: Date \| null; transitRecords: TransitRecord[] \| undefined; trends: DepartureSnapshot[] \| undefined; }): ArrivalEta \| null` |
+| `computeArrival` | function | `(params: { route: Route; departureTime: Date; liveEta?: Date \| null; transitRecords: TransitRecord[] \| undefined; trends: DepartureSnapshot[] \| undefined; /** Far-side mode; defaults to the route's (bike). */ vehicle?: Vehicle; }): ArrivalEta \| null` |
 | `ArrivalKind` | type |  |
 | `ArrivalEta` | interface |  |
 | `ARRIVAL_CONFIG` | const | `Partial<Record<Route, {

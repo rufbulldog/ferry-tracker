@@ -3,22 +3,22 @@ type: l2-module
 spec_version: 1
 path: src/hooks
 file_count: 18
-total_lines: 1667
+total_lines: 1674
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-03T05:46:28.351Z
+last_audited: 2026-11-03T07:59:21.948Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 18 · **Lines:** 1667
+**Files:** 18 · **Lines:** 1674
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`useArrivalEta.ts`](./useArrivalEta.md) | 98 | Arrival for the sailing the leave-by plan targets (not the boat currently |
+| [`useArrivalEta.ts`](./useArrivalEta.md) | 105 | Arrival for the sailing the leave-by plan targets (not the boat currently |
 | [`useBestSailing.ts`](./useBestSailing.md) | 214 | Best sailing to drive to from your current position, across both route |
 | [`useCarWait.ts`](./useCarWait.md) | 76 | Combine live capacity, WSF wait-time notes, WSF alerts, and recorded history |
 | [`useDailyTrends.ts`](./useDailyTrends.md) | 124 |  |

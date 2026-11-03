@@ -132,6 +132,7 @@ export default function DepartScreen() {
   const plannedArrival = usePlannedArrival(
     route,
     recommendation.plannedDepartureTime,
+    planVehicle,
   );
 
   // Animation state for ferry departure transitions
@@ -268,7 +269,7 @@ export default function DepartScreen() {
           ...recommendation.reasoning,
           ...(plannedArrival?.etaTime && plannedArrival.ferryArrivalTime
             ? [
-                `${plannedArrival.label} ${formatTime(plannedArrival.etaTime)}: ferry lands ${formatTime(plannedArrival.ferryArrivalTime)} + ${plannedArrival.transitMinutes} min bike${
+                `${plannedArrival.label} ${formatTime(plannedArrival.etaTime)}: ferry lands ${formatTime(plannedArrival.ferryArrivalTime)} + ${plannedArrival.transitMinutes} min ${plannedArrival.vehicle === "car" ? "drive" : "bike"}${
                   plannedArrival.sampleSize > 0
                     ? ` (from ${plannedArrival.sampleSize} recorded trip${plannedArrival.sampleSize !== 1 ? "s" : ""})`
                     : " (default)"

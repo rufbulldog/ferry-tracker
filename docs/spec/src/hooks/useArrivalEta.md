@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useArrivalEta.ts
-content_sha: bb06b06bf6b28fc17d49aaa68777d90e6eecab0b15d4d16a4ed7159549510b31
+content_sha: 6ad60ac140eef01621753465b01939eb2eee166b7756a4f4fe2eb0524e01a558
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-10-31T07:21:21.502Z
+last_audited: 2026-11-03T07:59:21.897Z
 ---
 
 # useArrivalEta.ts
 
 **Path:** `src/hooks/useArrivalEta.ts`
-**Lines:** 98
+**Lines:** 105
 **Language:** TypeScript
 
 ## Exports
@@ -19,7 +19,7 @@ last_audited: 2026-10-31T07:21:21.502Z
 | Name | Kind | Signature |
 |---|---|---|
 | `useArrivalEta` | function | `(ferryRoute: Route): ArrivalEtaResult` |
-| `usePlannedArrival` | function | `(ferryRoute: Route, plannedDeparture: Date \| null): ArrivalEta \| null` |
+| `usePlannedArrival` | function | `(ferryRoute: Route, plannedDeparture: Date \| null, vehicle?: Vehicle): ArrivalEta \| null` |
 | `ArrivalEta` | interface |  |
 | `ArrivalKind` | type |  |
 | `ArrivalEtaResult` | interface |  |
@@ -32,6 +32,7 @@ last_audited: 2026-10-31T07:21:21.502Z
 
 **Internal:**
 - `../store/checkIn` (`getCheckIn`, `subscribeCheckIn`)
+- `../types/storage` (`Vehicle`)
 - `../utils/arrivalEtaLogic` (`selectActiveDeparture`, `etaDepartureBasis`)
 - `../utils/arrivalPlan` (`ARRIVAL_CONFIG`, `ArrivalEta`, `computeArrival`)
 - `../utils/constants` (`Route`, `crossingMinutesForRoute`)

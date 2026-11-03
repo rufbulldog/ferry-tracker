@@ -10,6 +10,7 @@ import {
 } from '../utils/arrivalEtaLogic';
 import { ARRIVAL_CONFIG, ArrivalEta, computeArrival } from '../utils/arrivalPlan';
 import { getCheckIn, subscribeCheckIn } from '../store/checkIn';
+import { Vehicle } from '../types/storage';
 
 export type { ArrivalEta, ArrivalKind } from '../utils/arrivalPlan';
 
@@ -78,9 +79,14 @@ export function useArrivalEta(ferryRoute: Route): ArrivalEtaResult {
 /**
  * Arrival for the sailing the leave-by plan targets (not the boat currently
  * loading or underway — that's useArrivalEta's job for Send ETA). Uses the
- * same crossing + far-side transit math, starting from the planned departure.
+ * same crossing + far-side transit math, starting from the planned departure,
+ * with the far-side leg timed for the plan's vehicle.
  */
-export function usePlannedArrival(ferryRoute: Route, plannedDeparture: Date | null): ArrivalEta | null {
+export function usePlannedArrival(
+  ferryRoute: Route,
+  plannedDeparture: Date | null,
+  vehicle?: Vehicle,
+): ArrivalEta | null {
   const { data: transitRecords } = useTransitRecords();
   const { data: trends } = useRecentTrends(ferryRoute, 30);
 
@@ -92,6 +98,7 @@ export function usePlannedArrival(ferryRoute: Route, plannedDeparture: Date | nu
       departureTime: new Date(plannedMs),
       transitRecords,
       trends,
+      vehicle,
     });
-  }, [ferryRoute, plannedMs, transitRecords, trends]);
+  }, [ferryRoute, plannedMs, transitRecords, trends, vehicle]);
 }
