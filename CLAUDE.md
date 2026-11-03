@@ -116,7 +116,9 @@ There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK dep
 - **CarPlay app** (Driving Task list screen, `modules/ferry-live/ios/FerryCarPlay.swift`): **on** since
   1.11.0. `plugins/withCarPlay.js` adds the scene manifest (phone + CarPlay scene delegates) and the
   Apple-managed `carplay-driving-task` entitlement, granted 2026-11-02 and enabled on
-  `com.ferrytracker.app`. `FERRY_CARPLAY=0` at prebuild builds without it.
+  `com.ferrytracker.app`. `FERRY_CARPLAY=0` at prebuild builds without it. Rows lead with drive-up spots;
+  tapping one pushes a `CPInformationTemplate` (spots, leave by, departs, lands, boat) that refreshes with
+  each snapshot. Every tappable `CPListItem` handler must call `completion()` or CarPlay spins forever.
 
 ## Things to remember
 

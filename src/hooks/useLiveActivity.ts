@@ -85,6 +85,7 @@ export function toCarPlaySnapshot(
     hasLocation,
     best: best ? toLiveState(best, alternatives[0]) : null,
     followingDepartureMs: best?.following?.scheduledDeparture.getTime() ?? null,
+    followingSpaces: best?.following?.driveUpSpaces ?? null,
     alternatives: alternatives.map((a) => toLiveState(a, undefined)),
   };
 }

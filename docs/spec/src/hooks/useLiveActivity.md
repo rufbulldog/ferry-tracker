@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: src/hooks/useLiveActivity.ts
-content_sha: 1fec22aecc3969e852cb2e379791405682135fd6025fa20f5c0a542dd5c8db72
+content_sha: 544d08b8fce8eb3b9e3fc7575855ce96716a745cbc37cf06a67fdc5c42ea4bcd
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T04:30:53.428Z
+last_audited: 2026-11-03T05:46:28.312Z
 ---
 
 # useLiveActivity.ts
 
 **Path:** `src/hooks/useLiveActivity.ts`
-**Lines:** 116
+**Lines:** 117
 **Language:** TypeScript
 
 ## Exports

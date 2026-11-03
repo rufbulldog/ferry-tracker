@@ -10,6 +10,9 @@ struct FerryCarPlayRow: Codable {
   var arrivalMs: Double
   var driveMinutes: Int
   var note: String?
+  /// Drive-up spaces left (nil: route has no WSF space data, e.g. Seattle).
+  var spaces: Int?
+  var vesselName: String?
 }
 
 /// What JS pushes for CarPlay: the best sailing, the sailing after it, and the
@@ -19,6 +22,7 @@ struct FerryCarPlaySnapshot: Codable {
   var hasLocation: Bool
   var best: FerryCarPlayRow?
   var followingDepartureMs: Double?
+  var followingSpaces: Int?
   var alternatives: [FerryCarPlayRow]
 }
 
@@ -50,10 +54,26 @@ private func timeString(_ ms: Double) -> String {
   return f.string(from: Date(timeIntervalSince1970: ms / 1000))
 }
 
+private func spotsText(_ spaces: Int?) -> String? {
+  spaces.map { $0 == 1 ? "1 spot" : "\($0) spots" }
+}
+
 private func leaveText(_ row: FerryCarPlayRow) -> String {
-  if row.driveMinutes == 0 { return "At terminal · lands \(timeString(row.arrivalMs))" }
-  let leave = row.leaveByMs <= Date().timeIntervalSince1970 * 1000 ? "Leave now" : "Leave by \(timeString(row.leaveByMs))"
-  return "\(leave) · ~\(row.driveMinutes) min drive · lands \(timeString(row.arrivalMs))"
+  let leave =
+    row.driveMinutes == 0
+    ? "At terminal"
+    : row.leaveByMs <= Date().timeIntervalSince1970 * 1000
+      ? "Leave now · ~\(row.driveMinutes) min drive"
+      : "Leave by \(timeString(row.leaveByMs)) · ~\(row.driveMinutes) min drive"
+  // Spots first: the list truncates the end of the line on narrow head units.
+  return [spotsText(row.spaces), leave].compactMap { $0 }.joined(separator: " · ")
+}
+
+/// Which row a detail screen is showing, so it can re-render on new data.
+private enum FerryCarPlayPick: Equatable {
+  case best
+  case following
+  case alternative(Int)
 }
 
 /// CarPlay UI (Driving Task category): a single list template.
@@ -70,7 +90,7 @@ class FerryCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate
     didConnect interfaceController: CPInterfaceController
   ) {
     self.interfaceController = interfaceController
-    let template = CPListTemplate(title: "Ferry Tracker", sections: Self.sections())
+    let template = CPListTemplate(title: "Ferry Tracker", sections: sections())
     listTemplate = template
     interfaceController.setRootTemplate(template, animated: false, completion: nil)
 
@@ -89,35 +109,112 @@ class FerryCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate
     observer = nil
     timer = nil
     listTemplate = nil
+    detailTemplate = nil
+    detailPick = nil
     self.interfaceController = nil
   }
 
   private func refresh() {
-    listTemplate?.updateSections(Self.sections())
+    listTemplate?.updateSections(sections())
+    if let detail = detailTemplate, let pick = detailPick {
+      // Spots count up while you drive; keep an open detail screen current.
+      if let fresh = Self.detailItems(pick) {
+        detail.title = fresh.title
+        detail.items = fresh.items
+      }
+    }
   }
 
   private static func item(_ text: String, _ detail: String?, image: String = "ferry.fill") -> CPListItem {
     CPListItem(text: text, detailText: detail, image: UIImage(systemName: image))
   }
 
-  static func sections() -> [CPListSection] {
-    guard let snap = FerryCarPlayStore.snapshot, snap.hasLocation else {
-      return [CPListSection(items: [item("Waiting for location…", "Open Ferry Tracker on your iPhone once", image: "location")])]
+  /// A row that opens its detail screen. The handler must call `completion`,
+  /// or CarPlay spins on the row forever.
+  private func tappable(_ text: String, _ detail: String?, image: String = "ferry.fill", pick: FerryCarPlayPick) -> CPListItem {
+    let row = Self.item(text, detail, image: image)
+    row.handler = { [weak self] _, completion in
+      self?.showDetail(pick)
+      completion()
     }
-    guard let best = snap.best else {
-      return [CPListSection(items: [item("No reachable sailing", "Nothing you can make from here right now", image: "clock")])]
+    return row
+  }
+
+  private var detailTemplate: CPInformationTemplate?
+  private var detailPick: FerryCarPlayPick?
+
+  private func showDetail(_ pick: FerryCarPlayPick) {
+    guard let interfaceController, let content = Self.detailItems(pick) else { return }
+    let template = CPInformationTemplate(
+      title: content.title, layout: .twoColumn, items: content.items, actions: [])
+    detailTemplate = template
+    detailPick = pick
+    interfaceController.pushTemplate(template, animated: true) { _, _ in }
+  }
+
+  private static func detailItems(_ pick: FerryCarPlayPick) -> (title: String, items: [CPInformationItem])? {
+    guard let snap = FerryCarPlayStore.snapshot, let best = snap.best else { return nil }
+    let row: FerryCarPlayRow
+    switch pick {
+    case .best:
+      row = best
+    case .alternative(let i):
+      guard snap.alternatives.indices.contains(i) else { return nil }
+      row = snap.alternatives[i]
+    case .following:
+      guard let following = snap.followingDepartureMs else { return nil }
+      return (
+        "\(best.routeLabel) · \(timeString(following))",
+        [
+          CPInformationItem(title: "Spots open", detail: spotsText(snap.followingSpaces) ?? "No live data"),
+          CPInformationItem(title: "Departs", detail: "\(timeString(following)) from \(best.terminal)"),
+          CPInformationItem(title: "Instead of", detail: timeString(best.departureMs)),
+        ]
+      )
     }
 
-    var bestItems = [item("\(best.routeLabel) · \(timeString(best.departureMs))", leaveText(best))]
+    let now = Date().timeIntervalSince1970 * 1000
+    var items = [
+      CPInformationItem(title: "Spots open", detail: spotsText(row.spaces) ?? "No live data"),
+      CPInformationItem(
+        title: "Leave by",
+        detail: row.driveMinutes == 0
+          ? "You're at the terminal"
+          : row.leaveByMs <= now ? "Now · ~\(row.driveMinutes) min drive" : "\(timeString(row.leaveByMs)) · ~\(row.driveMinutes) min drive"),
+      CPInformationItem(title: "Departs", detail: "\(timeString(row.departureMs)) from \(row.terminal)"),
+      CPInformationItem(title: "Lands", detail: timeString(row.arrivalMs)),
+    ]
+    if let vessel = row.vesselName, !vessel.isEmpty {
+      items.append(CPInformationItem(title: "Boat", detail: vessel))
+    }
+    if let note = row.note, note.hasPrefix("Next boat") {
+      items.append(CPInformationItem(title: "Heads up", detail: note))
+    }
+    return ("\(row.routeLabel) · \(timeString(row.departureMs))", items)
+  }
+
+  func sections() -> [CPListSection] {
+    guard let snap = FerryCarPlayStore.snapshot, snap.hasLocation else {
+      return [CPListSection(items: [Self.item("Waiting for location…", "Open Ferry Tracker on your iPhone once", image: "location")])]
+    }
+    guard let best = snap.best else {
+      return [CPListSection(items: [Self.item("No reachable sailing", "Nothing you can make from here right now", image: "clock")])]
+    }
+
+    var bestItems = [tappable("\(best.routeLabel) · \(timeString(best.departureMs))", leaveText(best), pick: .best)]
     if let note = best.note, note.hasPrefix("Next boat") {
-      bestItems.append(item(note, nil, image: "car.fill"))
+      bestItems.append(Self.item(note, nil, image: "car.fill"))
     }
     if let following = snap.followingDepartureMs {
-      bestItems.append(item("Missed it? Next: \(timeString(following))", nil, image: "arrow.clockwise"))
+      bestItems.append(tappable(
+        "Missed it? Next: \(timeString(following))", spotsText(snap.followingSpaces),
+        image: "arrow.clockwise", pick: .following))
     }
 
     var sections = [CPListSection(items: bestItems, header: "Best from here", sectionIndexTitle: nil)]
-    let alts = snap.alternatives.map { item("\($0.routeLabel) · \(timeString($0.departureMs))", leaveText($0)) }
+    let alts = snap.alternatives.enumerated().map { i, alt in
+      tappable("\(alt.routeLabel) · \(timeString(alt.departureMs))", leaveText(alt), pick: .alternative(i))
+    }
     if !alts.isEmpty {
       sections.append(CPListSection(items: alts, header: "Other route", sectionIndexTitle: nil))
     }

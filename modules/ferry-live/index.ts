@@ -4,6 +4,8 @@ export interface CarPlaySnapshot {
   hasLocation: boolean;
   best: FerryLiveState | null;
   followingDepartureMs: number | null;
+  /** Drive-up spaces left on the following sailing (null: no WSF space data). */
+  followingSpaces?: number | null;
   alternatives: FerryLiveState[];
 }
 

@@ -2,16 +2,16 @@
 type: l1-file
 spec_version: 1
 source: modules/ferry-live/index.ts
-content_sha: 15c18c395b1d6f0fabd7419dee98817e3537131c423a7fce009c1e90dfeccfc5
+content_sha: db726efba220d8738946d538f9473bfb9f2ab7f6c873214d313cf39fa1bc92cd
 extractor_version: 1.1.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T04:30:53.399Z
+last_audited: 2026-11-03T05:46:28.280Z
 ---
 
 # index.ts
 
 **Path:** `modules/ferry-live/index.ts`
-**Lines:** 46
+**Lines:** 48
 **Language:** TypeScript
 
 ## Exports

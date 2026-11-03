@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-11-03T05:13:02.782Z",
+  "generated_at": "2026-11-03T05:46:28.356Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "e8b792519402426409612a64360ac107d69390dfa3ff87298f73a832c304427f",
@@ -101,11 +101,11 @@
       "last_audited": "2026-11-02T02:40:10.651Z"
     },
     "modules/ferry-live/index.ts": {
-      "content_sha256": "15c18c395b1d6f0fabd7419dee98817e3537131c423a7fce009c1e90dfeccfc5",
+      "content_sha256": "db726efba220d8738946d538f9473bfb9f2ab7f6c873214d313cf39fa1bc92cd",
       "spec_path": "docs/spec/modules/ferry-live/index.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T04:30:53.399Z"
+      "last_audited": "2026-11-03T05:46:28.280Z"
     },
     "plugins/withCarPlay.js": {
       "content_sha256": "3e218d798e50a73f6fbae5392065c236db9956b78191f8da0e5cbacb91147d13",
@@ -332,11 +332,11 @@
       "last_audited": "2026-11-02T03:07:16.435Z"
     },
     "src/hooks/useLiveActivity.ts": {
-      "content_sha256": "1fec22aecc3969e852cb2e379791405682135fd6025fa20f5c0a542dd5c8db72",
+      "content_sha256": "544d08b8fce8eb3b9e3fc7575855ce96716a745cbc37cf06a67fdc5c42ea4bcd",
       "spec_path": "docs/spec/src/hooks/useLiveActivity.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T04:30:53.428Z"
+      "last_audited": "2026-11-03T05:46:28.312Z"
     },
     "src/hooks/useNextDepartures.ts": {
       "content_sha256": "aa38e8a4de701355c062df10d0f26aa16bd4d0f6c3f729c91b4bda8dbef7b90d",
@@ -684,11 +684,11 @@
       "last_audited": "2026-11-02T02:40:10.725Z"
     },
     "modules/ferry-live": {
-      "input_hashes_sha256": "b9ee8b704aa22857e621fff2753e5f88aab9e929d2a32271046292b9fb2b23a1",
+      "input_hashes_sha256": "823c4d74c52bae6104814665edc43b54bad3905e5dc9ab8b57c4fd08e911da99",
       "spec_path": "docs/spec/modules/ferry-live/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T04:30:53.464Z"
+      "last_audited": "2026-11-03T05:46:28.350Z"
     },
     "plugins": {
       "input_hashes_sha256": "bf10fe3238f7ee99fceb5ee2961402e1955b4e8141657818422516a33ce6b0e5",
@@ -719,11 +719,11 @@
       "last_audited": "2026-11-02T04:30:53.465Z"
     },
     "src/hooks": {
-      "input_hashes_sha256": "f218fcd256d380e4df4e899f52e7fb219d619bf8e4ad94ff4ae9128995239f02",
+      "input_hashes_sha256": "a0435ffb451b8d90b0f24c5eea8a61fe346004f96aa83bc20835366f84a6b7b9",
       "spec_path": "docs/spec/src/hooks/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-02T04:57:17.811Z"
+      "last_audited": "2026-11-03T05:46:28.351Z"
     },
     "src/store": {
       "input_hashes_sha256": "2541a62f0ac13a8540d75945de52964e20d1a73448c4e4957bfe9cc5520f7a2c",
@@ -756,11 +756,11 @@
       "last_audited": "2026-11-02T08:06:25.484Z"
     },
     "frontend-architecture": {
-      "input_sha256": "470c48a00837257aaae6b84b2d96bcfc4399166ec5d8e57a2bbf5593ef4db6af",
+      "input_sha256": "9743c9896cb5acc621c6a998831bfb54f0a2d4aa33a7cfac66a4a21d3637ca2d",
       "spec_path": "docs/spec/_systems/frontend-architecture.md",
       "extractor_version": "1.0.2",
       "renderer_version": "1.0.2",
-      "last_audited": "2026-11-02T04:57:17.815Z"
+      "last_audited": "2026-11-03T05:46:28.355Z"
     },
     "tech-stack": {
       "input_sha256": "bce6f1ea890db91effb906a0173bc357fac85d1527914d8f62d064850094fb13",

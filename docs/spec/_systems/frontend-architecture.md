@@ -6,7 +6,7 @@ discovered_from: code-graph + repo config
 resource_count: 21
 extractor_version: 1.0.2
 renderer_version: 1.0.2
-last_audited: 2026-11-02T04:57:17.812Z
+last_audited: 2026-11-03T05:46:28.352Z
 ---
 
 # Frontend architecture — System Spec

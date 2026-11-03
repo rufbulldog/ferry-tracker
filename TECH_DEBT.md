@@ -10,13 +10,9 @@ Tracks remaining work for ferry-app. Completed items are removed — the history
 
 ## Medium Priority
 
-- **Check the CarPlay screen on a real head unit / in Device Hub** — the entitlement was granted and
-  enabled 2026-11-02 and ships in 1.11.0. The phone app was verified running under the new scene lifecycle
-  in the simulator; the CarPlay list itself (`modules/ferry-live/ios/FerryCarPlay.swift`: best sailing +
-  leave-by, "Missed it? Next", other route, waiting/no-sailing states) hasn't been seen yet — `simctl io
-  screenConfig --display=Wireless power on` lights the screen but doesn't start a CarPlay session; Device Hub
-  does. If the car spots keep-alive proves flaky on the road, add Live Activity push updates (APNs + push
-  entitlement) in a later native build.
+- **CarPlay detail screen (1.11.1)** — seen on the car 2026-11-02 (list works in 1.11.0, but taps spun).
+  1.11.1 adds spots to each row and a tap-through detail screen; confirm both on the head unit. If the car
+  spots keep-alive proves flaky on the road, add Live Activity push updates (APNs + push entitlement).
 - **Live Activity re-planning in the background (bike)** — car activities stay fresh via the background
   location keep-alive; the bike leave-by still only re-plans while the app is open. From 1.10.0 the native
   keep-alive is in the binary, so extending it to bike activities is JS-only (OTA) — weigh battery first.

@@ -3,16 +3,16 @@ type: l2-module
 spec_version: 1
 path: src/hooks
 file_count: 18
-total_lines: 1666
+total_lines: 1667
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-02T04:57:17.811Z
+last_audited: 2026-11-03T05:46:28.351Z
 ---
 
 # src/hooks — Module Spec
 
 **Folder:** `src/hooks`
-**Files:** 18 · **Lines:** 1666
+**Files:** 18 · **Lines:** 1667
 
 ## File inventory
 
@@ -25,7 +25,7 @@ last_audited: 2026-11-02T04:57:17.811Z
 | [`useDriveTimes.ts`](./useDriveTimes.md) | 79 | Apple Maps road drive times (with traffic) from `origin` to each point. |
 | [`useFutureSchedule.ts`](./useFutureSchedule.md) | 49 | Full sailing list for a route on a given date (YYYY-MM-DD). Schedules are |
 | [`useLatestDeparture.ts`](./useLatestDeparture.md) | 50 |  |
-| [`useLiveActivity.ts`](./useLiveActivity.md) | 116 | Mirror a plan into a Live Activity (Lock Screen, Dynamic Island, and the |
+| [`useLiveActivity.ts`](./useLiveActivity.md) | 117 | Mirror a plan into a Live Activity (Lock Screen, Dynamic Island, and the |
 | [`useNextDepartures.ts`](./useNextDepartures.md) | 52 |  |
 | [`useRecommendation.ts`](./useRecommendation.md) | 240 |  |
 | [`useTerminalBulletins.ts`](./useTerminalBulletins.md) | 30 |  |
@@ -61,8 +61,8 @@ Files in this folder imported from elsewhere:
   - `app/(tabs)/index.tsx`
   - `app/(tabs)/timer.tsx`
   - `app/(tabs)/trends.tsx`
+  - `src/components/DepartedStrip.tsx`
   - `src/components/FerryCard.tsx`
-  - `src/components/LastDepartureCard.tsx`
   - `src/components/MainDepartureCard.tsx`
 - `useRecommendation.ts` — used by 1 file
   - `app/(tabs)/index.tsx`
