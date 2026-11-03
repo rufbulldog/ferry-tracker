@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-11-02T08:06:25.484Z",
+  "generated_at": "2026-11-03T05:13:02.782Z",
   "files": {
     "app/(tabs)/_layout.tsx": {
       "content_sha256": "e8b792519402426409612a64360ac107d69390dfa3ff87298f73a832c304427f",
@@ -108,11 +108,11 @@
       "last_audited": "2026-11-02T04:30:53.399Z"
     },
     "plugins/withCarPlay.js": {
-      "content_sha256": "1a6875d8fdf8091a9abe9db37527e5f6d8b18cdc365ae411e23b45207f1ccaf9",
+      "content_sha256": "3e218d798e50a73f6fbae5392065c236db9956b78191f8da0e5cbacb91147d13",
       "spec_path": "docs/spec/plugins/withCarPlay.md",
       "extractor_version": "1.1.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.834Z"
+      "last_audited": "2026-11-03T05:13:02.702Z"
     },
     "plugins/withPodDeploymentTarget.js": {
       "content_sha256": "5fc34283e2819f6a4cd4e1044f5b60d3fecabb9109591e3b973644d6116ae0c0",
@@ -691,11 +691,11 @@
       "last_audited": "2026-11-02T04:30:53.464Z"
     },
     "plugins": {
-      "input_hashes_sha256": "a3cf71667f9eff4c36e48b5dd130776cddf35cb91adc472cc14072e79d08ce69",
+      "input_hashes_sha256": "bf10fe3238f7ee99fceb5ee2961402e1955b4e8141657818422516a33ce6b0e5",
       "spec_path": "docs/spec/plugins/_module.md",
       "extractor_version": "1.0.0",
       "renderer_version": "1.0.0",
-      "last_audited": "2026-11-01T19:07:47.900Z"
+      "last_audited": "2026-11-03T05:13:02.775Z"
     },
     "src/api": {
       "input_hashes_sha256": "9cd38068530a88ecdd394c870a9185bb302e23617840a2bd97b5f9587593e5ba",

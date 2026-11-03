@@ -3,22 +3,22 @@ type: l2-module
 spec_version: 1
 path: plugins
 file_count: 2
-total_lines: 95
+total_lines: 91
 extractor_version: 1.0.0
 renderer_version: 1.0.0
-last_audited: 2026-11-01T19:07:47.900Z
+last_audited: 2026-11-03T05:13:02.775Z
 ---
 
 # plugins — Module Spec
 
 **Folder:** `plugins`
-**Files:** 2 · **Lines:** 95
+**Files:** 2 · **Lines:** 91
 
 ## File inventory
 
 | File | Lines | Purpose |
 |---|---|---|
-| [`withCarPlay.js`](./withCarPlay.md) | 48 |  |
+| [`withCarPlay.js`](./withCarPlay.md) | 44 |  |
 | [`withPodDeploymentTarget.js`](./withPodDeploymentTarget.md) | 47 |  |
 
 ## Internal-only files

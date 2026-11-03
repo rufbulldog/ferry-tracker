@@ -10,16 +10,13 @@ Tracks remaining work for ferry-app. Completed items are removed — the history
 
 ## Medium Priority
 
-- **Validate the CarPlay screen in the simulator** — built but not yet seen (2026-11-01). Prebuild with
-  `FERRY_CARPLAY=1 npx expo prebuild -p ios --clean`, `npx expo run:ios`, open the simulator's CarPlay
-  display (I/O → External Displays → CarPlay) and check the "Best from here" list
-  (`modules/ferry-live/ios/FerryCarPlay.swift`): best sailing + leave-by, "Missed it? Next", other route,
-  and the waiting/no-sailing states. Also check the Live Activity's `.small` view on the CarPlay dashboard.
-- **CarPlay Driving Task entitlement — requested 2026-11-01, waiting on Apple** (granted to the team as a
-  managed capability; no app-specific form fields). Once granted: enable it on `com.ferrytracker.app`,
-  drop the `FERRY_CARPLAY` gate in `plugins/withCarPlay.js`, regenerate profiles (`eas credentials`) and
-  ship its own native build (1.10.0 went out without it). If the car spots keep-alive proves flaky on the
-  road, fold Live Activity push updates (APNs + push entitlement) into that same build.
+- **Check the CarPlay screen on a real head unit / in Device Hub** — the entitlement was granted and
+  enabled 2026-11-02 and ships in 1.11.0. The phone app was verified running under the new scene lifecycle
+  in the simulator; the CarPlay list itself (`modules/ferry-live/ios/FerryCarPlay.swift`: best sailing +
+  leave-by, "Missed it? Next", other route, waiting/no-sailing states) hasn't been seen yet — `simctl io
+  screenConfig --display=Wireless power on` lights the screen but doesn't start a CarPlay session; Device Hub
+  does. If the car spots keep-alive proves flaky on the road, add Live Activity push updates (APNs + push
+  entitlement) in a later native build.
 - **Live Activity re-planning in the background (bike)** — car activities stay fresh via the background
   location keep-alive; the bike leave-by still only re-plans while the app is open. From 1.10.0 the native
   keep-alive is in the binary, so extending it to bike activities is JS-only (OTA) — weigh battery first.

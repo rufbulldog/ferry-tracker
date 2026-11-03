@@ -113,11 +113,10 @@ There is no equivalent of kamilche-cabin's `deploy-sam.sh` wrapper here. CDK dep
   car activity is on, `FerryKeepAlive.swift` runs background location (`UIBackgroundModes: location`,
   When-In-Use, blue indicator) so JS stays alive and `BestSailingProvider` refetches WSF space every
   minute (react-query's own polling pauses when unfocused). Seattle/Bremerton have no WSF space → "—".
-- **CarPlay app** (Driving Task list screen, `modules/ferry-live/ios/FerryCarPlay.swift`): **off by
-  default**. `plugins/withCarPlay.js` only adds the scene manifest + `carplay-driving-task` entitlement
-  when `FERRY_CARPLAY=1` is set at prebuild. The entitlement is Apple-managed — until Apple grants it,
-  any signed (EAS/TestFlight) build that requests it fails provisioning, so only use the flag for local
-  simulator builds.
+- **CarPlay app** (Driving Task list screen, `modules/ferry-live/ios/FerryCarPlay.swift`): **on** since
+  1.11.0. `plugins/withCarPlay.js` adds the scene manifest (phone + CarPlay scene delegates) and the
+  Apple-managed `carplay-driving-task` entitlement, granted 2026-11-02 and enabled on
+  `com.ferrytracker.app`. `FERRY_CARPLAY=0` at prebuild builds without it.
 
 ## Things to remember
 
