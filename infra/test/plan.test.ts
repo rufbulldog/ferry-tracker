@@ -1,5 +1,6 @@
 import {
   buildPlan,
+  buildTimetable,
   candidateRoutes,
   departingTerminals,
   parsePlanQuery,
@@ -66,6 +67,7 @@ const query = (over: Partial<PlanQuery> = {}): PlanQuery => ({
   ],
   sailings: 3,
   bufferMinutes: null,
+  date: null,
   ...over,
 });
 
@@ -102,6 +104,7 @@ describe("parsePlanQuery", () => {
         routes: ["edmonds-kingston", "seattle-bremerton"],
         sailings: 5,
         bufferMinutes: 15,
+        date: null,
       },
     });
   });
@@ -116,6 +119,52 @@ describe("parsePlanQuery", () => {
     const r = parsePlanQuery(params);
     expect(r.ok).toBe(false);
     expect(!r.ok && r.error).toMatch(error);
+  });
+});
+
+describe("date=", () => {
+  it("takes a calendar date", () => {
+    const r = parsePlanQuery({ date: "2026-11-06" });
+    expect(r.ok && r.query.date).toBe("2026-11-06");
+  });
+
+  it.each(["soon", "2026-13-01", "2026-02-30", "11/06/2026"])(
+    "rejects %s",
+    (date) => {
+      const r = parsePlanQuery({ date });
+      expect(!r.ok && r.error).toMatch(/date must be/);
+    },
+  );
+
+  it("lists the whole day on schedule, in order, with nothing live", () => {
+    const at = (h: number) => Date.UTC(2026, 10, 6, h);
+    const times = [20, 16, 18].map((h, i) => ({
+      DepartingTime: `/Date(${at(h)}-0800)/`,
+      VesselID: i,
+      VesselName: `Boat ${h}`,
+    }));
+    const plan = buildTimetable(
+      query({ location: null, routes: ["edmonds-kingston", "seattle-bremerton"] }),
+      "2026-11-06",
+      { "edmonds-kingston": times },
+      NOW,
+    );
+    expect(plan.date).toBe("2026-11-06");
+    expect(plan.best).toBeNull();
+    const [ek, sb] = plan.routes;
+    expect(ek.sailings.map((s) => s.vesselName)).toEqual(["Boat 16", "Boat 18", "Boat 20"]);
+    expect(ek.sailings[0]).toMatchObject({
+      scheduledDeparture: new Date(at(16)).toISOString(),
+      departure: new Date(at(16)).toISOString(),
+      arrival: new Date(at(16) + ek.crossingMinutes * 60_000).toISOString(),
+      delayMinutes: 0,
+      status: "scheduled",
+      driveUpSpaces: null,
+      isCancelled: false,
+    });
+    expect(ek.from.name).toBe("Edmonds");
+    // A route WSF had nothing for is still listed, with no boats.
+    expect(sb.sailings).toEqual([]);
   });
 });
 

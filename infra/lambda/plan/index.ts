@@ -7,6 +7,7 @@ import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import {
   buildPlan,
+  buildTimetable,
   departingTerminals,
   parsePlanQuery,
   PLAN_ROUTES,
@@ -66,14 +67,16 @@ function tripDate(days: number): string {
   return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toLocaleDateString("en-CA");
 }
 
-// Today's and tomorrow's timetable (so late evenings still show the first boats).
-async function timetable(route: string): Promise<ScheduledSailing[]> {
+async function timetableFor(
+  route: string,
+  dates: string[],
+): Promise<ScheduledSailing[]> {
   const { from, to } = PLAN_ROUTES[route];
   const days = await Promise.all(
-    [0, 1].map((d) =>
+    dates.map((date) =>
       optional(() =>
         wsf<{ TerminalCombos?: { Times?: ScheduledSailing[] }[] }>(
-          `schedule/rest/schedule/${tripDate(d)}/${from}/${to}`,
+          `schedule/rest/schedule/${date}/${from}/${to}`,
           SCHEDULE_TTL_MS,
         ),
       ),
@@ -81,6 +84,10 @@ async function timetable(route: string): Promise<ScheduledSailing[]> {
   );
   return days.flatMap((d) => d?.TerminalCombos?.[0]?.Times ?? []);
 }
+
+// Today's and tomorrow's timetable (so late evenings still show the first boats).
+const timetable = (route: string) =>
+  timetableFor(route, [tripDate(0), tripDate(1)]);
 
 async function recentHistory(
   route: string,
@@ -117,6 +124,7 @@ function response(statusCode: number, body: unknown): APIGatewayProxyResult {
 }
 
 // GET /plan?lat=&lon=&routes=a,b&sailings=3&buffer=10
+// GET /plan?routes=a,b&date=YYYY-MM-DD  one day's timetable, to plan ahead
 export async function handler(
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> {
@@ -127,6 +135,22 @@ export async function handler(
   const { query } = parsed;
 
   try {
+    if (query.date) {
+      const date = query.date;
+      const days = await Promise.all(
+        query.routes.map((id) => timetableFor(id, [date])),
+      );
+      return response(
+        200,
+        buildTimetable(
+          query,
+          date,
+          Object.fromEntries(query.routes.map((id, i) => [id, days[i]])),
+          new Date(),
+        ),
+      );
+    }
+
     const terminalIds = departingTerminals(query.routes);
     const [vessels, terminals, waitTimes, bulletins, history] =
       await Promise.all([

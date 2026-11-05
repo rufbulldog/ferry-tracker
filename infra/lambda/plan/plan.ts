@@ -102,12 +102,21 @@ export interface PlanQuery {
   sailings: number;
   /** Overrides each route's car buffer. */
   bufferMinutes: number | null;
+  /** A Pacific calendar date: list that day's timetable instead of live boats. */
+  date: string | null;
 }
 
 export type ParseResult =
   { ok: true; query: PlanQuery } | { ok: false; error: string };
 
 const MAX_SAILINGS = 10;
+
+// A real calendar date, so "2026-02-30" is a 400 rather than an empty timetable.
+function isCalendarDate(raw: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return false;
+  const d = new Date(`${raw}T00:00:00Z`);
+  return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === raw;
+}
 
 function numberParam(raw: string | undefined): number | null {
   if (raw === undefined || raw.trim() === "") return null;
@@ -160,6 +169,10 @@ export function parsePlanQuery(
   ) {
     return { ok: false, error: "buffer must be 0..120 minutes" };
   }
+  const date = p.date?.trim() || null;
+  if (date && !isCalendarDate(date)) {
+    return { ok: false, error: "date must be YYYY-MM-DD" };
+  }
 
   return {
     ok: true,
@@ -168,6 +181,7 @@ export function parsePlanQuery(
       routes,
       sailings,
       bufferMinutes,
+      date,
     },
   };
 }
@@ -272,11 +286,70 @@ export interface PickOut {
 
 export interface PlanResponse {
   generatedAt: string;
+  /** Set when this is one day's timetable (`date=`), not the live plan. */
+  date?: string;
   location: { lat: number; lon: number } | null;
   /** Null without a location, or when no route has a catchable sailing. */
   best: PickOut | null;
   alternatives: PickOut[];
   routes: RouteOut[];
+}
+
+/**
+ * One day's timetable (`date=`), for planning ahead: every sailing that day, on
+ * schedule. Nothing live is known yet, so there's no pick, delay or car space.
+ */
+export function buildTimetable(
+  query: PlanQuery,
+  date: string,
+  schedules: Record<string, ScheduledSailing[] | undefined>,
+  now: Date,
+): PlanResponse {
+  return {
+    generatedAt: now.toISOString(),
+    date,
+    location: query.location,
+    best: null,
+    alternatives: [],
+    routes: query.routes.map((id) => {
+      const r = PLAN_ROUTES[id];
+      const sailings = (schedules[id] ?? []).flatMap((t): SailingOut[] => {
+        const departs = parseDate(t.DepartingTime);
+        if (!departs) return [];
+        return [
+          {
+            scheduledDeparture: departs.toISOString(),
+            departure: departs.toISOString(),
+            delayMinutes: 0,
+            arrival: addMinutes(departs, r.crossingMinutes).toISOString(),
+            status: "scheduled",
+            vesselName: t.VesselName,
+            driveUpSpaces: null,
+            maxSpaces: 0,
+            isCancelled: false,
+          },
+        ];
+      });
+      return {
+        route: id,
+        label: r.label,
+        from: { id: r.from, name: TERMINALS[r.from].name },
+        to: { id: r.to, name: TERMINALS[r.to].name },
+        crossingMinutes: r.crossingMinutes,
+        carWait: {
+          extraSailings: 0,
+          extraMinutes: 0,
+          atRisk: false,
+          reason: "none",
+          confidence: "low",
+          note: null,
+        },
+        sailings: sailings.sort((a, b) =>
+          a.departure.localeCompare(b.departure),
+        ),
+      };
+    }),
+  };
 }
 
 function sailingOut(d: DepartureInfo, route: PlanRoute): SailingOut {

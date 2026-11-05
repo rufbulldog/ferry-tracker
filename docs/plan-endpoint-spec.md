@@ -34,6 +34,7 @@ GET /plan?lat=47.7568&lon=-122.2806&routes=seattle-bremerton,edmonds-kingston&sa
 | `routes` | Bainbridge + Kingston (4) | Comma list of `bainbridge-seattle`, `seattle-bainbridge`, `kingston-edmonds`, `edmonds-kingston`, `seattle-bremerton`, `bremerton-seattle`. Bremerton is opt-in, matching the app's default route groups. |
 | `sailings` | `3` | 1–10 upcoming sailings listed per route (boats on the water are listed too). |
 | `buffer` | per route | Minutes to arrive before a sailing (0–120). Overrides the app's car buffers (default 10). |
+| `date` | none | `YYYY-MM-DD` (Pacific). Returns that day's whole timetable instead of live boats, to plan ahead. `sailings` doesn't apply, `best` is null, and each sailing is on schedule with `delayMinutes: 0` and `driveUpSpaces: null`. The response also carries `"date"`. A route WSF has no timetable for (for example, too far ahead) comes back with `sailings: []`. |
 
 With a location, each crossing is planned only from **your side of the water** (the nearer
 terminal of the pair). The drive is estimated as straight-line × 1.4 at 50 km/h, + 2 min (0 within
